@@ -9,17 +9,17 @@
 #define INF 999999999
 #define T_end 1245201000        //28270000000
 
-#define IT 10             // Number of ramdom sample
+#define IT 3             // Number of ramdom sample
 
-#define M 200	     // Maximum number of demands
+#define M 10000	     // Maximum number of demands
 
 #define N 5          	// N number of Nodes.
 #define L 12			// L number of directed Links. 有方向グラフ
-#define S 12			// S number of spec slots per link
+#define S 400			// S number of spec slots per link
 
-#define A1 2			// Traffic load
+#define A1 80			// Traffic load
 #define H  10			// 1/mu, Average holding time in Tu
-#define req_Max 4		// Maximum demand size 占有帯域スロット数
+#define req_Max 16		// Maximum demand size 占有帯域スロット数
 
 #define K 1000			//to explore less possibility of repeating of next arrival time of requests.  
 
@@ -76,7 +76,7 @@ int main(void)
 		for(l=0; l<8; l++){ //通信量を変更するためのループ
 			cout << "TERM NUMBER = " << l << endl;
 			if(l){
-				A = A + 1;//通信量
+				A = A + 10;//通信量
 				ofs1 << endl << " A= "<< A << endl;
 				cout << endl << " A= "<< A << endl;
 			} //l=0のときは既にAを表示しているため実行しない
@@ -148,7 +148,7 @@ int main(void)
 						}
 					}
 
-					for(j=2; j<=2; j++){	// To do all algorithms sequentially連続してアルゴリズムを実行する c=0なら2回ループ
+					for(j=0; j<=2; j++){	// To do all algorithms sequentially連続してアルゴリズムを実行する c=0なら2回ループ
 						algoCall = j;
 
 						//push to the priority queue
