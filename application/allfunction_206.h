@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <time.h>
 #include <float.h>
+#include <sstream>
 
 using namespace std;
 //名前を簡潔に指定するための記述

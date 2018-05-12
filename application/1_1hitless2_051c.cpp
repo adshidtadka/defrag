@@ -364,8 +364,6 @@ int main(void)
 			stdItConvIlpDiff = blkdItConvIlp*0.05 - stdItConvIlp*1.96;
 			stdItPropIlpDiff = blkdItPropIlp*0.05 - stdItPropIlp*1.96;
 
-
-
 			cout << "Av blocked request blkdItNone: 	" << blkdItNone/IT << endl;
 			ofs1 << "Av blocked request blkdItNone: 	" << blkdItNone/IT << endl;
 			cout << "Confidence interval blkdItNone: 	" << stdItNone << endl;
@@ -428,7 +426,11 @@ int readInput()
 	ifstream fin; 									//reading from files　入力用ストリーム
 
 	//	Register network
-	fin.open ("./../network/net_5.txt");//ノードの接続関係が EM:=で与えられている
+	stringstream ss;
+	string s;
+	ss << "./../network/net_" << N << ".txt";
+	s = ss.str();
+	fin.open (s);//ノードの接続関係が EM:=で与えられている
 	{
 		if (!fin){
 			cout <<"Cannot open network model" << endl;
@@ -448,8 +450,11 @@ int readInput()
 	fin.close();
 
 //	Register routing table primary
+	ss.str("");
+	ss << "./../network/dp" << N << "_x_result1.txt";
+	s = ss.str();
 	{
-	fin.open ("./../network/dp5_x_result1.txt"); //行数をカウントしてlに代入する
+	fin.open (s); //行数をカウントしてlに代入する
 	{
 		if (!fin)
 		{
@@ -470,7 +475,10 @@ int readInput()
 	}
 	fin.close();
 
-	fin.open ("./../network/dp5_x_result1.txt"); //今度こそプライマリのパス情報を得る path[i][j][p] hops[i][j]
+	ss.str("");
+	ss << "./../network/dp" << N << "_x_result1.txt";
+	s = ss.str();
+	fin.open (s); //今度こそプライマリのパス情報を得る path[i][j][p] hops[i][j]
 	{
 		if (!fin)
 		{
@@ -497,7 +505,10 @@ int readInput()
 
 //	Register routing table backup
 	{
-	fin.open ("./../network/dp5_x_result2.txt");//行数をカウントしてlに代入してる
+	ss.str("");
+	ss << "./../network/dp" << N << "_x_result2.txt";
+	s = ss.str();
+	fin.open (s);//行数をカウントしてlに代入してる
 	{
 		if (!fin)
 		{
@@ -518,7 +529,10 @@ int readInput()
 	}
 	fin.close();
 
-	fin.open ("./../network/dp5_x_result2.txt");//今度こそプライマリのパス情報を得る bp[i][j][p] bhops[i][j]
+	ss.str("");
+	ss << "./../network/dp" << N << "_x_result2.txt";
+	s = ss.str();
+	fin.open (s);//今度こそプライマリのパス情報を得る bp[i][j][p] bhops[i][j]
 	{
 		if (!fin)
 		{
