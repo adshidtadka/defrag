@@ -13,11 +13,11 @@
 
 #define M 10000	     // Maximum number of demands
 
-#define N 5          	// N number of Nodes.
-#define L 12			// L number of directed Links. 有方向グラフ
+#define N 11          	// N number of Nodes.
+#define L 52			// L number of directed Links. 有方向グラフ
 #define S 400			// S number of spec slots per link
 
-#define A1 80			// Traffic load
+#define A1 50			// Traffic load
 #define H  10			// 1/mu, Average holding time in Tu
 #define req_Max 16		// Maximum demand size 占有帯域スロット数
 
