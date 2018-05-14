@@ -115,9 +115,9 @@ int main(void)
 						// startEvent[0].type = 0;
 						// startEvent[0].lpNum = 0;
 						for(i=0; i<M; i++){//正規化
-							t_req[i]= double (t_req[i]) * spfact; //信号の到着時刻を20倍にする
+							t_req[i]= double (t_req[i]) * spfact;
 							t_req_event[i+1] *= spfact;
-							t_exp[i]= double (t_exp[i]) * spfact; //信号の切断時刻を20倍にする
+							t_exp[i]= double (t_exp[i]) * spfact;
 							t_exp_event[i] *= spfact;
 							if(t_req[i] == t_exp[i]){
 								t_exp[i]++; //到着時刻と切断時刻が同じであれば1ずらす
@@ -134,8 +134,8 @@ int main(void)
 						}
 						ret_int = spfact * ret_int / double(K); // To normalize ステップ数を20倍にする
 						// cout << "ret_int = " << ret_int << endl;
-						temp_max = temp_max * spfact / K; //デフラグ時間を20倍する
-						// cout << "temp_max = " << temp_max << endl;
+						temp_max = temp_max * spfact / K;
+						
 						//make defrag event
 						defragCount = round(endEvent[M-1].time/ret_int);
 						// cout << "defragCount = " << defragCount << endl;
