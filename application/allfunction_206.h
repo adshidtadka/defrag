@@ -32,6 +32,7 @@ using namespace std;
 //{
 	int initialize(void);
 	int reInitialize(void);
+	int initializeEvent(void);
 	int readInput(void);
 	int readDemands(void);
 	int firstFit(int);
@@ -1698,7 +1699,7 @@ int reInitialize(void)						// Set everything to zero save routings and demands
 	togOp =0;
 	realOp = 0;
 
-	for(i=0;i<=M;i++){
+	for(i=0;i<M;i++){
 		spec_ind[i]=0; isactive[i]=0;
 		lpState[i]=1; bpState[i]=0;
 	}
@@ -1716,6 +1717,25 @@ int reInitialize(void)						// Set everything to zero save routings and demands
 	midFitList = NULL;
 	backupList = NULL;
 	mixtList = NULL;
+
+	return 0;
+}
+
+int initializeEvent(void)						// Set everything to zero save routings and demands
+{
+	int i,j;
+
+	for(i=0;i<M;i++){
+		endEvent[i].time  = 0;
+		endEvent[i].type  = 0;
+		endEvent[i].lpNum = 0;
+		startEvent[i].time  = 0;
+		startEvent[i].type  = 0;
+		startEvent[i].lpNum = 0;
+	}
+
+	defragEvent.clear();
+
 	return 0;
 }
 

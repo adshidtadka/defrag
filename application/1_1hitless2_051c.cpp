@@ -13,11 +13,11 @@
 
 #define M 10000	     // Maximum number of demands
 
-#define N 14          	// N number of Nodes.
-#define L 44			// L number of directed Links. 有方向グラフ (N,L) = (11, 52), (5, 12), (14,44)
+#define N 5          	// N number of Nodes.
+#define L 12			// L number of directed Links. 有方向グラフ (N,L) = (11, 52), (5, 12), (14,44)
 #define S 400			// S number of spec slots per link
 
-#define A1 110		// Traffic load
+#define A1 50		// Traffic load
 #define H  10			// 1/mu, Average holding time in Tu
 #define req_Max 16		// Maximum demand size 占有帯域スロット数
 
@@ -100,13 +100,15 @@ int main(void)
 				reInitialize();//経路とパス以外をゼロにする
 				genDemands();//10万のパス情報を取り直す
 
-				for(k=1; k<2; k++){//k=1のみのループ
+				for(k=1; k<4; k++){//k=1のみのループ
 					reInitialize();//経路とパスの情報をゼロにする
+
+					initializeEvent(); //initialize startEvent endEvent defragEvent
 
 					double spfact;//正規化のための変数
 					if(k==1) spfact = 0.05;
-					if(k==2) spfact = 0.5;
-					if(k>=3) spfact = 5;
+					if(k==2) spfact = 2;
+					if(k>=3) spfact = 2;
 
 					if(k){
 						ofs1 << endl << "Speeding = " << spfact << endl;
@@ -132,10 +134,18 @@ int main(void)
 							startEvent[i].type = 0;
 							startEvent[i].lpNum = i;
 						}
-						ret_int = spfact * ret_int / double(K); // To normalize ステップ数を20倍にする
-						// cout << "ret_int = " << ret_int << endl;
-						temp_max = temp_max * spfact / K;
+
+						if (k != 1)
+						{
+							ret_int *= spfact;
+							temp_max *= spfact;
+						} else {
+							ret_int = spfact * ret_int / double(K); // To normalize ステップ数を20倍にする
+							// // cout << "ret_int = " << ret_int << endl;
+							temp_max = temp_max * spfact / K;
+						}
 						
+						cout << "endEvent[" << M-1 << "].time = " << endEvent[M-1].time << ", ret_int = " << ret_int << endl;
 						//make defrag event
 						defragCount = round(endEvent[M-1].time/ret_int);
 						// cout << "defragCount = " << defragCount << endl;
@@ -143,9 +153,9 @@ int main(void)
 						defragEvent.resize(defragCount);
 						for (int c = 0; c < defragCount ; c++){
 							defragEvent[c].time = c * ret_int;
-							// cout << "defragEvent[" << c << "].time = " << defragEvent[c].time << endl;
 							defragEvent[c].type = 2;
 						}
+						cout << "defragEvent[" << defragCount-1 << "].time = " << defragEvent[defragCount-1].time << endl;
 					}
 
 					for(j=0; j<=2; j++){	// To do all algorithms sequentially連続してアルゴリズムを実行する c=0なら2回ループ
