@@ -1,0 +1,14 @@
+Simulation for N= 5, Spec= 400, req_Max=16, A1= 50, R_int = 200, temp_max= 100000
+
+ M= 10000
+
+Sorting= 1
+
+ A= 50
+
+ Iteration= 0
+
+Speeding = 0.05
+Simulation time = 0.588635 sec
+Blocked request: First-fit w/o defragment                1
+

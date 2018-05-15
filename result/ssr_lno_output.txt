@@ -1,0 +1,4 @@
+param S   := 3
+param absP:= 6
+param absF:= 12
+param absE:= 12
