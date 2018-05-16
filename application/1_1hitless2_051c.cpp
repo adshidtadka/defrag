@@ -155,7 +155,7 @@ int main(void)
 							defragEvent[c].time = c * ret_int;
 							defragEvent[c].type = 2;
 						}
-						cout << "defragEvent[" << defragCount-1 << "].time = " << defragEvent[defragCount-1].time << endl;
+						// cout << "defragEvent[" << defragCount-1 << "].time = " << defragEvent[defragCount-1].time << endl;
 					}
 
 					for(j=0; j<=2; j++){	// To do all algorithms sequentially連続してアルゴリズムを実行する c=0なら2回ループ
