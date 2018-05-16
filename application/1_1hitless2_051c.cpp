@@ -13,8 +13,8 @@
 
 #define M 10000	     // Maximum number of demands
 
-#define N 5          	// N number of Nodes.
-#define L 12			// L number of directed Links. 有方向グラフ (N,L) = (11, 52), (5, 12), (14,44)
+#define N 11          	// N number of Nodes.
+#define L 28			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44)
 #define S 400			// S number of spec slots per link
 
 #define A1 50		// Traffic load
@@ -100,7 +100,7 @@ int main(void)
 				reInitialize();//経路とパス以外をゼロにする
 				genDemands();//10万のパス情報を取り直す
 
-				for(k=1; k<4; k++){//k=1のみのループ
+				for(k=1; k<2; k++){//k=1のみのループ
 					reInitialize();//経路とパスの情報をゼロにする
 
 					initializeEvent(); //initialize startEvent endEvent defragEvent
