@@ -145,7 +145,7 @@ int main(void)
 							temp_max = temp_max * spfact / K;
 						}
 						
-						cout << "endEvent[" << M-1 << "].time = " << endEvent[M-1].time << ", ret_int = " << ret_int << endl;
+						// cout << "endEvent[" << M-1 << "].time = " << endEvent[M-1].time << ", ret_int = " << ret_int << endl;
 						//make defrag event
 						defragCount = round(endEvent[M-1].time/ret_int);
 						// cout << "defragCount = " << defragCount << endl;
