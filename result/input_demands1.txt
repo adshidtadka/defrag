@@ -1,4 +1,4 @@
-mu and inter:=0.1, 0.166667
+mu and inter:=0.1, 0.2
 LP number, s, d, size, Arrival time, holding time:=
 0: 1 2 6 0 4
 1: 2 3 9 1 2
