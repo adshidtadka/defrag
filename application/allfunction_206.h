@@ -2268,6 +2268,7 @@ int checkFirstFitRerouting(int lp)
 		if(!b) break;//bが0ならブレイク
 		//	cout << "LP checking index: " << lp << ", "<< index << endl;
 		isGetRoot = getPrimRoot(index, lp);
+		//	cout << "LP checked index: " << lp << ", "<< index << endl;
 		if(isGetRoot){//もし全てのリンクを調べ終え、リンクが使われていなければ
 			asigned= 1;//割り当て確定
 		//	cout << "LP index " << lp << " will be first-asigned to index " << index << endl;
@@ -3339,7 +3340,7 @@ int getPrimRoot(int s, int lp)
 	a = dest[lp];
 	b = Nodes[a].from;
 
-	int path_rr_prev[N]; //to compare the routes
+	int path_rr_prev[L]; //to compare the routes
 
 	if (b < N) {
 		for (j = 0; j < N; j++) {//initialize
@@ -3356,7 +3357,7 @@ int getPrimRoot(int s, int lp)
             {
                     isSame = false;
             }
-			std::cout << "path_rr[" << link[b][a] << "][" << lp << "] = " << path_rr[link[b][a]][lp] << '\n';
+			// std::cout << "path_rr[" << link[b][a] << "][" << lp << "] = " << path_rr[link[b][a]][lp] << '\n';
 			a = b;
 			b = Nodes[a].from;
 		}
