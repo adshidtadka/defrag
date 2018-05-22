@@ -1,37 +1,33 @@
-Simulation for N= 5, Spec= 400, req_Max=16, A1= 70, R_int = 200, temp_max= 100000
+Simulation for N= 5, Spec= 400, req_Max=16, A1= 50, R_int = 200, temp_max= 100000
 
  M= 1000
 
 Sorting= 1
 
- A= 70
+ A= 50
 
  Iteration= 0
 
 Speeding = 0.05
-Simulation time = 0.061189 sec
-Blocked request: First-fit w/o defragment                2
+Simulation time = 0.041383 sec
+Blocked request: First-fit w/o defragment                0
 
-Simulation time = 5.09305 sec
+Simulation time = 4.37546 sec
 Blocked request: First-fit w/ stat defragment            0
 
-Number of switching operations:						  6948
-Number of reallocating operations:						  14390
+Number of switching operations:						  5475
+Number of reallocating operations:						  11366
 
-Simulation time = 77.7972 sec
+Simulation time = 89.9368 sec
 Blocked request: First-fit w/ stat rerouting defragment  0
 
-Number of switching operations:						  4739
-Number of reallocating operations:						  8906
+Number of switching operations:						  4051
+Number of reallocating operations:						  7718
 
 
-Speeding = 2
-Simulation time = 0.040426 sec
-Blocked request: First-fit w/o defragment                2
+ Iteration= 1
 
-Simulation time = 5.129 sec
-Blocked request: First-fit w/ stat defragment            0
-
-Number of switching operations:						  7205
-Number of reallocating operations:						  15225
+Speeding = 0.05
+Simulation time = 0.047937 sec
+Blocked request: First-fit w/o defragment                0
 

@@ -11,7 +11,7 @@
 
 #define IT 3             // Number of ramdom sample
 
-#define M 10000	     // Maximum number of demands
+#define M 1000	     // Maximum number of demands
 
 #define N 5          	// N number of Nodes.
 #define L 12			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44)
@@ -51,10 +51,24 @@ int main(void)
 	lpNode *cur; //curというポインタ宣言, lpNodeは構造体
 	//xはスロット番号, yは占有帯域の大きさ(ソート用),zはプライマリ・バックアップ判別子
 
-	ofstream ofs1; //出力用ストリーム
-	ofs1.open("./../result/blocked_205_b.txt"); //出力ファイルをオープンする
+	ofstream ofs1;
+	ofs1.open("./../result/blocked_205_b.txt");
 	if(!ofs1){
 		cout<< "Cannot open blocked file"<<endl;
+		return 1;
+	}
+
+	ofstream ofs4;
+	ofs4.open("./../result/blocked_205_b.csv"); //blocking probability
+	if(!ofs4){
+		cout<< "Cannot open csv blocked file"<<endl;
+		return 1;
+	}
+
+	ofstream ofs5;
+	ofs5.open("./../result/operation_num.csv"); //operation number
+	if(!ofs5){
+		cout<< "Cannot open csv operation_num file"<<endl;
 		return 1;
 	}
 
@@ -73,12 +87,16 @@ int main(void)
 		A = A1;//現在の通信量
 		ofs1 << endl << " A= "<< A << endl;
 		cout << endl << " A= "<< A << endl;
+		ofs4 << A << ",";
+		ofs5 << A << ",";
 		for(l=0; l<8; l++){ //通信量を変更するためのループ
 			cout << "TERM NUMBER = " << l << endl;
 			if(l){
 				A = A + 10;//通信量
 				ofs1 << endl << " A= "<< A << endl;
 				cout << endl << " A= "<< A << endl;
+				ofs4 << A << ",";
+				ofs5 << A << ",";
 			} //l=0のときは既にAを表示しているため実行しない
 			initialize(); //色々全部0にする
 			readInput(); //入力する情報を持って来る		
@@ -252,6 +270,7 @@ int main(void)
    						cout << "Simulation time = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
    						ofs1 << "Simulation time = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
 
+
 						if(j==0){							// Reinitializing for next loop
 							blockedff = blocked;
 							blkdItNone += blocked;
@@ -376,32 +395,41 @@ int main(void)
 
 			cout << "Av blocked request blkdItNone: 	" << blkdItNone/IT << endl;
 			ofs1 << "Av blocked request blkdItNone: 	" << blkdItNone/IT << endl;
+			ofs4 << blkdItNone/IT << ",";
 			cout << "Confidence interval blkdItNone: 	" << stdItNone << endl;
 			ofs1 << "Confidence interval blkdItNone: 	" << stdItNone << endl;
 			cout << "Av blocked request blkdItConv: 	" << blkdItConv/IT << endl;
 			ofs1 << "Av blocked request blkdItConv: 	" << blkdItConv/IT << endl;
+			ofs4 << blkdItConv/IT << ",";
 			cout << "Confidence interval blkdItConv: 	" << stdItConv << endl;
 			ofs1 << "Confidence interval blkdItConv: 	" << stdItConv << endl;
 			cout << "Av blocked request blkdItProp: 	" << blkdItProp/IT << endl;
 			ofs1 << "Av blocked request blkdItProp: 	" << blkdItProp/IT << endl;
+			ofs4 << blkdItProp/IT << ",";
 			cout << "Confidence interval blkdItProp: 	" << stdItProp << endl;
 			ofs1 << "Confidence interval blkdItProp: 	" << stdItProp << endl;
 			cout << "Av blocked request blkdItConvIlp: 	" << blkdItConvIlp/IT << endl;
 			ofs1 << "Av blocked request blkdItConvIlp: 	" << blkdItConvIlp/IT << endl;
+			ofs4 << blkdItConvIlp/IT << ",";
 			cout << "Confidence interval blkdItConvIlp: 	" << stdItConvIlp << endl;
 			ofs1 << "Confidence interval blkdItConvIlp: 	" << stdItConvIlp << endl;
 			cout << "Av blocked request blkdItPropIlp: 	" << blkdItPropIlp/IT << endl;
 			ofs1 << "Av blocked request blkdItPropIlp: 	" << blkdItPropIlp/IT << endl;
+			ofs4 << blkdItPropIlp/IT << endl;
 			cout << "Confidence interval blkdItPropIlp: 	" << stdItPropIlp << endl;
 			ofs1 << "Confidence interval blkdItPropIlp: 	" << stdItPropIlp << endl;
 			cout << "Av toggle operations togOpItConv: 	" << togOpItConv/IT << endl;
 			ofs1 << "Av toggle operations togOpItConv: 	" << togOpItConv/IT << endl;
+			ofs5 << togOpItConv/IT << ",";
 			cout << "Av move operations realOpItConv: 	" << realOpItConv/IT << endl;
 			ofs1 << "Av move operations realOpItConv: 	" << realOpItConv/IT << endl;
+			ofs5 << realOpItConv/IT << ",";
 			cout << "Av toggle operations togOpItProp: 	" << togOpItProp/IT << endl;
 			ofs1 << "Av toggle operations togOpItProp: 	" << togOpItProp/IT << endl;
+			ofs5 << togOpItProp/IT << ",";
 			cout << "Av move operations realOpItProp: 	" << realOpItProp/IT << endl << endl;
 			ofs1 << "Av move operations realOpItProp: 	" << realOpItProp/IT << endl << endl;
+			ofs5 << realOpItProp/IT << endl;
 		}
 	}
 	ofs1.close();
