@@ -3361,7 +3361,7 @@ int getPrimRoot(int s, int lp)
 			a = b;
 			b = Nodes[a].from;
 		}
-		if (isSame)
+		if (!isSame)
 		{
 			rerouteOp++;
 		}
@@ -3447,19 +3447,30 @@ int getBackRoot(int s, int lp)
 	a = dest[lp];
 	b = Nodes[a].from;
 
+	int bp_rr_prev[L]; //to compare the routes
+
 	if (b < N && a != b) {
-		for (j = 0; j < N; j++) {//初期化
+		for (j = 0; j < N; j++) {//initialize
 			for (k = 0; k < N; k++) {
 				if(link[j][k]>L)continue;
+				bp_rr_prev[link[j][k]] = bp_rr[link[j][k]][lp];
 				bp_rr[link[j][k]][lp] = 0;
 			}
 		}
+		bool isSame = true;
 		while (b < N && a != b) {
 			bp_rr[link[b][a]][lp] = 1;
+			if (bp_rr_prev[link[b][a]] != 1){
+				isSame = false;
+			}
 			// std::cout << "bp_rr[" << link[b][a] << "][" << lp << "] = " << bp_rr[link[b][a]][lp] << '\n';
 			a = b;
 			b = Nodes[a].from;
 		}
+		if (!isSame)
+        {
+        	rerouteOp++;
+        }
 		return 1;//割り当て確定
 	}else{
 		return 0;//割り当て不可

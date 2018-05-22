@@ -430,8 +430,8 @@ int main(void)
 			cout << "Av toggle operations togOpItProp:      " << togOpItProp/IT << endl;
 			ofs1 << "Av toggle operations togOpItProp:      " << togOpItProp/IT << endl;
 			ofs5 << togOpItProp/IT << ",";
-			cout << "Av move operations realOpItProp:       " << realOpItProp/IT << endl << endl;
-			ofs1 << "Av move operations realOpItProp:       " << realOpItProp/IT << endl << endl;
+			cout << "Av move operations realOpItProp:       " << realOpItProp/IT << endl;
+			ofs1 << "Av move operations realOpItProp:       " << realOpItProp/IT << endl;
             ofs5 << realOpItProp/IT << ",";
             cout << "Av rerouting operations rerouteOpItProp:       " << rerouteOpItProp/IT << endl << endl;
             ofs1 << "Av rerouting operations rerouteOpItProp:       " << rerouteOpItProp/IT << endl << endl;
