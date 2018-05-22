@@ -198,6 +198,7 @@ using namespace std;
 
 	int togOp;
 	int realOp;
+	int rerouteOp; //the number of rerouting operations
 
 	bool lpState[M];
 	bool bpState[M];
@@ -1698,6 +1699,7 @@ int reInitialize(void)						// Set everything to zero save routings and demands
 	eol_count = 0;
 	togOp =0;
 	realOp = 0;
+	rerouteOp = 0;
 
 	for(i=0;i<M;i++){
 		spec_ind[i]=0; isactive[i]=0;
@@ -3337,18 +3339,30 @@ int getPrimRoot(int s, int lp)
 	a = dest[lp];
 	b = Nodes[a].from;
 
+	int path_rr_prev[N]; //to compare the routes
+
 	if (b < N) {
-		for (j = 0; j < N; j++) {//初期化
+		for (j = 0; j < N; j++) {//initialize
 			for (k = 0; k < N; k++) {
 				if(link[j][k]>L)continue;
+				path_rr_prev[link[j][k]] = path_rr[link[j][k]][lp];
 				path_rr[link[j][k]][lp] = 0;
 			}
 		}
+		bool isSame = true;
 		while (b < N && a != b) {
 			path_rr[link[b][a]][lp] = 1;
-			// std::cout << "path_rr[" << link[b][a] << "][" << lp << "] = " << path_rr[link[b][a]][lp] << '\n';
+			if (path_rr_prev[link[b][a]] != 1)
+            {
+                    isSame = false;
+            }
+			std::cout << "path_rr[" << link[b][a] << "][" << lp << "] = " << path_rr[link[b][a]][lp] << '\n';
 			a = b;
 			b = Nodes[a].from;
+		}
+		if (isSame)
+		{
+			rerouteOp++;
 		}
 		return 1;//割り当て確定
 	}else{

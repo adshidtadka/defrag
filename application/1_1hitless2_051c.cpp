@@ -103,6 +103,7 @@ int main(void)
 			int blkdItNone = 0, blkdItConv = 0, blkdItProp = 0, blkdItConvIlp = 0, blkdItPropIlp = 0;
 			int togOpItConv = 0, togOpItProp = 0;
 			int realOpItConv = 0, realOpItProp = 0;
+			int rerouteOpItProp = 0;
 			double stdItNoneArr[IT], stdItConvArr[IT], stdItPropArr[IT], stdItConvIlpArr[IT], stdItPropIlpArr[IT];
 			for(it = 0; it<IT; it++){ //ランダムサンプルの数_5回				
 				ofs1 << endl << " Iteration= "<< it << endl;//何回めなのかを表示
@@ -305,12 +306,15 @@ int main(void)
 							stdItPropArr[it] = blocked;
 							togOpItProp  += togOp;
 							realOpItProp += realOp;
+							rerouteOpItProp += rerouteOp;
 							cout << "Blocked request: First-fit w/ stat rerouting defragment  " << blockedff << endl;
 							ofs1 << "Blocked request: First-fit w/ stat rerouting defragment  " << blockedff << endl << endl;
 							cout << "Number of switching operations:						  " << togOp << endl;
 							ofs1 << "Number of switching operations:						  " << togOp << endl;
 							cout << "Number of reallocating operations:						  " << realOp << endl;
 							ofs1 << "Number of reallocating operations:						  " << realOp << endl << endl;
+							cout << "Number of rerouting operations:                          " << rerouteOp << endl;
+                            ofs1 << "Number of rerouting operations:                          " << rerouteOp << endl << endl;
 							// printSpec();
 							// statDefrag();
 							// printSpec();
@@ -428,7 +432,10 @@ int main(void)
 			ofs5 << togOpItProp/IT << ",";
 			cout << "Av move operations realOpItProp:       " << realOpItProp/IT << endl << endl;
 			ofs1 << "Av move operations realOpItProp:       " << realOpItProp/IT << endl << endl;
-			ofs5 << realOpItProp/IT << endl;
+            ofs5 << realOpItProp/IT << ",";
+            cout << "Av rerouting operations rerouteOpItProp:       " << rerouteOpItProp/IT << endl << endl;
+            ofs1 << "Av rerouting operations rerouteOpItProp:       " << rerouteOpItProp/IT << endl << endl;
+            ofs5 << rerouteOpItProp/IT << endl;
 		}
 	}
 	ofs1.close();
