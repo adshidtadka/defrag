@@ -18,3 +18,24 @@ Blocked request: First-fit w/ stat defragment            0
 Number of switching operations:						  66683
 Number of reallocating operations:						  141794
 
+Simulation time = 906.344 sec
+Blocked request: First-fit w/ stat rerouting defragment  0
+
+Number of switching operations:						  46787
+Number of reallocating operations:						  87195
+
+Number of rerouting operations:                          452
+
+
+ Iteration= 1
+
+Speeding = 0.05
+Simulation time = 0.796968 sec
+Blocked request: First-fit w/o defragment                4
+
+Simulation time = 50.29 sec
+Blocked request: First-fit w/ stat defragment            0
+
+Number of switching operations:						  65550
+Number of reallocating operations:						  140257
+

@@ -955,6 +955,19 @@ int statReroutingAlgo()
 				}
 			//	cout << "cur2 = realList 3" << endl<< endl;
 				if(!b){//バックアップパスならば
+					int bp_rr_prev[L]; //to compare the previous root and new route
+					for (int i = 0; i < L; ++i)
+					{
+						bp_rr_prev[i] = 0;
+					}
+					for (int i = 0; i < N; ++i)
+					{
+						for (int j = 0; j < N; ++j)
+						{
+							if (link[i][j] > L) continue;
+							bp_rr_prev[link[i][j]] = bp_rr[link[i][j]][lp];
+						}
+					}
 					// std::cout << "バックアップ, lp = " << lp << ", bp_ind[lp] = " << bp_ind[lp] << ", source[lp] = " << source[lp] << ", dest[lp] =" << dest[lp] << ", lp_size[lp] =" <<lp_size[lp]<<'\n';
 					deleteLPRerouting(lp, 2);            // Remove LP from spec to avoid self-conflict
 					//バックアップパスのみ消去
@@ -963,6 +976,22 @@ int statReroutingAlgo()
 					if(a==S || a > bp_ind[lp]){
 						a = checkFirstBpRerouting(lp);
 						// std::cout << " after checkFirstFitRerouting a = " << a << '\n';
+					}
+					bool isSame = true; //check the rerouted or not rerouted
+					for (int i = 0; i < N; ++i)
+					{
+						for (int j = 0; j < N; ++j)
+						{
+							if (link[i][j] > L) continue;
+							if (bp_rr_prev[link[i][j]] != bp_rr[link[i][j]][lp])
+							{
+								isSame = false;
+							}
+						}
+					}
+					if (isSame == false)
+					{
+						rerouteOp++;
 					}
 					// std::cout << "after checkFirstBpRerouting a = " << a << '\n';
 					if(a != bp_ind[lp]){//スロット番号が小さくなっていれば(INFならブロッキング)
