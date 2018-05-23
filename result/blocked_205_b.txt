@@ -9,31 +9,54 @@ Sorting= 1
  Iteration= 0
 
 Speeding = 0.05
-Simulation time = 0.003261 sec
+Simulation time = 0.0035 sec
 Blocked request: First-fit w/o defragment                0
 
-Simulation time = 0.250533 sec
+Simulation time = 0.223246 sec
 Blocked request: First-fit w/ stat defragment            0
 
 Number of switching operations:						  353
 Number of reallocating operations:						  733
 
-Simulation time = 6.3229 sec
+Simulation time = 6.48093 sec
 Blocked request: First-fit w/ stat rerouting defragment  0
 
 Number of switching operations:						  241
 Number of reallocating operations:						  461
 
+Number of rerouting operations:                          870
+
 
  Iteration= 1
 
 Speeding = 0.05
-Simulation time = 0.002441 sec
+Simulation time = 0.002501 sec
 Blocked request: First-fit w/o defragment                0
 
-Simulation time = 0.23177 sec
+Simulation time = 0.202405 sec
 Blocked request: First-fit w/ stat defragment            0
 
 Number of switching operations:						  319
 Number of reallocating operations:						  589
+
+Simulation time = 5.2865 sec
+Blocked request: First-fit w/ stat rerouting defragment  0
+
+Number of switching operations:						  216
+Number of reallocating operations:						  408
+
+Number of rerouting operations:                          968
+
+
+ Iteration= 2
+
+Speeding = 0.05
+Simulation time = 0.002828 sec
+Blocked request: First-fit w/o defragment                0
+
+Simulation time = 0.205997 sec
+Blocked request: First-fit w/ stat defragment            0
+
+Number of switching operations:						  351
+Number of reallocating operations:						  709
 
