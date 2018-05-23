@@ -1186,6 +1186,19 @@ int retuneDownRerouting_0()
 			i = cur->x;
 			cur = cur->next;
 			if(isactive[i] == 1 && spec_ind[i] == index1){
+				int path_rr_prev[L]; //to compare the previous root and new route
+				for (int b = 0; b < L; ++b)
+				{
+					path_rr_prev[b] = 0;
+				}
+				for (int b = 0; b < N; ++b)
+				{
+					for (int c = 0; c < N; ++c)
+					{
+						if (link[b][c] > L) continue;
+						path_rr_prev[link[b][c]] = path_rr[link[b][c]][i];
+					}
+				}
 				deleteLPRerouting(i, 1);// Remove LP from spec to avoid self-conflict
 				//プライマリパスのみ消去
 				a = checkExactFitRerouting(i);
@@ -1193,6 +1206,22 @@ int retuneDownRerouting_0()
 				if(a==S || a > spec_ind[i]){
 					a = checkFirstFitRerouting(i);
 					// std::cout << " after checkFirstFitRerouting a = " << a << '\n';
+				}
+				bool isSame = true; //check the rerouted or not rerouted
+				for (int b = 0; b < N; ++b)
+				{
+					for (int c = 0; c < N; ++c)
+					{
+						if (link[b][c] > L) continue;
+						if (path_rr_prev[link[b][c]] != path_rr[link[b][c]][i])
+						{
+							isSame = false;
+						}
+					}
+				}
+				if (isSame == false)
+				{
+					rerouteOp++;
 				}
 				if(a != spec_ind[i]){//スロット番号が小さくなっていれば(INFならブロッキング)
 					realOp++;//帯域移動操作の総数
@@ -1207,12 +1236,41 @@ int retuneDownRerouting_0()
 			}
 
 			if(isactive[i] == 1 && bp_ind[i] == index1){
+				int bp_rr_prev[L]; //to compare the previous root and new route
+				for (int b = 0; b < L; ++b)
+				{
+					bp_rr_prev[b] = 0;
+				}
+				for (int b = 0; b < N; ++b)
+				{
+					for (int c = 0; c < N; ++c)
+					{
+						if (link[b][c] > L) continue;
+						bp_rr_prev[link[b][c]] = bp_rr[link[b][c]][i];
+					}
+				}
 				deleteLPRerouting(i, 2);            // Remove LP from spec to avoid self-conflict
 				//バックアップパスのみ消去
 				a = checkExactBpRerouting(i);
 				// std::cout << " after checkExactFitRerouting a = " << a << '\n';
 				if(a==S || a > bp_ind[i]){
 					a = checkFirstBpRerouting(i);
+				}
+				bool isSame = true; //check the rerouted or not rerouted
+				for (int b = 0; b < N; ++b)
+				{
+					for (int c = 0; c < N; ++c)
+					{
+						if (link[b][c] > L) continue;
+						if (bp_rr_prev[link[b][c]] != bp_rr[link[b][c]][i])
+						{
+							isSame = false;
+						}
+					}
+				}
+				if (isSame == false)
+				{
+					rerouteOp++;
 				}
 				if(a != bp_ind[i]){//スロット番号が小さくなっていれば(INFならブロッキング)
 					realOp++;
