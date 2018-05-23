@@ -905,6 +905,15 @@ int statReroutingAlgo()
 				b =  lpState[lp];
 				cur2 = cur2->next;
 				if(b){//プライマリパスならば
+					int path_rr_prev[L]; //to compare the previous root and new route
+					for (int i = 0; i < N; ++i)
+					{
+						for (int j = 0; j < N; ++j)
+						{
+							if (link[i][j] > L) continue;
+							path_rr_prev[link[i][j]] = path_rr[link[i][j]][lp];
+						}
+					}
 					deleteLPRerouting(lp, 1);// Remove LP from spec to avoid self-conflict
 					//プライマリパスのみ消去
 					a = checkExactFitRerouting(lp);
@@ -913,8 +922,25 @@ int statReroutingAlgo()
 						a = checkFirstFitRerouting(lp);
 						// std::cout << " after checkFirstFitRerouting a = " << a << '\n';
 					}
-					//もしスロット番号が小さくならないようであれば
-				//	if(a > spec_ind[lp]) a = spec_ind[lp];
+					bool isSame = true; //check the rerouted or not rerouted
+					for (int i = 0; i < N; ++i)
+					{
+						for (int j = 0; j < N; ++j)
+						{
+							if (link[i][j] > L) continue;
+							if (path_rr[link[i][j]][lp] == 1)
+							{
+								if (path_rr_prev[link[i][j]] != 1)
+								{
+									isSame = false;
+								}
+							}
+						}
+					}
+					if (isSame == false)
+					{
+						rerouteOp++;
+					}
 					if(a != spec_ind[lp]){//スロット番号が小さくなっていれば(INFならブロッキング)
 						realOp++;//帯域移動操作の総数
 						realMov++;
