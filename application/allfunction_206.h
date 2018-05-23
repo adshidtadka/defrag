@@ -906,6 +906,10 @@ int statReroutingAlgo()
 				cur2 = cur2->next;
 				if(b){//プライマリパスならば
 					int path_rr_prev[L]; //to compare the previous root and new route
+					for (int i = 0; i < L; ++i)
+					{
+						path_rr_prev[i] = 0;
+					}
 					for (int i = 0; i < N; ++i)
 					{
 						for (int j = 0; j < N; ++j)
@@ -928,12 +932,9 @@ int statReroutingAlgo()
 						for (int j = 0; j < N; ++j)
 						{
 							if (link[i][j] > L) continue;
-							if (path_rr[link[i][j]][lp] == 1)
+							if (path_rr_prev[link[i][j]] != path_rr[link[i][j]][lp])
 							{
-								if (path_rr_prev[link[i][j]] != 1)
-								{
-									isSame = false;
-								}
+								isSame = false;
 							}
 						}
 					}
@@ -3366,30 +3367,19 @@ int getPrimRoot(int s, int lp)
 	a = dest[lp];
 	b = Nodes[a].from;
 
-	int path_rr_prev[L]; //to compare the routes
-
 	if (b < N) {
 		for (j = 0; j < N; j++) {//initialize
 			for (k = 0; k < N; k++) {
 				if(link[j][k]>L)continue;
-				path_rr_prev[link[j][k]] = path_rr[link[j][k]][lp];
 				path_rr[link[j][k]][lp] = 0;
 			}
 		}
-		bool isSame = true;
+		// bool isSame = true;
 		while (b < N && a != b) {
 			path_rr[link[b][a]][lp] = 1;
-			if (path_rr_prev[link[b][a]] != 1)
-            {
-                    isSame = false;
-            }
 			// std::cout << "path_rr[" << link[b][a] << "][" << lp << "] = " << path_rr[link[b][a]][lp] << '\n';
 			a = b;
 			b = Nodes[a].from;
-		}
-		if (!isSame)
-		{
-			rerouteOp++;
 		}
 		return 1;//割り当て確定
 	}else{
@@ -3473,30 +3463,19 @@ int getBackRoot(int s, int lp)
 	a = dest[lp];
 	b = Nodes[a].from;
 
-	int bp_rr_prev[L]; //to compare the routes
-
 	if (b < N && a != b) {
 		for (j = 0; j < N; j++) {//initialize
 			for (k = 0; k < N; k++) {
 				if(link[j][k]>L)continue;
-				bp_rr_prev[link[j][k]] = bp_rr[link[j][k]][lp];
 				bp_rr[link[j][k]][lp] = 0;
 			}
 		}
-		bool isSame = true;
 		while (b < N && a != b) {
 			bp_rr[link[b][a]][lp] = 1;
-			if (bp_rr_prev[link[b][a]] != 1){
-				isSame = false;
-			}
 			// std::cout << "bp_rr[" << link[b][a] << "][" << lp << "] = " << bp_rr[link[b][a]][lp] << '\n';
 			a = b;
 			b = Nodes[a].from;
 		}
-		if (!isSame)
-        {
-        	rerouteOp++;
-        }
 		return 1;//割り当て確定
 	}else{
 		return 0;//割り当て不可
