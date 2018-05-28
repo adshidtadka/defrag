@@ -23,7 +23,7 @@
 
 #define K 1000			//to explore less possibility of repeating of next arrival time of requests.  
 
-#define  T_temp 100000     	// Vaiting time allowed to retune before adding new request
+#define  T_temp 100     	// Vaiting time allowed to retune before adding new request
 #define R_int 0.2		// Retuning period
 // #define Sorting 1		// 0 if not used, 1 by length, 2 by size, 3 by blocks
 //ソート方法が3種類与えられている
