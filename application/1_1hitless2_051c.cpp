@@ -13,8 +13,8 @@
 
 #define M 100	     // Maximum number of demands
 
-#define N 11          	// N number of Nodes.
-#define L 28			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44)
+#define N 5          	// N number of Nodes.
+#define L 12			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44)
 #define S 400			// S number of spec slots per link
 
 #define A1 50		// Traffic load
@@ -154,15 +154,15 @@ int main(void)
 							startEvent[i].lpNum = i;
 						}
 
-						if (k != 1)
-						{
-							ret_int *= spfact;
-							temp_max *= spfact;
-						} else {
-							ret_int = spfact * ret_int / double(K); // To normalize ステップ数を20倍にする
-							// // cout << "ret_int = " << ret_int << endl;
-							temp_max = temp_max * spfact / K;
-						}
+						// if (k != 1)
+						// {
+						// 	ret_int *= spfact;
+						// 	temp_max *= spfact;
+						// } else {
+						ret_int = spfact * ret_int / double(K);
+						// cout << "ret_int = " << ret_int << endl;
+						temp_max = temp_max * spfact / K;
+						// }
 						
 						// cout << "endEvent[" << M-1 << "].time = " << endEvent[M-1].time << ", ret_int = " << ret_int << endl;
 						//make defrag event

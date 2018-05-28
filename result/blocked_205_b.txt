@@ -1,6 +1,6 @@
 Simulation for N= 5, Spec= 400, req_Max=16, A1= 50, R_int = 200, temp_max= 100000
 
- M= 10000
+ M= 100
 
 Sorting= 1
 
@@ -9,33 +9,93 @@ Sorting= 1
  Iteration= 0
 
 Speeding = 0.05
-Simulation time = 0.548189 sec
-Blocked request: First-fit w/o defragment                1
+Simulation time = 0.003028 sec
+Blocked request: First-fit w/o defragment                0
 
-Simulation time = 46.5453 sec
+Simulation time = 0.237448 sec
 Blocked request: First-fit w/ stat defragment            0
 
-Number of switching operations:						  66683
-Number of reallocating operations:						  141794
+Number of switching operations:						  353
+Number of reallocating operations:						  733
 
-Simulation time = 906.344 sec
+Simulation time = 6.43368 sec
 Blocked request: First-fit w/ stat rerouting defragment  0
 
-Number of switching operations:						  46787
-Number of reallocating operations:						  87195
+Number of switching operations:						  241
+Number of reallocating operations:						  461
 
-Number of rerouting operations:                          452
+Number of rerouting operations:                          43
 
 
  Iteration= 1
 
 Speeding = 0.05
-Simulation time = 0.796968 sec
-Blocked request: First-fit w/o defragment                4
+Simulation time = 0.002631 sec
+Blocked request: First-fit w/o defragment                0
 
-Simulation time = 50.29 sec
+Simulation time = 0.215382 sec
 Blocked request: First-fit w/ stat defragment            0
 
-Number of switching operations:						  65550
-Number of reallocating operations:						  140257
+Number of switching operations:						  319
+Number of reallocating operations:						  589
+
+Simulation time = 5.41985 sec
+Blocked request: First-fit w/ stat rerouting defragment  0
+
+Number of switching operations:						  216
+Number of reallocating operations:						  408
+
+Number of rerouting operations:                          41
+
+
+ Iteration= 2
+
+Speeding = 0.05
+Simulation time = 0.002974 sec
+Blocked request: First-fit w/o defragment                0
+
+Simulation time = 0.186207 sec
+Blocked request: First-fit w/ stat defragment            0
+
+Number of switching operations:						  351
+Number of reallocating operations:						  709
+
+Simulation time = 5.02774 sec
+Blocked request: First-fit w/ stat rerouting defragment  0
+
+Number of switching operations:						  273
+Number of reallocating operations:						  472
+
+Number of rerouting operations:                          58
+
+Av blocked request blkdItNone:         0
+Confidence interval blkdItNone:        0
+Av blocked request blkdItConv:         0
+Confidence interval blkdItConv:        0
+Av blocked request blkdItProp:         0
+Confidence interval blkdItProp:        0
+Av blocked request blkdItConvIlp:      0
+Confidence interval blkdItConvIlp:     0
+Av blocked request blkdItPropIlp:      0
+Confidence interval blkdItPropIlp:     0
+Av toggle operations togOpItConv:      341
+Av move operations realOpItConv:       677
+Av toggle operations togOpItProp:      243
+Av move operations realOpItProp:       447
+Av rerouting operations rerouteOpItProp:       47
+
+
+ A= 60
+
+ Iteration= 0
+
+Speeding = 0.05
+Simulation time = 0.002779 sec
+Blocked request: First-fit w/o defragment                0
+
+Simulation time = 0.241927 sec
+Blocked request: First-fit w/ stat defragment            0
+
+Number of switching operations:						  316
+Number of reallocating operations:						  583
 
