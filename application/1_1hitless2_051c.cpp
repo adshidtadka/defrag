@@ -24,7 +24,7 @@
 #define K 1000			//to explore less possibility of repeating of next arrival time of requests.  
 
 #define  T_temp 100000     	// Vaiting time allowed to retune before adding new request
-#define R_int 200		// Retuning period
+#define R_int 0.2		// Retuning period
 // #define Sorting 1		// 0 if not used, 1 by length, 2 by size, 3 by blocks
 //ソート方法が3種類与えられている
 #define maxStep 3
@@ -159,15 +159,15 @@ int main(void)
 						// 	ret_int *= spfact;
 						// 	temp_max *= spfact;
 						// } else {
-						ret_int = spfact * ret_int / double(K);
+						ret_int = spfact * ret_int;
 						// cout << "ret_int = " << ret_int << endl;
 						temp_max = temp_max * spfact;
 						// }
 						
-						// cout << "endEvent[" << M-1 << "].time = " << endEvent[M-1].time << ", ret_int = " << ret_int << endl;
+						cout << "endEvent[" << M-1 << "].time = " << endEvent[M-1].time << ", ret_int = " << ret_int << endl;
 						//make defrag event
 						defragCount = round(endEvent[M-1].time/ret_int);
-						// cout << "defragCount = " << defragCount << endl;
+						cout << "defragCount = " << defragCount << endl;
 						defragEvent.clear();
 						defragEvent.resize(defragCount);
 						for (int c = 0; c < defragCount ; c++){
