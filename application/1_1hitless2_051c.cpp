@@ -161,7 +161,7 @@ int main(void)
 						// } else {
 						ret_int = spfact * ret_int / double(K);
 						// cout << "ret_int = " << ret_int << endl;
-						temp_max = temp_max * spfact / K;
+						temp_max = temp_max * spfact;
 						// }
 						
 						// cout << "endEvent[" << M-1 << "].time = " << endEvent[M-1].time << ", ret_int = " << ret_int << endl;
