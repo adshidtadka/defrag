@@ -119,15 +119,16 @@ int main(void)
 				reInitialize();//経路とパス以外をゼロにする
 				genDemands();//10万のパス情報を取り直す
 
-				for(k=1; k<2; k++){//k=1のみのループ
+				for(k=1; k<=4; k++){//k=1のみのループ
 					reInitialize();//経路とパスの情報をゼロにする
 
 					initializeEvent(); //initialize startEvent endEvent defragEvent
 
 					double spfact;//正規化のための変数
-					if(k==1) spfact = 0.05;
+					if(k==1) spfact = 0.01;
 					if(k==2) spfact = 2;
-					if(k>=3) spfact = 2;
+					if(k==3) spfact = 2.5;
+					if(k==4) spfact = 2;
 
 					if(k){
 						ofs1 << endl << "Speeding = " << spfact << endl;
@@ -154,15 +155,8 @@ int main(void)
 							startEvent[i].lpNum = i;
 						}
 
-						// if (k != 1)
-						// {
-						// 	ret_int *= spfact;
-						// 	temp_max *= spfact;
-						// } else {
 						ret_int = spfact * ret_int;
-						// cout << "ret_int = " << ret_int << endl;
 						temp_max = temp_max * spfact;
-						// }
 						
 						cout << "endEvent[" << M-1 << "].time = " << endEvent[M-1].time << ", ret_int = " << ret_int << endl;
 						//make defrag event
