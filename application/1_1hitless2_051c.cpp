@@ -119,7 +119,7 @@ int main(void)
 				reInitialize();//経路とパス以外をゼロにする
 				genDemands();//10万のパス情報を取り直す
 
-				for(k=1; k<=4; k++){//k=1のみのループ
+				for(k=1; k<=1; k++){//k=1のみのループ
 					reInitialize();//経路とパスの情報をゼロにする
 
 					initializeEvent(); //initialize startEvent endEvent defragEvent
