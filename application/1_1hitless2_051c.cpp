@@ -87,24 +87,20 @@ int main(void)
 		A = A1;//現在の通信量
 		ofs1 << endl << " A= "<< A << endl;
 		cout << endl << " A= "<< A << endl;
-		ofs4 << A << ",";
-		ofs5 << A << ",";
 		for(l=0; l<8; l++){ //通信量を変更するためのループ
 			cout << "TERM NUMBER = " << l << endl;
 			if(l){
 				A = A + 10;//通信量
 				ofs1 << endl << " A= "<< A << endl;
 				cout << endl << " A= "<< A << endl;
-				ofs4 << A << ",";
-				ofs5 << A << ",";
 			} //l=0のときは既にAを表示しているため実行しない
 			initialize(); //色々全部0にする
 			readInput(); //入力する情報を持って来る		
-			int blkdItNone = 0, blkdItConv = 0, blkdItProp = 0, blkdItConvIlp = 0, blkdItPropIlp = 0;
-			int togOpItConv = 0, togOpItProp = 0;
-			int realOpItConv = 0, realOpItProp = 0;
-			int rerouteOpItProp = 0;
-			double stdItNoneArr[IT], stdItConvArr[IT], stdItPropArr[IT], stdItConvIlpArr[IT], stdItPropIlpArr[IT];
+			int blkdItNone[10] = {}, blkdItConv[10] = {}, blkdItProp[10] = {}, blkdItConvIlp[10] = {}, blkdItPropIlp[10] = {};
+			int togOpItConv[10] = {}, togOpItProp[10] = {};
+			int realOpItConv[10] = {}, realOpItProp[10] = {};
+			int rerouteOpItProp[10] = {};
+			double stdItNoneArr[10][IT] = {{}}, stdItConvArr[10][IT] = {{}}, stdItPropArr[10][IT] = {{}}, stdItConvIlpArr[10][IT] = {{}}, stdItPropIlpArr[10][IT] = {{}};
 			for(it = 0; it<IT; it++){ //ランダムサンプルの数_5回				
 				ofs1 << endl << " Iteration= "<< it << endl;//何回めなのかを表示
 				cout << endl << " Iteration= "<< it << endl;//何回めなのかを表示
@@ -119,7 +115,7 @@ int main(void)
 				reInitialize();//経路とパス以外をゼロにする
 				genDemands();//10万のパス情報を取り直す
 
-				for(k=1; k<=1; k++){//k=1のみのループ
+				for(k=1; k<=4; k++){//k=1のみのループ
 					reInitialize();//経路とパスの情報をゼロにする
 
 					initializeEvent(); //initialize startEvent endEvent defragEvent
@@ -267,8 +263,8 @@ int main(void)
 
 						if(j==0){							// Reinitializing for next loop
 							blockedff = blocked;
-							blkdItNone += blocked;
-							stdItNoneArr[it] = blocked;
+							blkdItNone[k] += blocked;
+							stdItNoneArr[k][it] = blocked;
 							cout << "Blocked request: First-fit w/o defragment                " << blockedff << endl;
 							ofs1 << "Blocked request: First-fit w/o defragment                " << blockedff << endl << endl;
 							// printSpec();
@@ -279,10 +275,10 @@ int main(void)
 						}
 						if(j==1){
 							blockedff = blocked;
-							blkdItConv += blocked;
-							stdItConvArr[it] = blocked;
-							togOpItConv  += togOp;
-							realOpItConv += realOp;
+							blkdItConv[k] += blocked;
+							stdItConvArr[k][it] = blocked;
+							togOpItConv[k]  += togOp;
+							realOpItConv[k] += realOp;
 							cout << "Blocked request: First-fit w/ stat defragment            " << blockedff << endl;
 							ofs1 << "Blocked request: First-fit w/ stat defragment            " << blockedff << endl << endl;
 							cout << "Number of switching operations:						  " << togOp << endl;
@@ -296,11 +292,11 @@ int main(void)
 						}
 						if(j==2){
 							blockedff = blocked;
-							blkdItProp += blocked;
-							stdItPropArr[it] = blocked;
-							togOpItProp  += togOp;
-							realOpItProp += realOp;
-							rerouteOpItProp += rerouteOp;
+							blkdItProp[k] += blocked;
+							stdItPropArr[k][it] = blocked;
+							togOpItProp[k]  += togOp;
+							realOpItProp[k] += realOp;
+							rerouteOpItProp[k] += rerouteOp;
 							cout << "Blocked request: First-fit w/ stat rerouting defragment  " << blockedff << endl;
 							ofs1 << "Blocked request: First-fit w/ stat rerouting defragment  " << blockedff << endl << endl;
 							cout << "Number of switching operations:						  " << togOp << endl;
@@ -316,8 +312,8 @@ int main(void)
 						}
 						if(j==3){
 							blockedff = blocked;
-							blkdItConvIlp += blocked;
-							stdItConvIlpArr[it] = blocked;
+							blkdItConvIlp[k] += blocked;
+							stdItConvIlpArr[k][it] = blocked;
 							cout << "Blocked request: First-fit w/ stat ilp defragment  	  " << blockedff << endl;
 							ofs1 << "Blocked request: First-fit w/ stat ilp defragment  	  " << blockedff << endl << endl;
 							cout << "Number of switching operations:						  " << togOp << endl;
@@ -331,8 +327,8 @@ int main(void)
 						}
 						if(j==4){
 							blockedff = blocked;
-							blkdItPropIlp += blocked;
-							stdItPropIlpArr[it] = blocked;
+							blkdItPropIlp[k] += blocked;
+							stdItPropIlpArr[k][it] = blocked;
 							cout << "Blocked request: First-fit w/ stat ilp rerouting defragment" << blockedff << endl;
 							ofs1 << "Blocked request: First-fit w/ stat ilp rerouting defragment" << blockedff << endl << endl;
 							cout << "Number of switching operations:							" << togOp << endl;
@@ -375,61 +371,78 @@ int main(void)
 				}
 
 			}
+			for(k=1; k<=4; k++){//k=1のみのループ
 
-			//信頼区間の計算
-			double stdItNone, stdItConv, stdItProp, stdItConvIlp, stdItPropIlp;
-			double stdItNoneDiff, stdItConvDiff, stdItPropDiff, stdItConvIlpDiff, stdItPropIlpDiff;
-			stdItNone = standard(stdItNoneArr, IT);
-			stdItConv = standard(stdItConvArr, IT);
-			stdItProp = standard(stdItPropArr, IT);
-			stdItConvIlp = standard(stdItConvIlpArr, IT);
-			stdItPropIlp = standard(stdItPropIlpArr, IT);
-			stdItNoneDiff = blkdItNone*0.05 - stdItNone*1.96;
-			stdItConvDiff = blkdItConv*0.05 - stdItConv*1.96;
-			stdItPropDiff = blkdItProp*0.05 - stdItProp*1.96;
-			stdItConvIlpDiff = blkdItConvIlp*0.05 - stdItConvIlp*1.96;
-			stdItPropIlpDiff = blkdItPropIlp*0.05 - stdItPropIlp*1.96;
+				//traffic load
+				ofs4 << A << ",";
+				ofs5 << A << ",";
 
-			cout << "Av blocked request blkdItNone:         " << blkdItNone/IT << endl;
-			ofs1 << "Av blocked request blkdItNone:         " << blkdItNone/IT << endl;
-			ofs4 << blkdItNone/IT << ",";
-			cout << "Confidence interval blkdItNone:        " << stdItNone << endl;
-			ofs1 << "Confidence interval blkdItNone:        " << stdItNone << endl;
-			cout << "Av blocked request blkdItConv:         " << blkdItConv/IT << endl;
-			ofs1 << "Av blocked request blkdItConv:         " << blkdItConv/IT << endl;
-			ofs4 << blkdItConv/IT << ",";
-			cout << "Confidence interval blkdItConv:        " << stdItConv << endl;
-			ofs1 << "Confidence interval blkdItConv:        " << stdItConv << endl;
-			cout << "Av blocked request blkdItProp:         " << blkdItProp/IT << endl;
-			ofs1 << "Av blocked request blkdItProp:         " << blkdItProp/IT << endl;
-			ofs4 << blkdItProp/IT << ",";
-			cout << "Confidence interval blkdItProp:        " << stdItProp << endl;
-			ofs1 << "Confidence interval blkdItProp:        " << stdItProp << endl;
-			cout << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp/IT << endl;
-			ofs1 << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp/IT << endl;
-			ofs4 << blkdItConvIlp/IT << ",";
-			cout << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
-			ofs1 << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
-			cout << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp/IT << endl;
-			ofs1 << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp/IT << endl;
-			ofs4 << blkdItPropIlp/IT << endl;
-			cout << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
-			ofs1 << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
-			cout << "Av toggle operations togOpItConv:      " << togOpItConv/IT << endl;
-			ofs1 << "Av toggle operations togOpItConv:      " << togOpItConv/IT << endl;
-			ofs5 << togOpItConv/IT << ",";
-			cout << "Av move operations realOpItConv:       " << realOpItConv/IT << endl;
-			ofs1 << "Av move operations realOpItConv:       " << realOpItConv/IT << endl;
-			ofs5 << realOpItConv/IT << ",";
-			cout << "Av toggle operations togOpItProp:      " << togOpItProp/IT << endl;
-			ofs1 << "Av toggle operations togOpItProp:      " << togOpItProp/IT << endl;
-			ofs5 << togOpItProp/IT << ",";
-			cout << "Av move operations realOpItProp:       " << realOpItProp/IT << endl;
-			ofs1 << "Av move operations realOpItProp:       " << realOpItProp/IT << endl;
-            ofs5 << realOpItProp/IT << ",";
-            cout << "Av rerouting operations rerouteOpItProp:       " << rerouteOpItProp/IT << endl << endl;
-            ofs1 << "Av rerouting operations rerouteOpItProp:       " << rerouteOpItProp/IT << endl << endl;
-            ofs5 << rerouteOpItProp/IT << endl;
+				double spfact;
+
+				if(k==1) spfact = 0.01;
+				if(k==2) spfact = 0.02;
+				if(k==3) spfact = 0.05;
+				if(k==4) spfact = 0.1;
+
+				//speeding
+				ofs4 << spfact << ",";
+				ofs5 << spfact << ",";
+
+				//信頼区間の計算
+				double stdItNone, stdItConv, stdItProp, stdItConvIlp, stdItPropIlp;
+				double stdItNoneDiff, stdItConvDiff, stdItPropDiff, stdItConvIlpDiff, stdItPropIlpDiff;
+				stdItNone = standard(stdItNoneArr[k], IT);
+				stdItConv = standard(stdItConvArr[k], IT);
+				stdItProp = standard(stdItPropArr[k], IT);
+				stdItConvIlp = standard(stdItConvIlpArr[k], IT);
+				stdItPropIlp = standard(stdItPropIlpArr[k], IT);
+				stdItNoneDiff = blkdItNone[k]*0.05 - stdItNone*1.96;
+				stdItConvDiff = blkdItConv[k]*0.05 - stdItConv*1.96;
+				stdItPropDiff = blkdItProp[k]*0.05 - stdItProp*1.96;
+				stdItConvIlpDiff = blkdItConvIlp[k]*0.05 - stdItConvIlp*1.96;
+				stdItPropIlpDiff = blkdItPropIlp[k]*0.05 - stdItPropIlp*1.96;
+
+				cout << "Av blocked request blkdItNone:         " << blkdItNone[k]/IT << endl;
+				ofs1 << "Av blocked request blkdItNone:         " << blkdItNone[k]/IT << endl;
+				ofs4 << blkdItNone[k]/IT << ",";
+				cout << "Confidence interval blkdItNone:        " << stdItNone << endl;
+				ofs1 << "Confidence interval blkdItNone:        " << stdItNone << endl;
+				cout << "Av blocked request blkdItConv:         " << blkdItConv[k]/IT << endl;
+				ofs1 << "Av blocked request blkdItConv:         " << blkdItConv[k]/IT << endl;
+				ofs4 << blkdItConv[k]/IT << ",";
+				cout << "Confidence interval blkdItConv:        " << stdItConv << endl;
+				ofs1 << "Confidence interval blkdItConv:        " << stdItConv << endl;
+				cout << "Av blocked request blkdItProp:         " << blkdItProp[k]/IT << endl;
+				ofs1 << "Av blocked request blkdItProp:         " << blkdItProp[k]/IT << endl;
+				ofs4 << blkdItProp[k]/IT << ",";
+				cout << "Confidence interval blkdItProp:        " << stdItProp << endl;
+				ofs1 << "Confidence interval blkdItProp:        " << stdItProp << endl;
+				cout << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp[k]/IT << endl;
+				ofs1 << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp[k]/IT << endl;
+				ofs4 << blkdItConvIlp[k]/IT << ",";
+				cout << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
+				ofs1 << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
+				cout << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp[k]/IT << endl;
+				ofs1 << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp[k]/IT << endl;
+				ofs4 << blkdItPropIlp[k]/IT << endl;
+				cout << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
+				ofs1 << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
+				cout << "Av toggle operations togOpItConv:      " << togOpItConv[k]/IT << endl;
+				ofs1 << "Av toggle operations togOpItConv:      " << togOpItConv[k]/IT << endl;
+				ofs5 << togOpItConv[k]/IT << ",";
+				cout << "Av move operations realOpItConv:       " << realOpItConv[k]/IT << endl;
+				ofs1 << "Av move operations realOpItConv:       " << realOpItConv[k]/IT << endl;
+				ofs5 << realOpItConv[k]/IT << ",";
+				cout << "Av toggle operations togOpItProp:      " << togOpItProp[k]/IT << endl;
+				ofs1 << "Av toggle operations togOpItProp:      " << togOpItProp[k]/IT << endl;
+				ofs5 << togOpItProp[k]/IT << ",";
+				cout << "Av move operations realOpItProp:       " << realOpItProp[k]/IT << endl;
+				ofs1 << "Av move operations realOpItProp:       " << realOpItProp[k]/IT << endl;
+            	ofs5 << realOpItProp[k]/IT << ",";
+            	cout << "Av rerouting operations rerouteOpItProp:       " << rerouteOpItProp[k]/IT << endl << endl;
+            	ofs1 << "Av rerouting operations rerouteOpItProp:       " << rerouteOpItProp[k]/IT << endl << endl;
+            	ofs5 << rerouteOpItProp[k]/IT << endl;
+            }
 		}
 	}
 	ofs1.close();
