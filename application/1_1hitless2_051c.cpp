@@ -371,7 +371,7 @@ int main(void)
 				}
 
 			}
-			for(k=1; k<=4; k++){//k=1のみのループ
+			for(k=1; k<=1; k++){//k=1のみのループ
 
 				//traffic load
 				ofs4 << A << ",";
