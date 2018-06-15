@@ -1498,14 +1498,12 @@ int firstFit1_1(int lp, int algoCall)
 
 		if(a == INF){
 			blocked++;
-			cout << "[primary path] lp = " << lp << endl;
 			return 0;
 		}
 
 		b = checkFirstBpRerouting(lp);					// For Backup
 		if(b == INF){
 			blocked++;
-			cout << "[backup path] lp = " << lp << endl;
 			return 0;
 		}
 		//ブロッキングが起こらなかったらパスを割り当てる
