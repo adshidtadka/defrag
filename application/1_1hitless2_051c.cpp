@@ -9,12 +9,12 @@
 #define INF 999999999
 #define T_end 1245201000        //28270000000
 
-#define IT 3             // Number of ramdom sample
+#define IT 2             // Number of ramdom sample
 
-#define M 10000	     // Maximum number of demands
+#define M 1000	     // Maximum number of demands
 
-#define N 5          	// N number of Nodes.
-#define L 12			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44)
+#define N 11          	// N number of Nodes.
+#define L 28			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44)
 #define S 400			// S number of spec slots per link
 
 #define A1 50		// Traffic load
@@ -28,6 +28,8 @@
 // #define Sorting 1		// 0 if not used, 1 by length, 2 by size, 3 by blocks
 //ソート方法が3種類与えられている
 #define maxStep 3
+
+#define spfact 0.1
 
 #include "allfunction_206.h"
 
@@ -72,8 +74,8 @@ int main(void)
             return 1;
     }
 
-	ofs1 << "Simulation for N= "<< N <<", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max  << endl;
-	cout << "Simulation for N= "<< N <<", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max  << endl;
+	ofs1 << "Simulation for N= "<< N <<", Links = " << L << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max  << endl;
+	cout << "Simulation for N= "<< N <<", Links = " << L << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max  << endl;
 		//number of nodes, number of slots, maxi demand size, Traffic load, retuning period, Vaiting time allowed to retune before adding new request
 	ofs1 << endl << " M= "<< M << endl;
 		//max number of demand
@@ -120,11 +122,11 @@ int main(void)
 
 					initializeEvent(); //initialize startEvent endEvent defragEvent
 
-					double spfact;//正規化のための変数
-					if(k==1) spfact = 0.01;
-					if(k==2) spfact = 2;
-					if(k==3) spfact = 2.5;
-					if(k==4) spfact = 2;
+					// double spfact;//正規化のための変数
+					// if(k==1) spfact = 0.01;
+					// if(k==2) spfact = 2;
+					// if(k==3) spfact = 2.5;
+					// if(k==4) spfact = 2;
 
 					if(k){
 						ofs1 << endl << "Speeding = " << spfact << endl;
@@ -377,12 +379,12 @@ int main(void)
 				ofs4 << A << ",";
 				ofs5 << A << ",";
 
-				double spfact;
+				// double spfact;
 
-				if(k==1) spfact = 0.01;
-				if(k==2) spfact = 0.02;
-				if(k==3) spfact = 0.05;
-				if(k==4) spfact = 0.1;
+				// if(k==1) spfact = 0.01;
+				// if(k==2) spfact = 0.02;
+				// if(k==3) spfact = 0.05;
+				// if(k==4) spfact = 0.1;
 
 				//speeding
 				ofs4 << spfact << ",";
