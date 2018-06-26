@@ -14,10 +14,10 @@
 #define M 10000	     // Maximum number of demands
 
 #define N 5          	// N number of Nodes.
-#define L 11			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44)
+#define L 12			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44)
 #define S 400			// S number of spec slots per link
 
-#define A1 50		// Traffic load
+#define A1 60		// Traffic load
 #define H  10			// 1/mu, Average holding time in Tu
 #define req_Max 16		// Maximum demand size 占有帯域スロット数
 
@@ -29,7 +29,7 @@
 //ソート方法が3種類与えられている
 #define maxStep 3
 
-#define spfact 0.02
+#define spfact 0.01
 
 #include "allfunction_206.h"
 
@@ -283,10 +283,10 @@ int main(void)
 							realOpItConv[k] += realOp;
 							cout << "Blocked request: First-fit w/ stat defragment            " << blockedff << endl;
 							ofs1 << "Blocked request: First-fit w/ stat defragment            " << blockedff << endl << endl;
-							cout << "Number of switching operations:						  " << togOp << endl;
-							ofs1 << "Number of switching operations:						  " << togOp << endl;
-							cout << "Number of reallocating operations:						  " << realOp << endl;
-							ofs1 << "Number of reallocating operations:						  " << realOp << endl << endl;
+							cout << "Number of switching operations:                          " << togOp << endl;
+							ofs1 << "Number of switching operations:                          " << togOp << endl;
+							cout << "Number of reallocating operations:                       " << realOp << endl;
+							ofs1 << "Number of reallocating operations:                       " << realOp << endl << endl;
 							// printSpec();
 							// statDefrag();
 							// printSpec();
@@ -301,10 +301,10 @@ int main(void)
 							rerouteOpItProp[k] += rerouteOp;
 							cout << "Blocked request: First-fit w/ stat rerouting defragment  " << blockedff << endl;
 							ofs1 << "Blocked request: First-fit w/ stat rerouting defragment  " << blockedff << endl << endl;
-							cout << "Number of switching operations:						  " << togOp << endl;
-							ofs1 << "Number of switching operations:						  " << togOp << endl;
-							cout << "Number of reallocating operations:						  " << realOp << endl;
-							ofs1 << "Number of reallocating operations:						  " << realOp << endl << endl;
+							cout << "Number of switching operations:                          " << togOp << endl;
+							ofs1 << "Number of switching operations:                          " << togOp << endl;
+							cout << "Number of reallocating operations:                       " << realOp << endl;
+							ofs1 << "Number of reallocating operations:                       " << realOp << endl << endl;
 							cout << "Number of rerouting operations:                          " << rerouteOp << endl;
                             ofs1 << "Number of rerouting operations:                          " << rerouteOp << endl << endl;
 							// printSpec();
@@ -316,12 +316,12 @@ int main(void)
 							blockedff = blocked;
 							blkdItConvIlp[k] += blocked;
 							stdItConvIlpArr[k][it] = blocked;
-							cout << "Blocked request: First-fit w/ stat ilp defragment  	  " << blockedff << endl;
-							ofs1 << "Blocked request: First-fit w/ stat ilp defragment  	  " << blockedff << endl << endl;
-							cout << "Number of switching operations:						  " << togOp << endl;
-							ofs1 << "Number of switching operations:						  " << togOp << endl;
-							cout << "Number of reallocating operations:						  " << realOp << endl;
-							ofs1 << "Number of reallocating operations:						  " << realOp << endl << endl;
+							cout << "Blocked request: First-fit w/ stat ilp defragment        " << blockedff << endl;
+							ofs1 << "Blocked request: First-fit w/ stat ilp defragment        " << blockedff << endl << endl;
+							cout << "Number of switching operations:                          " << togOp << endl;
+							ofs1 << "Number of switching operations:                          " << togOp << endl;
+							cout << "Number of reallocating operations:                       " << realOp << endl;
+							ofs1 << "Number of reallocating operations:                       " << realOp << endl << endl;
 							// printSpec();
 							// statDefrag();
 							// printSpec();
@@ -331,43 +331,17 @@ int main(void)
 							blockedff = blocked;
 							blkdItPropIlp[k] += blocked;
 							stdItPropIlpArr[k][it] = blocked;
-							cout << "Blocked request: First-fit w/ stat ilp rerouting defragment" << blockedff << endl;
-							ofs1 << "Blocked request: First-fit w/ stat ilp rerouting defragment" << blockedff << endl << endl;
-							cout << "Number of switching operations:							" << togOp << endl;
-							ofs1 << "Number of switching operations:							" << togOp << endl;
-							cout << "Number of reallocating operations:							" << realOp << endl;
-							ofs1 << "Number of reallocating operations:							" << realOp << endl << endl;
+							cout << "Blocked request: First-fit w/ stat ilp reroute defragment" << blockedff << endl;
+							ofs1 << "Blocked request: First-fit w/ stat ilp reroute defragment" << blockedff << endl << endl;
+							cout << "Number of switching operations:                          " << togOp << endl;
+							ofs1 << "Number of switching operations:                          " << togOp << endl;
+							cout << "Number of reallocating operations:                       " << realOp << endl;
+							ofs1 << "Number of reallocating operations:                       " << realOp << endl << endl;
 							// printSpec();
 							// statDefrag();
 							// printSpec();
 							reInitialize();
 						}
-						if(j==5){
-							blockedff = blocked;
-							cout << "Blocked request: Defrag w/ path switching 					" << blockedff << endl;
-							ofs1 << "Blocked request: Defrag w/ path switching					" << blockedff << endl << endl;
-							// cout << "Number of switching operations:							" << togOp << endl;
-							// ofs1 << "Number of switching operations: 						" << togOp << endl;
-							// cout << "Number of reallocating operations:						" << realOp << endl;
-							// ofs1 << "Number of reallocating operations:						" << realOp << endl << endl;
-							// printSpec();
-							reInitialize();
-						}
-						if(j==6){
-							blockedff = blocked;
-							cout << "Blocked request: Defrag w/ backup only	 					" << blockedff << endl;
-							ofs1 << "Blocked request: Defrag w/ backup only			 			" << blockedff << endl << endl;
-							// printSpec();
-							reInitialize();
-						}
-						if(j==7){
-							blockedff = blocked;
-							cout << "Blocked request: Defrag w/ primary retuning	 			" << blockedff << endl;
-							ofs1 << "Blocked request: Defrag w/ primary retuning		 		" << blockedff << endl << endl;
-							// printSpec();
-							reInitialize();
-						}
-
 					}
 
 				}
@@ -441,8 +415,8 @@ int main(void)
 				cout << "Av move operations realOpItProp:       " << realOpItProp[k]/IT << endl;
 				ofs1 << "Av move operations realOpItProp:       " << realOpItProp[k]/IT << endl;
             	ofs5 << realOpItProp[k]/IT << ",";
-            	cout << "Av rerouting operations rerouteOpItProp:       " << rerouteOpItProp[k]/IT << endl << endl;
-            	ofs1 << "Av rerouting operations rerouteOpItProp:       " << rerouteOpItProp[k]/IT << endl << endl;
+            	cout << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp[k]/IT << endl << endl;
+            	ofs1 << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp[k]/IT << endl << endl;
             	ofs5 << rerouteOpItProp[k]/IT << endl;
             }
 		}
