@@ -11,7 +11,7 @@
 
 #define IT 3             // Number of ramdom sample
 
-#define M 10000	     // Maximum number of demands
+#define M 100	     // Maximum number of demands
 
 #define N 5          	// N number of Nodes.
 #define L 12			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44)
@@ -29,7 +29,7 @@
 //ソート方法が3種類与えられている
 #define maxStep 3
 
-#define spfact 0.01
+#define spfact 0.1
 
 #include "allfunction_206.h"
 
@@ -169,7 +169,7 @@ int main(void)
 						// cout << "defragEvent[" << defragCount-1 << "].time = " << defragEvent[defragCount-1].time << endl;
 					}
 
-					for(j=0; j<=2; j++){	// To do all algorithms sequentially連続してアルゴリズムを実行する c=0なら2回ループ
+					for(j=2; j<=2; j++){	// To do all algorithms sequentially連続してアルゴリズムを実行する c=0なら2回ループ
 						algoCall = j;
 
 						//push to the priority queue
@@ -198,7 +198,7 @@ int main(void)
 							// next event
 							nowEvent = eventQueue.top();
 	 						eventQueue.pop();
-	 						// cout << "nowEvent.time = " << nowEvent.time << ", nowEvent.type = " << nowEvent.type << endl;
+	 						cout << "nowEvent.time = " << nowEvent.time << ", nowEvent.type = " << nowEvent.type << endl;
 
 	 						if(nowEvent.type == 1){
 	 							t = nowEvent.time;

@@ -1017,7 +1017,7 @@ int statReroutingAlgo()
 				ret_time += 1/double(K);					//increment defrag time
 				nextEvent = eventQueue.top(); 	// next event
 				// cout << "nextEvent.type" << nextEvent.type << endl;
-				if(nextEvent.type == 0 && (t+ret_time >= nextEvent.time || ret_time >= temp_max)){
+				if((nextEvent.type == 0 && (t+ret_time >= nextEvent.time || ret_time >= temp_max)) || eventQueue.empty()){
 					// t += ret_time;
 					return 0;	
 				}
