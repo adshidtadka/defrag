@@ -11,13 +11,13 @@
 
 #define IT 3             // Number of ramdom sample
 
-#define M 100	     // Maximum number of demands
+#define M 10000	     // Maximum number of demands
 
 #define N 5          	// N number of Nodes.
 #define L 12			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44)
 #define S 400			// S number of spec slots per link
 
-#define A1 60		// Traffic load
+#define A1 50		// Traffic load
 #define H  10			// 1/mu, Average holding time in Tu
 #define req_Max 16		// Maximum demand size 占有帯域スロット数
 
@@ -29,7 +29,7 @@
 //ソート方法が3種類与えられている
 #define maxStep 3
 
-#define spfact 0.1
+#define spfact 0.01
 
 #include "allfunction_206.h"
 
@@ -195,10 +195,20 @@ int main(void)
 						while(!eventQueue.empty()){//Start!!		// For running period 信号の数やステップ数が上限を超えない限り反復
 							b = 0;
 
+							// if expired path is
+							while(!deleteQueue.empty()) {
+							    nowEvent = deleteQueue.top();
+							    deleteQueue.pop();
+							    removeLP1_1(nowEvent.lpNum, algoCall);
+								delFromList(1, nowEvent.lpNum);			
+								delFromList(2, nowEvent.lpNum);			
+							}
+
 							// next event
 							nowEvent = eventQueue.top();
 	 						eventQueue.pop();
-	 						cout << "nowEvent.time = " << nowEvent.time << ", nowEvent.type = " << nowEvent.type << endl;
+	 						t = nowEvent.time;
+	 						cout << "nowEvent.time = " << t << ", nowEvent.type = " << nowEvent.type << endl;
 
 	 						if(nowEvent.type == 1){
 	 							t = nowEvent.time;
@@ -207,7 +217,6 @@ int main(void)
 								delFromList(2, nowEvent.lpNum);							// Removing from linked list(mixtlist)
 	 						}
 	 						if(nowEvent.type == 0){
-	 							t = nowEvent.time;
 	 							if(lp_size[nowEvent.lpNum]){
 	 								last_lp = nowEvent.lpNum;//パスのIDをlast_lpに移す
 
@@ -248,7 +257,6 @@ int main(void)
 	 							}
 	 						}
 							if(nowEvent.type == 2){//デフラグメンテーションがret_intごとに行われる
-								t = nowEvent.time;
 								try{
 									retuneBp();//デフラグを行う
 								}

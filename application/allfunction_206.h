@@ -121,6 +121,8 @@ using namespace std;
 	double var(double, int);
 	double standard(double, int);
 
+	double finTime();
+
 //}
 
 // Declaring global vars
@@ -218,6 +220,7 @@ using namespace std;
 	};
 
 	priority_queue<Event, vector<Event>, greater<Event> > eventQueue; // 優先度付き待ち行列
+	priority_queue<Event, vector<Event>, greater<Event> > deleteQueue;
 
 	Event startEvent[M];
 	Event endEvent[M];
@@ -811,11 +814,14 @@ int statReroutingAlgo()
 		cur= cur->next;
 	}
 	cur = tempList;
-//	cout << "cur = realList " << endl<< endl;
-	// while ( cur != NULL ) {
-		// cout << "cur = " << cur->x <<", "<<cur->z << endl;
-		// cur= cur->next;
-	// }
+
+	//デフラグ終了時刻を出す
+	double fin_time;
+	fin_time = finTime();
+	if (fin_time < 0) // queue is empty
+	{
+		return 0;
+	}
 
 	while(realMov){//最初はrealMov=1 パスの割り当てがあれば
 		realMov = 0;
@@ -1015,9 +1021,7 @@ int statReroutingAlgo()
 			}
 			if(realcheck != realOp){//帯域移動操作数が変わっていれば
 				ret_time += 1/double(K);					//increment defrag time
-				nextEvent = eventQueue.top(); 	// next event
-				// cout << "nextEvent.type" << nextEvent.type << endl;
-				if((nextEvent.type == 0 && (t+ret_time >= nextEvent.time || ret_time >= temp_max)) || eventQueue.empty()){
+				if((t+ret_time >= fin_time || ret_time >= temp_max) || eventQueue.empty()){
 					// t += ret_time;
 					return 0;	
 				}
@@ -1027,6 +1031,23 @@ int statReroutingAlgo()
 		}//tempListがなくなるまで
 	}//realMovが0以外なら続くのwhile文 帯域移動がなければデフラグ終了
 	return 0;
+}
+
+double finTime(){
+
+	while(eventQueue.top().type != 0){
+		if (eventQueue.empty())
+		{
+			return -1;
+		}
+		if (eventQueue.top().type == 1)
+		{
+			deleteQueue.push(eventQueue.top());
+		}
+		eventQueue.pop();
+	}
+
+	return eventQueue.top().time;
 }
 
 int retuneDown_0()
