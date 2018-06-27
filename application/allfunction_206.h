@@ -646,11 +646,14 @@ int statAlgo()
 		cur= cur->next;
 	}
 	cur = tempList;
-//	cout << "cur = realList " << endl<< endl;
-	// while ( cur != NULL ) {
-		// cout << "cur = " << cur->x <<", "<<cur->z << endl;
-		// cur= cur->next;
-	// }
+
+	//デフラグ終了時刻を出す
+	double fin_time;
+	fin_time = finTime();
+	if (fin_time < 0) // queue is empty
+	{
+		return 0;
+	}
 
 	while(realMov){//最初はrealMov=1 パスの割り当てがあれば
 		realMov = 0;
@@ -779,9 +782,7 @@ int statAlgo()
 			
 			if(realcheck != realOp){//帯域移動操作数が変わっていれば
 				ret_time += 1/double(K);					//increment defrag time
-				nextEvent = eventQueue.top(); 	// next event
-				// cout << "nextEvent.type" << nextEvent.type << endl;
-				if(nextEvent.type == 0 && (t+ret_time >= nextEvent.time || ret_time >= temp_max)){
+				if((t+ret_time >= fin_time || ret_time >= temp_max) || eventQueue.empty()){
 					// t += ret_time;
 					return 0;	
 				}
@@ -1844,6 +1845,9 @@ int reInitialize(void)						// Set everything to zero save routings and demands
 	//make priority empty
 	while(!eventQueue.empty()){
 		eventQueue.pop();
+	}
+	while(!deleteQueue.empty()){
+		deleteQueue.pop();
 	}
 
 	for(i=0;i<S;i++){
