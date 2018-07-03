@@ -21,7 +21,9 @@
 #define H  10			// 1/mu, Average holding time in Tu
 #define req_Max 16		// Maximum demand size 占有帯域スロット数
 
-#define K 10			//to explore less possibility of repeating of next arrival time of requests.  
+#define K 1000			//to explore less possibility of repeating of next arrival time of requests.  
+
+#define DEFRAG_TIME 0.1			//to explore less possibility of repeating of next arrival time of requests.  
 
 #define  T_temp 100     	// Vaiting time allowed to retune before adding new request
 #define R_int 0.2		// Retuning period

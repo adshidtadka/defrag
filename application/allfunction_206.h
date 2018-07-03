@@ -781,7 +781,7 @@ int statAlgo()
 			}			
 			
 			if(realcheck != realOp){//帯域移動操作数が変わっていれば
-				ret_time += 1/double(K);					//increment defrag time
+				ret_time += DEFRAG_TIME;					//increment defrag time
 				if((t+ret_time >= fin_time || ret_time >= temp_max) || eventQueue.empty()){
 					// t += ret_time;cout << "t = " << t << ", ret_time = " << ret_time << ", fin_time = " << fin_time << endl;	
 					return 0;	
@@ -1022,7 +1022,7 @@ int statReroutingAlgo()
 				delFromList(3, lp);//1:active 2:mixtList 3:realList 4:tempList
 			}
 			if(realcheck != realOp){//帯域移動操作数が変わっていれば
-				ret_time += 1/double(K);					//increment defrag time
+				ret_time += DEFRAG_TIME;					//increment defrag time
 				if((t+ret_time >= fin_time || ret_time >= temp_max) || eventQueue.empty()){
 					// t += ret_time;
 					return 0;	
@@ -1177,7 +1177,7 @@ int retuneDownNonRerouting_0()
 			}
 		}
 		//increment defrag time
-		ret_time += double(mov_time)/double(K);
+		ret_time += double(mov_time)*DEFRAG_TIME;
 		nextEvent = eventQueue.top(); 	// next event
 		if(nextEvent.type == 0 && (t+ret_time >= nextEvent.time || ret_time >= temp_max)){
 			// t += ret_time;
@@ -1308,7 +1308,7 @@ int retuneDownRerouting_0()
 			}
 		}
 		//increment defrag time
-		ret_time += double(mov_time)/double(K);
+		ret_time += double(mov_time)*DEFRAG_TIME;
 		nextEvent = eventQueue.top(); 	// next event
 		if(nextEvent.type == 0 && (t+ret_time >= nextEvent.time || ret_time >= temp_max)){
 			t += ret_time;
