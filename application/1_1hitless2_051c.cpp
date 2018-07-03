@@ -11,7 +11,7 @@
 
 #define IT 3             // Number of ramdom sample
 
-#define M 10000	     // Maximum number of demands
+#define M 300	     // Maximum number of demands
 
 #define N 5          	// N number of Nodes.
 #define L 12			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44)
@@ -21,7 +21,7 @@
 #define H  10			// 1/mu, Average holding time in Tu
 #define req_Max 16		// Maximum demand size 占有帯域スロット数
 
-#define K 1000			//to explore less possibility of repeating of next arrival time of requests.  
+#define K 10			//to explore less possibility of repeating of next arrival time of requests.  
 
 #define  T_temp 100     	// Vaiting time allowed to retune before adding new request
 #define R_int 0.2		// Retuning period
@@ -29,7 +29,7 @@
 //ソート方法が3種類与えられている
 #define maxStep 3
 
-#define spfact 0.01
+#define spfact 1
 
 #include "allfunction_206.h"
 
@@ -169,7 +169,7 @@ int main(void)
 						// cout << "defragEvent[" << defragCount-1 << "].time = " << defragEvent[defragCount-1].time << endl;
 					}
 
-					for(j=2; j<=2; j++){	// To do all algorithms sequentially連続してアルゴリズムを実行する c=0なら2回ループ
+					for(j=0; j<=2; j++){	// To do all algorithms sequentially連続してアルゴリズムを実行する c=0なら2回ループ
 						algoCall = j;
 
 						//push to the priority queue
@@ -208,7 +208,7 @@ int main(void)
 							nowEvent = eventQueue.top();
 	 						eventQueue.pop();
 	 						t = nowEvent.time;
-	 						cout << "nowEvent.time = " << t << ", nowEvent.type = " << nowEvent.type << endl;
+	 						// cout << "nowEvent.time = " << t << ", nowEvent.type = " << nowEvent.type << endl;
 
 	 						if(nowEvent.type == 1){
 	 							t = nowEvent.time;

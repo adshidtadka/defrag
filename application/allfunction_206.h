@@ -783,7 +783,7 @@ int statAlgo()
 			if(realcheck != realOp){//帯域移動操作数が変わっていれば
 				ret_time += 1/double(K);					//increment defrag time
 				if((t+ret_time >= fin_time || ret_time >= temp_max) || eventQueue.empty()){
-					// t += ret_time;
+					// t += ret_time;cout << "t = " << t << ", ret_time = " << ret_time << ", fin_time = " << fin_time << endl;	
 					return 0;	
 				}
 				//新しいパスがきているか, 100000ステップを超えたならばデフラグ終了
@@ -823,6 +823,7 @@ int statReroutingAlgo()
 	{
 		return 0;
 	}
+	// cout << "t = " << t << ", ret_time = " << ret_time << ", fin_time = " << fin_time << endl;
 
 	while(realMov){//最初はrealMov=1 パスの割り当てがあれば
 		realMov = 0;
