@@ -11,7 +11,7 @@
 
 #define IT 3             // Number of ramdom sample
 
-#define M 300	     // Maximum number of demands
+#define M 10000	     // Maximum number of demands
 
 #define N 5          	// N number of Nodes.
 #define L 12			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44)
