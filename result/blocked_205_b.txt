@@ -1,11 +1,20 @@
-Simulation for N= 5, Links = 12, Spec= 400, req_Max=16, A1= 150, R_int = 0.2, temp_max= 100
+Simulation for N= 5, Links = 12, Spec= 400, req_Max=16, A1= 50, R_int = 0.2, temp_max= 100
 
  M= 300
 
 Sorting= 1
 
- A= 150
+ A= 50
 
  Iteration= 0
 
 Speeding = 1
+Simulation time = 0.016059 sec
+Blocked request: First-fit w/o defragment                0
+
+Simulation time = 0.201919 sec
+Blocked request: First-fit w/ stat defragment            0
+
+Number of switching operations:                          863
+Number of reallocating operations:                       1606
+
