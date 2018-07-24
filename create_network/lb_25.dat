@@ -5,7 +5,7 @@ JPN nerwork
 */
 
 	
-param N := 5;
+param N := 25;
 
 /*
 spectrum but it seems unnecessary
@@ -38,8 +38,8 @@ set EM :=
 6 8
 7 5
 7 6
-7 8
 7 9
+7 10
 8 6
 8 9
 8 11

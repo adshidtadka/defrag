@@ -5,7 +5,7 @@ European network
 */
 
 	
-param N := 12;
+param N := 11;
 
 /*
 spectrum but it seems unnecessary
