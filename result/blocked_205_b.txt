@@ -1,20 +1,41 @@
-Simulation for N= 5, Links = 12, Spec= 400, req_Max=16, A1= 50, R_int = 0.2, temp_max= 100
+Simulation for N= 5, Links = 12, Spec= 400, req_Max=16, A1= 120, R_int = 10, temp_max= 100, DEFRAG_TIME = 0.1
 
  M= 300
 
 Sorting= 1
 
- A= 50
+ A= 120
 
  Iteration= 0
 
 Speeding = 1
-Simulation time = 0.016059 sec
-Blocked request: First-fit w/o defragment                0
+Simulation time = 0.020734 sec
+Blocked request: First-fit w/o defragment                28
 
-Simulation time = 0.201919 sec
-Blocked request: First-fit w/ stat defragment            0
+Simulation time = 0.06782 sec
+Blocked request: First-fit w/ stat defragment            24
 
-Number of switching operations:                          863
-Number of reallocating operations:                       1606
+Number of switching operations:                          184
+Number of reallocating operations:                       296
+
+Simulation time = 1.53593 sec
+Blocked request: First-fit w/ stat rerouting defragment  11
+
+Number of switching operations:                          545
+Number of reallocating operations:                       918
+
+Number of rerouting operations:                          156
+
+
+ Iteration= 1
+
+Speeding = 1
+Simulation time = 0.013179 sec
+Blocked request: First-fit w/o defragment                22
+
+Simulation time = 0.037566 sec
+Blocked request: First-fit w/ stat defragment            20
+
+Number of switching operations:                          226
+Number of reallocating operations:                       341
 
