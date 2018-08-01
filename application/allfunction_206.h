@@ -33,7 +33,7 @@ using namespace std;
 	int initialize(void);
 	int reInitialize(void);
 	int initializeEvent(void);
-	int readInput(void);
+	int readInput(int, char**);
 	int readDemands(void);
 	int firstFit(int);
 	int lastFit(int);
