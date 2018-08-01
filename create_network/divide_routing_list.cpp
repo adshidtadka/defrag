@@ -17,7 +17,8 @@ int readMixedList(int path[10000][4], int argc, char* argv[0]){
 
 	ifs_mixed.ignore(INT_MAX,'=');
 
-	int path_read[5] = {0, 0, 0, 0, 0};
+	int path_read[5];
+	ifs_mixed >> path_read[0] >> path_read[1] >> path_read[2] >> path_read[3] >> path_read[4];
 	int s_prev = 0;
 	int path_num = 0;
 	while(path_read[0] >= s_prev){
@@ -27,34 +28,76 @@ int readMixedList(int path[10000][4], int argc, char* argv[0]){
 			path[path_num][i] = path_read[i];
 		}
 		ifs_mixed >> path_read[0] >> path_read[1] >> path_read[2] >> path_read[3] >> path_read[4];
-		// cout << "path_read[0] = " << path_read[0] << ", path_read[1] = " << path_read[1] << ", path_read[2] = " << path_read[2] << ", path_read[3] = " << path_read[3] << ", path_read[4] = " << path_read[4] <<  ", s_prev = " << s_prev <<  endl;
 		path_num++;
 	}
 	path_num--;
-	cout << "path_num = " << path_num << endl;
 	ifs_mixed.close();
 
 	return path_num;
 }
 
-int insertPath(int path[10000][4], int path_same_sd[20][4], int key_path, int key_same){
+int copyToPathSameSD(int path[10000][4], int path_same_sd[20][4], int path_count, int path_same_sd_count){
 	for (int j = 0; j < 4; ++j)
 	{
-		path_same_sd[key_same][j] = path[key_path][j];
+		path_same_sd[path_same_sd_count][j] = path[path_count][j];
 	}
-	key_same++;
-	return key_same;
+	path_same_sd_count++;
+	return path_same_sd_count;
 }
 
-// int addDividedList(int path[10000][4], int path_same_sd[20][4], int key){
-// 	for (int i = 0; i < key; ++i)
-// 	{
-		
-// 	}
-// 	return 0;
-// }
+int writeRoot(int path_same_sd[20][4], int path_same_sd_count, int first_dest_prim, ofstream &ofs)
+{
+	int start_node = path_same_sd[0][0];		//source of root
+	int end_node   = path_same_sd[0][1];		//destination of root
+	int next_source;							//next source of link
 
-int writeDevidedList(int path[10000][4], int argc, char* argv[0], int path_num){
+	for (int i = 0; i < path_same_sd_count; ++i)
+	{
+		if (path_same_sd[i][2] == start_node && path_same_sd[i][3] != first_dest_prim)
+		{	
+			// write first prim link
+			for (int j = 0; j < 4; ++j)
+			{
+				ofs << path_same_sd[i][j] << " ";
+			}
+			ofs << " 1" << endl;
+	
+			// save next source node
+			next_source = path_same_sd[i][3];
+			first_dest_prim = path_same_sd[i][3];
+	
+			//write the other links
+			for (int j = 0; j < path_same_sd_count; ++j)
+			{
+				if (next_source == end_node)
+				{
+					// finish write the other links
+					break;
+				}
+				if (path_same_sd[j][2] == next_source)
+				{
+					// write a link
+					for (int k = 0; k < 4; ++k)
+					{
+						ofs << path_same_sd[j][k] << " ";
+					}
+					ofs << " 1" << endl;
+	
+					// save next source node
+					next_source = path_same_sd[j][3];
+	
+					//reset search index
+					j = -1;
+				}
+			}
+			// finish write the other links
+			break;
+		}
+	}
+	return first_dest_prim;
+}
+
+int writeList(int path[10000][4], int argc, char* argv[0], int path_num){
 
 	ofstream ofs_prim;
 	ofstream ofs_back;
@@ -70,36 +113,40 @@ int writeDevidedList(int path[10000][4], int argc, char* argv[0], int path_num){
 		cout <<"Cannot open back list" << endl;
 		return 1;
 	}
-
+	// write first line
 	ofs_prim << "f =:" << endl;
 	ofs_back << "f =:" << endl;
 
-	//devide two mixed list
 	int path_same_sd[20][4];
-	int key = 0;
+	int path_same_sd_count = 0;
 	path_same_sd[0][0]  = -1;
-	for (int i = 0; i < path_num; ++i)
+	for (int i = 0; i <= path_num; ++i)
 	{
 		// next candidate of s-d
 		if (path_same_sd[0][0]  == -1)
 		{
-			key = insertPath(path, path_same_sd, i, key);
+			path_same_sd_count = copyToPathSameSD(path, path_same_sd, i, path_same_sd_count);
 			continue;
 		}
 
 		// same s-d
-		if (path[i][0] == path_same_sd[key -1][0] && path[i][1] == path_same_sd[key -1][1])
+		if (path[i][0] == path_same_sd[path_same_sd_count -1][0] && path[i][1] == path_same_sd[path_same_sd_count -1][1])
 		{
-			key = insertPath(path, path_same_sd, i, key);
+			path_same_sd_count = copyToPathSameSD(path, path_same_sd, i, path_same_sd_count);
 			continue;
 		} else {
-			// add path_same_sd
-			// addDividedList(path, path_same_sd, key);
+
+			int first_dest_prim = -1;
+
+			// write path_prim
+			first_dest_prim = writeRoot(path_same_sd, path_same_sd_count, first_dest_prim, ofs_prim);
+
+			// write path_back
+			writeRoot(path_same_sd, path_same_sd_count, first_dest_prim, ofs_back);
 
 			//initialize
-			int path_same_sd[20][4] = {{}};
 			path_same_sd[0][0]  = -1;
-			key = 0;
+			path_same_sd_count = 0;
 			i--;
 			continue;
 		}
@@ -117,10 +164,7 @@ int main(int argc, char* argv[])
 	int path_num;
 
 	path_num = readMixedList(mixed_path, argc, &argv[0]);
-
-	// writeDevidedList(mixed_path, argc, &argv[0], path_num);
-
-
+	writeList(mixed_path, argc, &argv[0], path_num);
 	 
 	return 0;
 }
