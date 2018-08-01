@@ -14,7 +14,7 @@
 #define M 10000	     // Maximum number of demands
 
 #define N 11          	// N number of Nodes.
-#define L 28			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44)
+#define L 28			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
 #define S 400			// S number of spec slots per link
 
 #define A1 50		// Traffic load
@@ -39,7 +39,7 @@ using namespace std; //名前空間の指定
 
 	// Declaring functions
 
-int main(void)
+int main(int argc, char* argv[])
 {
 	int i, j, k, l, p;
 	int a, b;
@@ -99,7 +99,7 @@ int main(void)
 				cout << endl << " A= "<< A << endl;
 			} //l=0のときは既にAを表示しているため実行しない
 			initialize(); //色々全部0にする
-			readInput(); //入力する情報を持って来る		
+			readInput(argc, &argv[0]); //入力する情報を持って来る		
 			int blkdItNone[10] = {}, blkdItConv[10] = {}, blkdItProp[10] = {}, blkdItConvIlp[10] = {}, blkdItPropIlp[10] = {};
 			int togOpItConv[10] = {}, togOpItProp[10] = {};
 			int realOpItConv[10] = {}, realOpItProp[10] = {};
@@ -454,7 +454,7 @@ int main(void)
 //	printSpec();
 }
 
-int readInput()
+int readInput(int argc, char* argv[0])
 {
 	int i,j,k,l, p;
 	int a, b;
@@ -465,7 +465,7 @@ int readInput()
 	//	Register network
 	stringstream ss;
 	string s;
-	ss << "./../network/net_" << N << ".txt";
+	ss << "./../network/net_" << argv[1] << ".txt";
 	s = ss.str();
 	fin.open (s);//ノードの接続関係が EM:=で与えられている
 	{
@@ -488,7 +488,7 @@ int readInput()
 
 //	Register routing table primary
 	ss.str("");
-	ss << "./../network/dp" << N << "_x_result1.txt";
+	ss << "./../network/dp" << argv[1] << "_x_result1.txt";
 	s = ss.str();
 	{
 	fin.open (s); //行数をカウントしてlに代入する
@@ -513,7 +513,7 @@ int readInput()
 	fin.close();
 
 	ss.str("");
-	ss << "./../network/dp" << N << "_x_result1.txt";
+	ss << "./../network/dp" << argv[1] << "_x_result1.txt";
 	s = ss.str();
 	fin.open (s); //今度こそプライマリのパス情報を得る path[i][j][p] hops[i][j]
 	{
@@ -543,7 +543,7 @@ int readInput()
 //	Register routing table backup
 	{
 	ss.str("");
-	ss << "./../network/dp" << N << "_x_result2.txt";
+	ss << "./../network/dp" << argv[1] << "_x_result2.txt";
 	s = ss.str();
 	fin.open (s);//行数をカウントしてlに代入してる
 	{
@@ -567,7 +567,7 @@ int readInput()
 	fin.close();
 
 	ss.str("");
-	ss << "./../network/dp" << N << "_x_result2.txt";
+	ss << "./../network/dp" << argv[1] << "_x_result2.txt";
 	s = ss.str();
 	fin.open (s);//今度こそプライマリのパス情報を得る bp[i][j][p] bhops[i][j]
 	{
