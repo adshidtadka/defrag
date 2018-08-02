@@ -11,10 +11,10 @@
 
 #define IT 3             // Number of ramdom sample
 
-#define M 10000	     // Maximum number of demands
+#define M 100	     // Maximum number of demands
 
 #define N 11          	// N number of Nodes.
-#define L 28			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
+#define L 52			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
 #define S 400			// S number of spec slots per link
 
 #define A1 50		// Traffic load
@@ -468,21 +468,17 @@ int readInput(int argc, char* argv[0])
 	ss << "./../network/net_" << argv[1] << ".txt";
 	s = ss.str();
 	fin.open (s);//ノードの接続関係が EM:=で与えられている
-	{
-		if (!fin){
-			cout <<"Cannot open network model" << endl;
-			return 1;
-		}
+	if (!fin){
+		cout <<"Cannot open network model" << endl;
+		return 1;
+	}
 
-		// cout <<" links: "<< endl;
+	cout <<" links: "<< endl;
 
-		fin.ignore(INT_MAX,'='); //=が見つかるまで無視
-		for(k=0; k<L; k++){ //リンクの数だけループする
-			fin >> a >> b ; //aとbに代入する, 空白と改行はスキップされる
-			link[a][b]=k; //発ノードと着ノードを入力したらリンク番号がでてくる関数
-		// cout << k <<": "<< a << b << endl;
-		}
-
+	fin.ignore(INT_MAX,'=');
+	for(k=0; k<L; k++){
+		fin >> a >> b ;
+		link[a][b]=k;
 	}
 	fin.close();
 
@@ -490,25 +486,22 @@ int readInput(int argc, char* argv[0])
 	ss.str("");
 	ss << "./../network/dp" << argv[1] << "_x_result1.txt";
 	s = ss.str();
-	{
 	fin.open (s); //行数をカウントしてlに代入する
+	if (!fin)
 	{
-		if (!fin)
-		{
-			cout <<"Cannot open routing file" << endl;
-			return 1;
-		}
+		cout <<"Cannot open routing file" << endl;
+		return 1;
+	}
 
-		fin.ignore(INT_MAX,'=');//=が出るまで無視
+	fin.ignore(INT_MAX,'=');//=が出るまで無視
 	//	fin.ignore(INT_MAX,':');
-		fin >> tmp;					//tmp1 is a char
+	fin >> tmp;					//tmp1 is a char
 
-		l=0;
-		while(tmp !=';'){//もし最終行でなければ
-			l++;
-			fin.ignore(INT_MAX,'\n');//改行まで無視
-			fin >> tmp; //次の行の最初の文字を読み取る
-		}
+	l=0;
+	while(tmp !=';'){//もし最終行でなければ
+		l++;
+		fin.ignore(INT_MAX,'\n');//改行まで無視
+		fin >> tmp; //次の行の最初の文字を読み取る
 	}
 	fin.close();
 
@@ -516,32 +509,28 @@ int readInput(int argc, char* argv[0])
 	ss << "./../network/dp" << argv[1] << "_x_result1.txt";
 	s = ss.str();
 	fin.open (s); //今度こそプライマリのパス情報を得る path[i][j][p] hops[i][j]
+	if (!fin)
 	{
-		if (!fin)
-		{
-			cout <<"Cannot open routing file" << endl;
-			return 1;
-		}
+		cout <<"Cannot open routing file" << endl;
+		return 1;
+	}
 
-		//cout << l <<": lines" << endl;
-		fin.ignore(INT_MAX,'='); //=まで無視
-		for (k=0;k<l;k++){ //行数分forループ
-			fin >> i >> j >> a >> b;
-			fin.ignore(INT_MAX,'\n'); //改行まで無視する
-			p= link[a][b]; //pにリンク番号を代入
-		//	cout << p <<": "<< a << b << endl;
-			path[i][j][p] = 1; /*path[i][j][p]は発ノードと着ノードを結ぶパスが使う
-			リンク番号を代入すると1をとるバイナリ変数*/
-		//	if(k<20) cout << i <<" "<< j <<" " << p << endl;　
-			++hops[i][j];  			// Counting number of hops
-			//hops[i][j]発ノードと着ノードを結ぶパスが何ホップでできているか
-		}
+	//cout << l <<": lines" << endl;
+	fin.ignore(INT_MAX,'='); //=まで無視
+	for (k=0;k<l;k++){ //行数分forループ
+		fin >> i >> j >> a >> b;
+		fin.ignore(INT_MAX,'\n'); //改行まで無視する
+		p= link[a][b]; //pにリンク番号を代入
+		// cout << p <<": "<< a << b << endl;
+		path[i][j][p] = 1; /*path[i][j][p]は発ノードと着ノードを結ぶパスが使う
+		リンク番号を代入すると1をとるバイナリ変数*/
+	//	if(k<20) cout << i <<" "<< j <<" " << p << endl;　
+		++hops[i][j];  			// Counting number of hops
+		//hops[i][j]発ノードと着ノードを結ぶパスが何ホップでできているか
 	}
 	fin.close();
-}
 
 //	Register routing table backup
-	{
 	ss.str("");
 	ss << "./../network/dp" << argv[1] << "_x_result2.txt";
 	s = ss.str();
@@ -585,13 +574,12 @@ int readInput(int argc, char* argv[0])
 			p= link[a][b];
 		//	cout << p <<": "<< a << b << endl;
 			bp[i][j][p] = 1;
-		//	if(k<20) cout << i <<" "<< j <<" " << p << endl;
+			// if(k<20) cout << i <<" "<< j <<" " << p << endl;
 			++bhops[i][j];  			// Counting number of hops
 			//bhops[i][j]発ノードと着ノードを結ぶバックアップパスパスが何ホップでできているか
 		}
 	}
 	fin.close();
-}
 
 	for (i=0;i<N;i++){				//Comparing path, may be usefull
 		for (j=0;j<N;j++){
