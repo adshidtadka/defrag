@@ -1,6 +1,6 @@
 
 /*
-12 nodes network
+11 nodes network
 European network
 */
 

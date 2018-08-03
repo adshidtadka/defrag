@@ -9,31 +9,10 @@ Sorting= 1
  Iteration= 0
 
 Speeding = 1
-Simulation time = 0.001277 sec
+Simulation time = 0.001183 sec
 Blocked request: First-fit w/o defragment                0
 
-Simulation time = 0.214274 sec
-Blocked request: First-fit w/ stat defragment            0
-
-Number of switching operations:                          0
-Number of reallocating operations:                       0
-
-Simulation time = 23.0216 sec
-Blocked request: First-fit w/ stat rerouting defragment  0
-
-Number of switching operations:                          215
-Number of reallocating operations:                       349
-
-Number of rerouting operations:                          236
-
-
- Iteration= 1
-
-Speeding = 1
-Simulation time = 0.001063 sec
-Blocked request: First-fit w/o defragment                0
-
-Simulation time = 0.178378 sec
+Simulation time = 0.213748 sec
 Blocked request: First-fit w/ stat defragment            0
 
 Number of switching operations:                          0
