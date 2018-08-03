@@ -11,10 +11,10 @@
 
 #define IT 3             // Number of ramdom sample
 
-#define M 100	     // Maximum number of demands
+#define M 10000	     // Maximum number of demands
 
-#define N 11          	// N number of Nodes.
-#define L 52			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
+#define N 14          	// N number of Nodes.
+#define L 46			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
 #define S 400			// S number of spec slots per link
 
 #define A1 50		// Traffic load
@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
 		A = A1;//現在の通信量
 		ofs1 << endl << " A= "<< A << endl;
 		cout << endl << " A= "<< A << endl;
-		for(l=0; l<11; l++){ //通信量を変更するためのループ
+		for(l=0; l<20; l++){ //通信量を変更するためのループ
 			cout << "TERM NUMBER = " << l << endl;
 			if(l){
 				A = A + 10;//通信量
@@ -201,7 +201,13 @@ int main(int argc, char* argv[])
 							while(!deleteQueue.empty()) {
 							    nowEvent = deleteQueue.top();
 							    deleteQueue.pop();
-							    removeLP1_1(nowEvent.lpNum, algoCall);
+							    try {
+							    	removeLP1_1(nowEvent.lpNum, algoCall);
+							    }
+							    catch(const char* err) {
+							    	cout << "ERR:パス切断中における" << err << endl;
+							    	return 1;
+							    }
 								delFromList(1, nowEvent.lpNum);			
 								delFromList(2, nowEvent.lpNum);			
 							}
@@ -214,7 +220,13 @@ int main(int argc, char* argv[])
 
 	 						if(nowEvent.type == 1){
 	 							t = nowEvent.time;
-	 							removeLP1_1(nowEvent.lpNum, algoCall);
+	 							try {
+							    	removeLP1_1(nowEvent.lpNum, algoCall);
+							    }
+							    catch(const char* err) {
+							    	cout << "ERR:パス切断中における" << err << endl;
+							    	return 1;
+							    }
 								delFromList(1, nowEvent.lpNum);							// Removing from linked list(active list)
 								delFromList(2, nowEvent.lpNum);							// Removing from linked list(mixtlist)
 	 						}
@@ -222,7 +234,13 @@ int main(int argc, char* argv[])
 	 							if(lp_size[nowEvent.lpNum]){
 	 								last_lp = nowEvent.lpNum;//パスのIDをlast_lpに移す
 
-									b = firstFit1_1(nowEvent.lpNum, algoCall);
+	 								try{
+										b = firstFit1_1(nowEvent.lpNum, algoCall);
+									}
+									catch(const char* err){
+										cout << "ERR:パス割り当て中における" << err << endl;
+										return 1;
+									}
 
 									if(!b){//もしブロッキングが起こってしまったら
 										try{
