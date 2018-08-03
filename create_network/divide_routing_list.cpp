@@ -114,8 +114,8 @@ int writeList(int path[10000][4], int argc, char* argv[0], int path_num){
 		return 1;
 	}
 	// write first line
-	ofs_prim << "f =:" << endl;
-	ofs_back << "f =:" << endl;
+	ofs_prim << "f :=" << endl;
+	ofs_back << "f :=" << endl;
 
 	int path_same_sd[20][4];
 	int path_same_sd_count = 0;
