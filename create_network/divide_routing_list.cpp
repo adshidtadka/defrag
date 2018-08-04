@@ -55,16 +55,21 @@ int writeRoot(int path_same_sd[20][4], int path_same_sd_count, int first_dest_pr
 	{
 		if (path_same_sd[i][2] == start_node && path_same_sd[i][3] != first_dest_prim)
 		{	
+			// save next source node
+			next_source = path_same_sd[i][3];
+			first_dest_prim = path_same_sd[i][3];
+
 			// write first prim link
 			for (int j = 0; j < 4; ++j)
 			{
 				ofs << path_same_sd[i][j] << " ";
 			}
+
+			// delete path
+			path_same_sd[i][2] = -1;
+
 			ofs << " 1" << endl;
 	
-			// save next source node
-			next_source = path_same_sd[i][3];
-			first_dest_prim = path_same_sd[i][3];
 	
 			//write the other links
 			for (int j = 0; j < path_same_sd_count; ++j)
@@ -76,15 +81,19 @@ int writeRoot(int path_same_sd[20][4], int path_same_sd_count, int first_dest_pr
 				}
 				if (path_same_sd[j][2] == next_source)
 				{
+					// save next source node
+					next_source = path_same_sd[j][3];
+
 					// write a link
 					for (int k = 0; k < 4; ++k)
 					{
 						ofs << path_same_sd[j][k] << " ";
+
 					}
 					ofs << " 1" << endl;
-	
-					// save next source node
-					next_source = path_same_sd[j][3];
+
+					// delete path
+					path_same_sd[j][2] = -1;
 	
 					//reset search index
 					j = -1;
@@ -97,7 +106,7 @@ int writeRoot(int path_same_sd[20][4], int path_same_sd_count, int first_dest_pr
 	return first_dest_prim;
 }
 
-int writeList(int path[10000][4], int argc, char* argv[0], int path_num){
+int writeRoots(int path[10000][4], int argc, char* argv[0], int path_num){
 
 	ofstream ofs_prim;
 	ofstream ofs_back;
@@ -164,7 +173,7 @@ int main(int argc, char* argv[])
 	int path_num;
 
 	path_num = readMixedList(mixed_path, argc, &argv[0]);
-	writeList(mixed_path, argc, &argv[0], path_num);
+	writeRoots(mixed_path, argc, &argv[0], path_num);
 	 
 	return 0;
 }
