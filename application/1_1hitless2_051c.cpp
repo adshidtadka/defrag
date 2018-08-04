@@ -491,8 +491,6 @@ int readInput(int argc, char* argv[0])
 		return 1;
 	}
 
-	cout <<" links: "<< endl;
-
 	fin.ignore(INT_MAX,'=');
 	for(k=0; k<L; k++){
 		fin >> a >> b ;
