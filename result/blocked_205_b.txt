@@ -5,7 +5,3 @@ Simulation for N= 14, Links = 46, Spec= 400, req_Max=16, A1= 50, R_int = 0.2, te
 Sorting= 1
 
  A= 50
-
- Iteration= 0
-
-Speeding = 1

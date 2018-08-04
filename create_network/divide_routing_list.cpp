@@ -160,8 +160,10 @@ int writeRoots(int path[10000][4], int argc, char* argv[0], int path_num){
 			continue;
 		}
 	}
-	 ofs_prim.close();
-	 ofs_back.close();
+	ofs_prim << ";" << endl;
+	ofs_back << ";" << endl;
+	ofs_prim.close();
+	ofs_back.close();
 
 
 	return 0;
