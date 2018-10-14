@@ -3484,6 +3484,22 @@ int getPrimRoot(int s, int lp)
 	a = dest[lp];
 	b = Nodes[a].from;
 
+	// limit hop number
+	int hop_counter = 0;
+	while (b < N && a != b) {
+		a = b;
+		b = Nodes[a].from;
+		hop_counter++;
+	}
+	if (hop_counter > LIMIT_HOP_NUM)
+	{
+		return 0;
+	}
+
+	//ルートの代入
+	a = dest[lp];
+	b = Nodes[a].from;
+
 	if (b < N) {
 		for (j = 0; j < N; j++) {//initialize
 			for (k = 0; k < N; k++) {

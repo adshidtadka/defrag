@@ -11,13 +11,13 @@
 
 #define IT 3             // Number of ramdom sample
 
-#define M 10000	     // Maximum number of demands
+#define M 100	     // Maximum number of demands
 
 #define N 11          	// N number of Nodes.
 #define L 52			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
-#define S 400			// S number of spec slots per link
+#define S 100			// S number of spec slots per link
 
-#define A1 350		// Traffic load
+#define A1 600		// Traffic load
 #define H  10			// 1/mu, Average holding time in Tu
 #define req_Max 16		// Maximum demand size 占有帯域スロット数
 
@@ -32,6 +32,8 @@
 #define maxStep 3
 
 #define spfact 1
+
+#define LIMIT_HOP_NUM 6
 
 #include "allfunction_206.h"
 
