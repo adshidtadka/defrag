@@ -78,8 +78,8 @@ int main(int argc, char* argv[])
             return 1;
     }
 
-	ofs1 << "Simulation for N= "<< N <<", Links = " << L << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << endl;
-	cout << "Simulation for N= "<< N <<", Links = " << L << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << endl;
+	ofs1 << "Simulation for N= "<< N <<", Links = " << L << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
+	cout << "Simulation for N= "<< N <<", Links = " << L << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
 		//number of nodes, number of slots, maxi demand size, Traffic load, retuning period, Vaiting time allowed to retune before adding new request
 	ofs1 << endl << " M= "<< M << endl;
 		//max number of demand
