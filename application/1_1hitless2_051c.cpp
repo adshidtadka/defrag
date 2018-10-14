@@ -33,7 +33,7 @@
 
 #define spfact 1
 
-#define LIMIT_HOP_NUM 6
+#define LIMIT_HOP_NUM 3
 
 #include "allfunction_206.h"
 
