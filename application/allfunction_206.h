@@ -1700,7 +1700,11 @@ int asignBp(int lp, int index)
 
 	for(j=0;j<b;j++){
 		for(p=0;p<L;p++){
-			if(spec[index+j][p] == 1 && bp[s][d][p] ==1) throw "バックアップパス割り当てエラー";
+			if(spec[index+j][p] == 1 && bp[s][d][p] ==1){
+				cout << "spec[" <<  index+j << "][" << p << "] = " << spec[index+j][p] << endl;
+				cout << "bp[" << s << "][" << d << "][" << p << "] = " << bp[s][d][p] << endl;
+				throw "バックアップパス割り当てエラー";
+			}
 			spec[index+j][p] = spec[index+j][p] || bp[s][d][p];
 		}
 	}
