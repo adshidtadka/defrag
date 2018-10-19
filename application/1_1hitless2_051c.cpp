@@ -101,7 +101,10 @@ int main(int argc, char* argv[])
 				cout << endl << " A= "<< A << endl;
 			} //l=0のときは既にAを表示しているため実行しない
 			initialize(); //色々全部0にする
-			readInput(argc, &argv[0]); //入力する情報を持って来る		
+			if (readInput(argc, &argv[0]) == 1){
+                cout << "cannot read input" << endl;
+                return 1;
+            }//入力する情報を持って来る		
 			int blkdItNone[10] = {}, blkdItConv[10] = {}, blkdItProp[10] = {}, blkdItConvIlp[10] = {}, blkdItPropIlp[10] = {};
 			int togOpItConv[10] = {}, togOpItProp[10] = {};
 			int realOpItConv[10] = {}, realOpItProp[10] = {};
