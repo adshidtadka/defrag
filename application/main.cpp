@@ -1,4 +1,4 @@
-#include "assumptions.h"
+#include "params.h"
 #include "func.h"
 
 using namespace std; //名前空間の指定
