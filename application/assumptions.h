@@ -4,7 +4,7 @@
 #define ITERATION 3
 
 // demand
-#define M 10000
+#define REQUEST_NUM 100
 
 // node num
 #define N 11
