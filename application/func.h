@@ -127,23 +127,23 @@ using namespace std;
 
 // Declaring global vars
 //{
-	int lp_ind=0, lp_size[REQUEST_NUM], source[REQUEST_NUM], dest[REQUEST_NUM], spec_ind[REQUEST_NUM];    // Each LP has an arrival index, a couple s/d,
+	int lp_ind=0, lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM], spec_ind[REQ_NUM];    // Each LP has an arrival index, a couple s/d,
 															// and a given size. It is allocated to a spectrum index
 	bool spec[CAPASITY][LINK_NUM], path[NODE_NUM][NODE_NUM][LINK_NUM];				// Spectrum is a slots*links matrix, path(s,d,link) 1 if sd use l
 	bool linked_path[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_bp[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_crosspath[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];				// Paths sharing at least a link
 
 	int low_ind, high_ind;						// Lowest used index for lastfit and highest for firstfit
 	int blocked;					// Counting blocked request //ブロッキングを起こしたリクエストの数
-	int isactive[REQUEST_NUM];							// Tracking if lp is allocated and where (0-off, 1-firstf, 2-lastf)
-	int t_req[REQUEST_NUM], t_hold[REQUEST_NUM], t_exp[REQUEST_NUM];			// Tracking request arrival time and lp expiration time
-	double t_req_event[REQUEST_NUM], t_hold_event[REQUEST_NUM], t_exp_event[REQUEST_NUM];
+	int isactive[REQ_NUM];							// Tracking if lp is allocated and where (0-off, 1-firstf, 2-lastf)
+	int t_req[REQ_NUM], t_hold[REQ_NUM], t_exp[REQ_NUM];			// Tracking request arrival time and lp expiration time
+	double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
 
 	int hops[NODE_NUM][NODE_NUM], bhops[NODE_NUM][NODE_NUM];
 	int link[NODE_NUM][NODE_NUM];
 
 	int max_hold, last_lp;
 
-	int midlp = REQUEST_NUM;
+	int midlp = REQ_NUM;
 
 	unsigned seed1 = 123;      //time(NULL);						// Initializing generator
 	unsigned seed2 =  125;
@@ -179,7 +179,7 @@ using namespace std;
 		}
 	};
 
-	bool path_rr[LINK_NUM][REQUEST_NUM], bp_rr[LINK_NUM][REQUEST_NUM];//リルーティングのための変数
+	bool path_rr[LINK_NUM][REQ_NUM], bp_rr[LINK_NUM][REQ_NUM];//リルーティングのための変数
 
 	int part[NODE_NUM][NODE_NUM];
 
@@ -195,15 +195,15 @@ using namespace std;
 
 	double t;
 
-	int bp_ind[REQUEST_NUM];
+	int bp_ind[REQ_NUM];
 	bool bp[NODE_NUM][NODE_NUM][LINK_NUM];
 
 	int togOp;
 	int realOp;
 	int rerouteOp; //the number of rerouting operations
 
-	bool lpState[REQUEST_NUM];
-	bool bpState[REQUEST_NUM];
+	bool lpState[REQ_NUM];
+	bool bpState[REQ_NUM];
 
 	int last_blocked = 0;   // Put to 1 if last allocation try was denied
 
@@ -222,8 +222,8 @@ using namespace std;
 	priority_queue<Event, vector<Event>, greater<Event> > eventQueue; // 優先度付き待ち行列
 	priority_queue<Event, vector<Event>, greater<Event> > deleteQueue;
 
-	Event startEvent[REQUEST_NUM];
-	Event endEvent[REQUEST_NUM];
+	Event startEvent[REQ_NUM];
+	Event endEvent[REQ_NUM];
 	Event nowEvent;
 	Event nextEvent;
 	int defragCount;
@@ -1820,7 +1820,7 @@ int initialize(void)						  // Set everything to zero
 	}
 
 	for(i=0; i<LINK_NUM; i++){
-		for(j=0;j<REQUEST_NUM;j++){
+		for(j=0;j<REQ_NUM;j++){
 			path_rr[i][j] = 0;
 			bp_rr[i][j] = 0;
 		}
@@ -1842,7 +1842,7 @@ int reInitialize(void)						// Set everything to zero save routings and demands
 	realOp = 0;
 	rerouteOp = 0;
 
-	for(i=0;i<REQUEST_NUM;i++){
+	for(i=0;i<REQ_NUM;i++){
 		spec_ind[i]=0; isactive[i]=0;
 		lpState[i]=1; bpState[i]=0;
 	}
@@ -1871,7 +1871,7 @@ int initializeEvent(void)						// Set everything to zero save routings and deman
 {
 	int i,j;
 
-	for(i=0;i<REQUEST_NUM;i++){
+	for(i=0;i<REQ_NUM;i++){
 		endEvent[i].time  = 0;
 		endEvent[i].type  = 0;
 		endEvent[i].lpNum = 0;
@@ -1905,7 +1905,7 @@ int readDemands()
 		fin.ignore(INT_MAX,':');
 		fin >> tmp1;					//tmp1 is a char
 
-		while(tmp1 !=';' && l < REQUEST_NUM){
+		while(tmp1 !=';' && l < REQ_NUM){
 			l++;
 			fin.ignore(INT_MAX,':');
 			fin >> tmp1;
@@ -1993,7 +1993,7 @@ int genDemands()
 	t_req[0]= 0;
 	t_req_event[0] = 0;
 
-	for (int i=0; i<REQUEST_NUM; ++i){ //リクエストの数だけ
+	for (int i=0; i<REQ_NUM; ++i){ //リクエストの数だけ
 		temp1 = hold_time(generator); //指数関数分布で継続時間を乱数として得る
 		t_hold[i] = int(temp1)+1;		//100をかけて1を足したものが継続時間となる
 		t_hold_event[i] = temp1;
@@ -2114,7 +2114,7 @@ void retune(){
 	if(low_ind - high_ind - 1 < 4*req_Max){
 //		releaseMiddle();
 		isactive[midlp] = 1;
-		midlp = REQUEST_NUM;
+		midlp = REQ_NUM;
 	}
 
 	if(t_temp <= 0){						//	Retune only after the previous one is done
@@ -2720,7 +2720,7 @@ int midFitAllocLP(int lp)
 	}else{										// Middle-fit allocation scheme
 //		lpNode 	*cur = midFitList;
 //		if( cur == NULL )									// Midlle is empty
-		if( midlp == REQUEST_NUM){
+		if( midlp == REQ_NUM){
 			asign(lp, index1);								// Allocate to exact middle
 			isactive[lp] = 3 ;
 			//addToList(2, lp);
@@ -3055,7 +3055,7 @@ int midFitAllocLP1(int lp)
 
 //		lpNode 	*cur = midFitList;
 //		if( cur == NULL )									// Midlle is empty
-		if( midlp == REQUEST_NUM){
+		if( midlp == REQ_NUM){
 			asign(lp, index1);								// Allocate to exact middle
 			isactive[lp] = 3 ;
 			//addToList(2, lp);
@@ -3651,7 +3651,7 @@ int removeLP_0(int lp)
 	//	cout << "loop2" << endl;
 
 	isactive[lp] = 0;
-	if(lp==midlp) midlp = REQUEST_NUM;
+	if(lp==midlp) midlp = REQ_NUM;
 	//	cout << "CAPASITY" << lp << " removed." << endl;
 	//	printSpec();
 	}
@@ -3677,7 +3677,7 @@ int removeLP(int lp)
 	//	cout << "loop2" << endl;
 
 	isactive[lp] = 0;
-	if(lp==midlp) midlp = REQUEST_NUM;
+	if(lp==midlp) midlp = REQ_NUM;
 	//	cout << "CAPASITY" << lp << " removed." << endl;
 	//	printSpec();
 	}
@@ -3764,7 +3764,7 @@ void fixMiddle()
 	int i,j,p;
   	bool eol=0;
 
-	if(midlp!=REQUEST_NUM && isactive[midlp]==3){
+	if(midlp!=REQ_NUM && isactive[midlp]==3){
 		index = spec_ind[midlp];
 		b = lp_size[midlp];
 		s = source[midlp];

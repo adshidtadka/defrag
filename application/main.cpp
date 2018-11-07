@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 	ofs1 << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", req_Max=" << req_Max <<", START_LOAD= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
 	cout << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", req_Max=" << req_Max <<", START_LOAD= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
 		//number of nodes, number of slots, maxi demand size, Traffic load, retuning period, Vaiting time allowed to retune before adding new request
-	ofs1 << endl << " REQUEST_NUM= "<< REQUEST_NUM << endl;
+	ofs1 << endl << " REQ_NUM= "<< REQ_NUM << endl;
 		//max number of demand
 
 	for(p=1; p<2; p++){ //Listを作る方法の違い
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
 						// startEvent[0].time = 0;
 						// startEvent[0].type = 0;
 						// startEvent[0].lpNum = 0;
-						for(int i=0; i<REQUEST_NUM; i++){//正規化
+						for(int i=0; i<REQ_NUM; i++){//正規化
 							t_req[i]= double (t_req[i]) * spfact;
 							t_req_event[i+1] *= spfact;
 							t_exp[i]= double (t_exp[i]) * spfact;
@@ -125,9 +125,9 @@ int main(int argc, char* argv[])
 						ret_int = spfact * ret_int;
 						temp_max = temp_max * spfact;
 						
-						cout << "endEvent[" << REQUEST_NUM-1 << "].time = " << endEvent[REQUEST_NUM-1].time << ", ret_int = " << ret_int << endl;
+						cout << "endEvent[" << REQ_NUM-1 << "].time = " << endEvent[REQ_NUM-1].time << ", ret_int = " << ret_int << endl;
 						//make defrag event
-						defragCount = round(endEvent[REQUEST_NUM-1].time/ret_int);
+						defragCount = round(endEvent[REQ_NUM-1].time/ret_int);
 						cout << "defragCount = " << defragCount << endl;
 						defragEvent.clear();
 						defragEvent.resize(defragCount);
@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
 
 						//push to the priority queue
 						// eventQueue.push(startEvent[0]);
-						for (int i = 0; i < REQUEST_NUM; i++){
+						for (int i = 0; i < REQ_NUM; i++){
 							eventQueue.push(endEvent[i]);
 							// cout << "endEvent[" << i << "].time= " << endEvent[i].time << endl;
 							eventQueue.push(startEvent[i]);
@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
 						start = clock();
 
 						/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-						// while(lp<REQUEST_NUM && t < T_end){//Start!!		// For running period 信号の数やステップ数が上限を超えない限り反復
+						// while(lp<REQ_NUM && t < T_end){//Start!!		// For running period 信号の数やステップ数が上限を超えない限り反復
 						while(!eventQueue.empty()){//Start!!		// For running period 信号の数やステップ数が上限を超えない限り反復
 							b = 0;
 
@@ -236,7 +236,7 @@ int main(int argc, char* argv[])
 									//ブロッキングが起きていなければパスをリストに加える
 									if(b) addToList(nowEvent.lpNum, sort_val1, sort_val2);//activeList, backupList, mixtListに加えられる
 									//最終パスならばシミュレーション終了
-									if (nowEvent.lpNum == REQUEST_NUM-1){
+									if (nowEvent.lpNum == REQ_NUM-1){
 										while(!eventQueue.empty()){
 											eventQueue.pop();
 										}
@@ -613,7 +613,7 @@ int writeOutput()
 	}
 
 	ofs2 << endl;
-	ofs2 << "param REQUEST_NUM := " << m <<";" << endl;
+	ofs2 << "param REQ_NUM := " << m <<";" << endl;
 	ofs2 << "param B := " << CAPASITY <<";" << endl;
 	ofs2 << "param LINK_NUM := " << LINK_NUM <<";" << endl;
 	ofs2 << "param C := " << c <<";" << endl;
@@ -627,11 +627,11 @@ int writeOutput()
 		return 1;
 	}
 	ofs3 << "Load A := " << A <<";" << endl;
-	ofs3 << "param REQUEST_NUM := " << m <<";" << endl;
+	ofs3 << "param REQ_NUM := " << m <<";" << endl;
 	ofs3 << "Last LP := " << lp <<";" << endl;
 	ofs3.close();
 	// cout << "Load A := " << A <<";" << endl;
-	// cout << "param REQUEST_NUM := " << m <<";" << endl;
+	// cout << "param REQ_NUM := " << m <<";" << endl;
 	// cout << "Last LP := " << lp <<";" << endl;
 
 	cur = activeList;
@@ -710,11 +710,11 @@ int writeOutputPy()
 		return 1;
 	}
 	ofs3 << "Load A := " << A <<";" << endl;
-	ofs3 << "param REQUEST_NUM := " << m <<";" << endl;
+	ofs3 << "param REQ_NUM := " << m <<";" << endl;
 	ofs3 << "Last LP := " << lp <<";" << endl;
 	ofs3.close();
 	// cout << "Load A := " << A <<";" << endl;
-	// cout << "param REQUEST_NUM := " << m <<";" << endl;
+	// cout << "param REQ_NUM := " << m <<";" << endl;
 	// cout << "Last LP := " << lp <<";" << endl;
 
 
@@ -806,11 +806,11 @@ int writeOutputReroutingPy()
 		return 1;
 	}
 	ofs3 << "Load A := " << A <<";" << endl;
-	ofs3 << "param REQUEST_NUM := " << m <<";" << endl;
+	ofs3 << "param REQ_NUM := " << m <<";" << endl;
 	ofs3 << "Last LP := " << lp <<";" << endl;
 	ofs3.close();
 	// cout << "Load A := " << A <<";" << endl;
-	// cout << "param REQUEST_NUM := " << m <<";" << endl;
+	// cout << "param REQ_NUM := " << m <<";" << endl;
 	// cout << "Last LP := " << lp <<";" << endl;
 
 

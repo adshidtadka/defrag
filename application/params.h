@@ -1,6 +1,6 @@
 #define INF 999999999
 #define ITERATION 3
-#define REQUEST_NUM 100
+#define REQ_NUM 100
 #define NODE_NUM 11
 
 // directional links (NODE_NUM,LINK_NUM) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
