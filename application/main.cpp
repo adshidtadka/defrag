@@ -91,23 +91,10 @@ int main(int argc, char* argv[])
 
 					initializeEvent(); //initialize startEvent endEvent defragEvent
 
-					// double spfact;//正規化のための変数
-					// if(k==1) spfact = 0.01;
-					// if(k==2) spfact = 2;
-					// if(k==3) spfact = 2.5;
-					// if(k==4) spfact = 2;
-
 					if(k){
-						ofs1 << endl << "Speeding = " << spfact << endl;
-						cout << endl << "Speeding = " << spfact << endl;
-						// startEvent[0].time = 0;
-						// startEvent[0].type = 0;
-						// startEvent[0].lpNum = 0;
-						for(int i=0; i<REQ_NUM; i++){//正規化
-							t_req[i]= double (t_req[i]) * spfact;
-							t_req_event[i+1] *= spfact;
-							t_exp[i]= double (t_exp[i]) * spfact;
-							t_exp_event[i] *= spfact;
+						for(int i=0; i<REQ_NUM; i++){
+							t_req[i]= double (t_req[i]);
+							t_exp[i]= double (t_exp[i]);
 							if(t_req[i] == t_exp[i]){
 								t_exp[i]++; //到着時刻と切断時刻が同じであれば1ずらす
 								// t_exp_event[i] += DBL_MIN;	
@@ -121,11 +108,9 @@ int main(int argc, char* argv[])
 							startEvent[i].type = 0;
 							startEvent[i].lpNum = i;
 						}
-
-						ret_int = spfact * ret_int;
-						temp_max = temp_max * spfact;
 						
 						cout << "endEvent[" << REQ_NUM-1 << "].time = " << endEvent[REQ_NUM-1].time << ", ret_int = " << ret_int << endl;
+
 						//make defrag event
 						defragCount = round(endEvent[REQ_NUM-1].time/ret_int);
 						cout << "defragCount = " << defragCount << endl;
@@ -347,17 +332,6 @@ int main(int argc, char* argv[])
 				//traffic load
 				ofs4 << A << ",";
 				ofs5 << A << ",";
-
-				// double spfact;
-
-				// if(k==1) spfact = 0.01;
-				// if(k==2) spfact = 0.02;
-				// if(k==3) spfact = 0.05;
-				// if(k==4) spfact = 0.1;
-
-				//speeding
-				ofs4 << spfact << ",";
-				ofs5 << spfact << ",";
 
 				//信頼区間の計算
 				double stdItNone, stdItConv, stdItProp, stdItConvIlp, stdItPropIlp;
@@ -595,7 +569,7 @@ int writeOutput()
 	int i,j,ind=0;
 	int lp,n,f0;
 	int s,d;
-	int c = maxStep;
+	int c = MAX_STEP;
 	int m=0;
 
 	ofstream ofs2;
@@ -679,7 +653,7 @@ int writeOutputPy()
 	int i,j,ind=0;
 	int lp,n,f0,k;
 	int s,d;
-	int c = maxStep;
+	int c = MAX_STEP;
 	int m=0;
 
 	ofstream ofs2;
@@ -774,7 +748,7 @@ int writeOutputReroutingPy()
 	int i,j,ind=0;
 	int lp,n,f0,k;
 	int s,d;
-	int c = maxStep;
+	int c = MAX_STEP;
 	int m=0;
 
 	ofstream ofs2;
