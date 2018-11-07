@@ -5,7 +5,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	int i, j, k, l, p;
+	int k, l, p;
 	int a, b;
 	int blockedff=0, blockedffh=0;
 
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
 						// startEvent[0].time = 0;
 						// startEvent[0].type = 0;
 						// startEvent[0].lpNum = 0;
-						for(i=0; i<REQUEST_NUM; i++){//正規化
+						for(int i=0; i<REQUEST_NUM; i++){//正規化
 							t_req[i]= double (t_req[i]) * spfact;
 							t_req_event[i+1] *= spfact;
 							t_exp[i]= double (t_exp[i]) * spfact;
@@ -138,12 +138,12 @@ int main(int argc, char* argv[])
 						// cout << "defragEvent[" << defragCount-1 << "].time = " << defragEvent[defragCount-1].time << endl;
 					}
 
-					for(j=0; j<=2; j++){	// To do all algorithms sequentially連続してアルゴリズムを実行する c=0なら2回ループ
+					for(int j=0; j<=2; j++){	// To do all algorithms sequentially連続してアルゴリズムを実行する c=0なら2回ループ
 						algoCall = j;
 
 						//push to the priority queue
 						// eventQueue.push(startEvent[0]);
-						for (i = 0; i < REQUEST_NUM; i++){
+						for (int i = 0; i < REQUEST_NUM; i++){
 							eventQueue.push(endEvent[i]);
 							// cout << "endEvent[" << i << "].time= " << endEvent[i].time << endl;
 							eventQueue.push(startEvent[i]);
