@@ -3,15 +3,13 @@
 #define REQUEST_NUM 100
 #define NODE_NUM 11
 
-// link num 
 // directional links (NODE_NUM,LINK_NUM) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
 #define LINK_NUM 52
 
-// capacity per link
-#define S 400
+#define CAPASITY 400
 
 // start traffic load
-#define A1 350
+#define START_LOAD 350
 
 // average holding time
 #define H  10

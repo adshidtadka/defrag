@@ -129,7 +129,7 @@ using namespace std;
 //{
 	int lp_ind=0, lp_size[REQUEST_NUM], source[REQUEST_NUM], dest[REQUEST_NUM], spec_ind[REQUEST_NUM];    // Each LP has an arrival index, a couple s/d,
 															// and a given size. It is allocated to a spectrum index
-	bool spec[S][LINK_NUM], path[NODE_NUM][NODE_NUM][LINK_NUM];				// Spectrum is a slots*links matrix, path(s,d,link) 1 if sd use l
+	bool spec[CAPASITY][LINK_NUM], path[NODE_NUM][NODE_NUM][LINK_NUM];				// Spectrum is a slots*links matrix, path(s,d,link) 1 if sd use l
 	bool linked_path[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_bp[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_crosspath[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];				// Paths sharing at least a link
 
 	int low_ind, high_ind;						// Lowest used index for lastfit and highest for firstfit
@@ -191,7 +191,7 @@ using namespace std;
 	int last_ret= 0;
 	int temp_max = T_temp;
 
-	int A= A1;
+	int A= START_LOAD;
 
 	double t;
 
@@ -364,7 +364,7 @@ int readResult()
 	int a,b, lp;
 	ifstream fin, fin1;
 
-	for(i=0;i<S;i++){
+	for(i=0;i<CAPASITY;i++){
 		for(j=0;j<LINK_NUM;j++)  spec[i][j]= 0;
 	}
 
@@ -408,7 +408,7 @@ int readResultPy()
 	int a,b, lp;
 	ifstream fin, fin1;
 
-	for(i=0;i<S;i++){
+	for(i=0;i<CAPASITY;i++){
 		for(j=0;j<LINK_NUM;j++)  spec[i][j]= 0;
 	}
 
@@ -453,7 +453,7 @@ int readResultReroutingPy()
 	int a,b,c,d,lp;
 	ifstream fin, fin1;
 
-	for(i=0;i<S;i++){
+	for(i=0;i<CAPASITY;i++){
 		for(j=0;j<LINK_NUM;j++)  spec[i][j]= 0;
 	}
 
@@ -596,7 +596,7 @@ int hopretune(int index)   				// Index is the starting point
 				deleteLP(lp, 1);        // Remove LP from spec to avoid self-conflict
 			//	printSpec();
 				a = checkFirstFit(lp);				// Return spec_ind[lp] at worst
-				if(a==S || a > spec_ind[lp]) a = checkFirstFit(lp);
+				if(a==CAPASITY || a > spec_ind[lp]) a = checkFirstFit(lp);
 	//			cout << "In while-If"  << endl ;
 				if(a != spec_ind[lp]){
 					togOp++;
@@ -738,7 +738,7 @@ int statAlgo()
 					// printSpec();
 					//a = checkFirstFit(lp);				// Return spec_ind[lp] at worst
 					a = checkExactFit(lp);
-					if(a==S || a > spec_ind[lp]) a = checkFirstFit(lp);
+					if(a==CAPASITY || a > spec_ind[lp]) a = checkFirstFit(lp);
 					//もしスロット番号が小さくならないようであれば
 					//if(a > spec_ind[lp]) a = spec_ind[lp];
 					if(a != spec_ind[lp]){//スロット番号が小さくなっていれば(INFならブロッキング)
@@ -759,7 +759,7 @@ int statAlgo()
 					//printSpec();
 					// a = checkFirstBp(lp);				// Return spec_ind[lp] at worst
 					a = checkExactBp(lp);
-					if(a==S || a > spec_ind[lp]) a = checkFirstBp(lp);
+					if(a==CAPASITY || a > spec_ind[lp]) a = checkFirstBp(lp);
 					if(a != bp_ind[lp]){//スロット番号が小さくなっていれば(INFならブロッキング)
 						realOp++;
 						realMov++;
@@ -930,7 +930,7 @@ int statReroutingAlgo()
 					//プライマリパスのみ消去
 					a = checkExactFitRerouting(lp);
 					// std::cout << " after checkExactFitRerouting a = " << a << '\n';
-					if(a==S || a > spec_ind[lp]){
+					if(a==CAPASITY || a > spec_ind[lp]){
 						a = checkFirstFitRerouting(lp);
 						// std::cout << " after checkFirstFitRerouting a = " << a << '\n';
 					}
@@ -981,7 +981,7 @@ int statReroutingAlgo()
 					//バックアップパスのみ消去
 					a = checkExactBpRerouting(lp);
 					// std::cout << " after checkExactFitRerouting a = " << a << '\n';
-					if(a==S || a > bp_ind[lp]){
+					if(a==CAPASITY || a > bp_ind[lp]){
 						a = checkFirstBpRerouting(lp);
 						// std::cout << " after checkFirstFitRerouting a = " << a << '\n';
 					}
@@ -1066,7 +1066,7 @@ int retuneDown_0()
 
 	index1 = 1;
 
-	while(index1 < S-1 && k++ < INF){			//Sweep the spectrum
+	while(index1 < CAPASITY-1 && k++ < INF){			//Sweep the spectrum
 		index2 = index1-1;
 		lpNode *cur = activeList; 
 		mov_time = 0 ;
@@ -1134,7 +1134,7 @@ int retuneDownNonRerouting_0()
 
 	index1 = 1;
 
-	while(index1 < S-1 && k++ < INF){			//Sweep the spectrum
+	while(index1 < CAPASITY-1 && k++ < INF){			//Sweep the spectrum
 		lpNode *cur = activeList; 
 		mov_time = 0 ;
 		while ( cur != NULL ) {						// Checking all active LPs
@@ -1145,7 +1145,7 @@ int retuneDownNonRerouting_0()
 				//プライマリパスのみ消去
 				//a = checkFirstFit(lp);				// Return spec_ind[lp] at worst
 				a = checkExactFit(i);
-				if(a==S || a > spec_ind[i]) a = checkFirstFit(i);
+				if(a==CAPASITY || a > spec_ind[i]) a = checkFirstFit(i);
 				//もしスロット番号が小さくならないようであれば
 				//if(a > spec_ind[lp]) a = spec_ind[lp];
 				if(a != spec_ind[i]){//スロット番号が小さくなっていれば(INFならブロッキング)
@@ -1202,7 +1202,7 @@ int retuneDownRerouting_0()
 
 	index1 = 1;
 
-	while(index1 < S-1 && k++ < INF){			//Sweep the spectrum
+	while(index1 < CAPASITY-1 && k++ < INF){			//Sweep the spectrum
 		lpNode *cur = activeList; 
 		mov_time = 0 ;
 		while ( cur != NULL ) {						// Checking all active LPs
@@ -1226,7 +1226,7 @@ int retuneDownRerouting_0()
 				//プライマリパスのみ消去
 				a = checkExactFitRerouting(i);
 				// std::cout << " after checkExactFitRerouting a = " << a << '\n';
-				if(a==S || a > spec_ind[i]){
+				if(a==CAPASITY || a > spec_ind[i]){
 					a = checkFirstFitRerouting(i);
 					// std::cout << " after checkFirstFitRerouting a = " << a << '\n';
 				}
@@ -1276,7 +1276,7 @@ int retuneDownRerouting_0()
 				//バックアップパスのみ消去
 				a = checkExactBpRerouting(i);
 				// std::cout << " after checkExactFitRerouting a = " << a << '\n';
-				if(a==S || a > bp_ind[i]){
+				if(a==CAPASITY || a > bp_ind[i]){
 					a = checkFirstBpRerouting(i);
 				}
 				bool isSame = true; //check the rerouted or not rerouted
@@ -1627,7 +1627,7 @@ int checkFirstBp(int lp)
 	b= lp_size[lp];
 	index = 0;
 
-	while(index <= (S-b) && !asigned)   		  //Checking all spectrum range
+	while(index <= (CAPASITY-b) && !asigned)   		  //Checking all spectrum range
 	{
 		if(!b) break;
 
@@ -1670,7 +1670,7 @@ int checkFirstBpRerouting(int lp)
 	b= lp_size[lp];
 	index = 0;
 
-	while(index <= (S-b) && !asigned)   		  //Checking all spectrum range
+	while(index <= (CAPASITY-b) && !asigned)   		  //Checking all spectrum range
 	{
 		if(!b) break;
 		isGetRoot = getBackRoot(index, lp);
@@ -1776,7 +1776,7 @@ int reAllocBp(int p)
 	}
 
 	if(!p){
-		while(index < S){			//Sweep the spectrum
+		while(index < CAPASITY){			//Sweep the spectrum
 			lpNode *cur = activeList;
 			while ( cur != NULL ) {						// Checking all active LPs
 				lp = cur->x;
@@ -1834,7 +1834,7 @@ int reInitialize(void)						// Set everything to zero save routings and demands
 {
 	int i,j;
 
-	low_ind = S-1; high_ind=0; lp_ind=0;
+	low_ind = CAPASITY-1; high_ind=0; lp_ind=0;
 	blocked=0;
 	retOp = 0;
 	eol_count = 0;
@@ -1855,7 +1855,7 @@ int reInitialize(void)						// Set everything to zero save routings and demands
 		deleteQueue.pop();
 	}
 
-	for(i=0;i<S;i++){
+	for(i=0;i<CAPASITY;i++){
 		for(j=0;j<LINK_NUM;j++)  spec[i][j]= 0;
 	}
 
@@ -2051,7 +2051,7 @@ int retuneUp_0()
   	bool eol=0;
 	int k=0;
 
-	index1 = S-2;
+	index1 = CAPASITY-2;
 
 	while(index1 >= 0 && k++ < INF){			//Sweep the spectrum
 		index2 = index1;
@@ -2069,7 +2069,7 @@ int retuneUp_0()
 				d = dest[i];
 				eol = 0;
 
-				while(index2 < S && !eol){		// Check to what extend it can be retuned
+				while(index2 < CAPASITY && !eol){		// Check to what extend it can be retuned
 					for(j=0;j<LINK_NUM;j++){							//Check path availibility
 						if(spec[index2][j] && path[s][d][j]){
 
@@ -2144,7 +2144,7 @@ int retuneDown()
 
 //	if(t>=T_end-3) cout << " 3_0 lp index " << spec_ind[9989] <<endl;
 
-	while(index1 < S-1 && k++ < INF){			//Sweep the spectrum
+	while(index1 < CAPASITY-1 && k++ < INF){			//Sweep the spectrum
 		index2 = index1-1;
 		lpNode *cur = activeList;
 		while ( cur != NULL ) {						// Checking all active LPs
@@ -2196,7 +2196,7 @@ int retuneUp()
   	bool eol=0;
 	int k=0;
 
-	index1 = S-2;
+	index1 = CAPASITY-2;
 
 	while(index1 >= 0 && k++ < INF){			//Sweep the spectrum
 		index2 = index1;
@@ -2212,7 +2212,7 @@ int retuneUp()
 				d = dest[i];
 				eol = 0;
 
-			//	while(index2 < S && !eol){		// Check to what extend it can be retuned
+			//	while(index2 < CAPASITY && !eol){		// Check to what extend it can be retuned
 					for(j=0;j<LINK_NUM;j++){							//Check path availibility
 						if(spec[index2][j] && path[s][d][j]){
 							eol = 1;
@@ -2276,11 +2276,11 @@ int checkEOL()
 void updateSpecStat()
 {
 	int i, j;
-	int new_high= 0, new_low= S-1;								// Updating high and low index
+	int new_high= 0, new_low= CAPASITY-1;								// Updating high and low index
 	int attached = 0;
 
 	high_ind =0;
-	low_ind =S-1;
+	low_ind =CAPASITY-1;
 
 	lpNode *cur;
 
@@ -2314,7 +2314,7 @@ int firstFit(int lp)
 
 	if(!b) return 0;
 
-	while(index <= (S-b) && !asigned)   		  //Checking all spectrum range
+	while(index <= (CAPASITY-b) && !asigned)   		  //Checking all spectrum range
 	{
 	//	cout << "LP checking index: " << lp << ", "<< index << endl;
 
@@ -2360,7 +2360,7 @@ int checkFirstFit(int lp)
 	b= lp_size[lp];
 	index = 0;
 
-	while(index <= (S-b) && !asigned) //Checking all spectrum range 全ての帯域スロットを調べる
+	while(index <= (CAPASITY-b) && !asigned) //Checking all spectrum range 全ての帯域スロットを調べる
 	{
 		if(!b) break;//bが0ならブレイク
 
@@ -2407,7 +2407,7 @@ int checkFirstFitRerouting(int lp)
 	b= lp_size[lp];
 	index = 0;
 
-	while(index <= (S-b) && !asigned) //Checking all spectrum range 全ての帯域スロットを調べる
+	while(index <= (CAPASITY-b) && !asigned) //Checking all spectrum range 全ての帯域スロットを調べる
 	{
 		if(!b) break;//bが0ならブレイク
 		//	cout << "LP checking index: " << lp << ", "<< index << endl;
@@ -2437,7 +2437,7 @@ int lastFit(int lp)
 	s = source[lp];
 	d= dest[lp];
 	b= lp_size[lp];
-	index = S-b;
+	index = CAPASITY-b;
 
 	while(index >= 0 && !asigned)   		  //Checking all spectrum range
 	{
@@ -2488,7 +2488,7 @@ int checkLastFit(int lp)
 	s = source[lp];
 	d= dest[lp];
 	b= lp_size[lp];
-	index = S-b;
+	index = CAPASITY-b;
 
 	while(index >= 0 && !asigned)   		  //Checking all spectrum range
 	{
@@ -2608,7 +2608,7 @@ int minIndAllocLP(int lp)
 
 	{	// min max index Allocation policy
 		if(b > low_ind && a+c < high_ind){			// No added index in both side
-			if(high_ind > S-low_ind){ 		// Lower side higher
+			if(high_ind > CAPASITY-low_ind){ 		// Lower side higher
 				isactive[lp]= 2;
 				asign(lp, b);
 	//			cout << "LP index " << lp << " last-asigned_0 to index  " << spec_ind[lp] << endl;
@@ -2632,7 +2632,7 @@ int minIndAllocLP(int lp)
 	//			cout << "LP index " << lp << " last-asigned_1 to index " << spec_ind[lp] << endl;
 				return 1;
 			}
-			if(a + c -1 - high_ind == low_ind - b && high_ind +1 > S-low_ind){ 		// Added same for first and last fit, but last fit shorter
+			if(a + c -1 - high_ind == low_ind - b && high_ind +1 > CAPASITY-low_ind){ 		// Added same for first and last fit, but last fit shorter
 				isactive[lp]= 2;
 				asign(lp, b);
 	//			cout << "LP index " << lp << " last-asigned_2 to index " << spec_ind[lp] << endl;
@@ -2861,14 +2861,14 @@ int firstFit1(int lp)
 	if(!b) return 0;
 
 	a= checkExactFit(lp);
-	if(a!=S){
+	if(a!=CAPASITY){
 		asign(lp, a);
 		if(a <= high_ind+1) isactive[lp] = 1;
 		if(a >= low_ind-1) isactive[lp] = 2;
 		return 1;
 	}
 
-	while(index <= (S-b) && !asigned)   		  //Checking all spectrum range
+	while(index <= (CAPASITY-b) && !asigned)   		  //Checking all spectrum range
 	{
 	//	cout << "LP checking index: " << lp << ", "<< index << endl;
 
@@ -2910,7 +2910,7 @@ int minIndAllocLP1(int lp)
 	if(!c) return 0;
 
 	a= checkExactFit(lp);
-	if(a!=S){
+	if(a!=CAPASITY){
 		asign(lp, a);
 		if(a <= high_ind+1) isactive[lp] = 1;
 		if(a >= low_ind-1) isactive[lp] = 2;
@@ -2927,7 +2927,7 @@ int minIndAllocLP1(int lp)
 
 	{	// min max index Allocation policy
 		if(b > low_ind && a+c < high_ind){			// No added index in both side
-			if(high_ind > S-low_ind){ 		// Lower side higher
+			if(high_ind > CAPASITY-low_ind){ 		// Lower side higher
 				isactive[lp]= 2;
 				asign(lp, b);
 	//			cout << "LP index " << lp << " last-asigned_0 to index  " << spec_ind[lp] << endl;
@@ -2951,7 +2951,7 @@ int minIndAllocLP1(int lp)
 	//			cout << "LP index " << lp << " last-asigned_1 to index " << spec_ind[lp] << endl;
 				return 1;
 			}
-			if(a + c -1 - high_ind == low_ind - b && high_ind +1 > S-low_ind){ 		// Added same for first and last fit, but last fit shorter
+			if(a + c -1 - high_ind == low_ind - b && high_ind +1 > CAPASITY-low_ind){ 		// Added same for first and last fit, but last fit shorter
 				isactive[lp]= 2;
 				asign(lp, b);
 	//			cout << "LP index " << lp << " last-asigned_2 to index " << spec_ind[lp] << endl;
@@ -2975,7 +2975,7 @@ int minFragAllocLP1(int lp)
 	if(!c) return 0;
 
 	a= checkExactFit(lp);
-	if(a!=S){
+	if(a!=CAPASITY){
 		asign(lp, a);
 		if(a <= high_ind+1) isactive[lp] = 1;
 		if(a >= low_ind-1) isactive[lp] = 2;
@@ -3038,7 +3038,7 @@ int midFitAllocLP1(int lp)
 		return 1;
 	}else{		// Middle-fit allocation scheme
 	    a= checkExactFit(lp);
-		if(a!=S){
+		if(a!=CAPASITY){
 			asign(lp, a);
 			if(a <= high_ind+1) isactive[lp] = 1;
 			if(a >= low_ind-1) isactive[lp] = 2;
@@ -3138,7 +3138,7 @@ int printSpec()
 	cout << "  l :";
 	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
 	cout << endl;
-	for (i=S-1; i>=0; i--){
+	for (i=CAPASITY-1; i>=0; i--){
 		if(i / 10 < 1) cout << " ";
 		if(i / 100 <1) cout << " ";
 		cout << i << " :";
@@ -3197,7 +3197,7 @@ double checkFrag(int lp, int index)
 	int s = source[lp], d= dest[lp], b= lp_size[lp];
 	int lp1, index1, s1, d1;
 
-	bool temp_spec[S][LINK_NUM];
+	bool temp_spec[CAPASITY][LINK_NUM];
 	double pathFrag[NODE_NUM][NODE_NUM];
 	double specFrag =0;
 	double totalfrag=0, avefrag=0;
@@ -3207,7 +3207,7 @@ double checkFrag(int lp, int index)
 		for(j=0;j<NODE_NUM;j++) 	pathFrag[i][j] = 0;
 	}
 
-	for(i=0;i<S;i++){				// Duplicating spectrum
+	for(i=0;i<CAPASITY;i++){				// Duplicating spectrum
 		for(p=0;p<LINK_NUM;p++)
 			temp_spec[i][p] = spec[i][p];
 	}
@@ -3220,7 +3220,7 @@ double checkFrag(int lp, int index)
 	// cout << "l:";
 	// for (i=0;i<=LINK_NUM;i++) cout <<"  "<< i ;
 	// cout << endl;
-	// for (i=S-1 ; i>=0; i--){
+	// for (i=CAPASITY-1 ; i>=0; i--){
 		// cout << i << " :";
 		// for(j=0;j<LINK_NUM;j++){
 			// cout << "  " << temp_spec[i][j];
@@ -3239,7 +3239,7 @@ double checkFrag(int lp, int index)
 	// cout << "l:";
 	// for (i=0;i<=LINK_NUM;i++) cout <<"  "<< i ;
 	// cout << endl;
-	// for (i=S-1 ; i>=0; i--){
+	// for (i=CAPASITY-1 ; i>=0; i--){
 		// cout << i << " :";
 		// for(j=0;j<LINK_NUM;j++){
 			// cout << "  " << temp_spec[i][j];
@@ -3254,7 +3254,7 @@ double checkFrag(int lp, int index)
 			int nonalign = 0, consecSB =0, maxcons=0;
 
 //			if(linked_path[s][d][s1][d1]){			// For shared path
-				for(i=0;i<S;i++){					// Checking spectrum for available aligned SB
+				for(i=0;i<CAPASITY;i++){					// Checking spectrum for available aligned SB
 					nonalign =0 ;
 					for(j=0;j<LINK_NUM;j++){
 						if(path[s1][d1][j]){		// Path s1-d1 using link j
@@ -3263,7 +3263,7 @@ double checkFrag(int lp, int index)
 						}
 					}
 					if(nonalign==0) consecSB++;		// Increasing consecutive aligned SB
-					if(nonalign || i==S-1){			// End of consecutive aligned SB
+					if(nonalign || i==CAPASITY-1){			// End of consecutive aligned SB
 						if(maxcons < consecSB){
 							maxcons = consecSB;
 						}
@@ -3309,7 +3309,7 @@ int checkExactFit(int lp)
 	int maxSB = 0, avSB = 0;
 	int nonalign = 0, consecSB =0, maxcons=0;
 
-	for(i=0;i<S;i++){		// Checking spectrum for available aligned SB
+	for(i=0;i<CAPASITY;i++){		// Checking spectrum for available aligned SB
 		nonalign =0 ;
 		for(j=0;j<LINK_NUM;j++){//全てのリンクについて
 			if(path[s][d][j]){		// Path s-d using link j
@@ -3322,14 +3322,14 @@ int checkExactFit(int lp)
 				return i-b;
 			consecSB = 0;
 		}
-		if(i==S-1){//もし最高帯域スロットに達したならば
+		if(i==CAPASITY-1){//もし最高帯域スロットに達したならば
 			if(consecSB == b)//もし必要な帯域スロットと同じならば
 				return i-b+1;
 			consecSB = 0;
 		}
 	}
 
-	return S;
+	return CAPASITY;
 }
 
 int checkExactBp(int lp)
@@ -3345,7 +3345,7 @@ int checkExactBp(int lp)
 	int maxSB = 0, avSB = 0;
 	int nonalign = 0, consecSB =0, maxcons=0;
 
-	for(i=0;i<S;i++){		// Checking spectrum for available aligned SB
+	for(i=0;i<CAPASITY;i++){		// Checking spectrum for available aligned SB
 		nonalign =0 ;
 		for(j=0;j<LINK_NUM;j++){//全てのリンクについて
 			if(bp[s][d][j]){		// Path s-d using link j
@@ -3358,14 +3358,14 @@ int checkExactBp(int lp)
 				return i-b;
 			consecSB = 0;
 		}
-		if(i==S-1){//もし最高帯域スロットに達したならば
+		if(i==CAPASITY-1){//もし最高帯域スロットに達したならば
 			if(consecSB == b)//もし必要な帯域スロットと同じならば
 				return i-b+1;
 			consecSB = 0;
 		}
 	}
 
-	return S;
+	return CAPASITY;
 }
 
 int checkExactFitRerouting(int lp)
@@ -3375,7 +3375,7 @@ int checkExactFitRerouting(int lp)
 	int lp1, index1, s1, d1;
 	bool isGetRoot;
 
-	for(i=0;i<S-b;i++){
+	for(i=0;i<CAPASITY-b;i++){
 		isGetRoot = 0;
 		isGetRoot = getPrimRoot(i, lp);
 		if(isGetRoot){
@@ -3389,7 +3389,7 @@ int checkExactFitRerouting(int lp)
 			}
 		}
 	}
-	return S;
+	return CAPASITY;
 }
 
 int checkExactBpRerouting(int lp)
@@ -3399,7 +3399,7 @@ int checkExactBpRerouting(int lp)
 	int lp1, index1, s1, d1;
 	bool isGetRoot;
 
-	for(i=0;i<S-b;i++){
+	for(i=0;i<CAPASITY-b;i++){
 		isGetRoot = 0;
 		isGetRoot = getBackRoot(i, lp);
 		if(isGetRoot){
@@ -3413,7 +3413,7 @@ int checkExactBpRerouting(int lp)
 			}
 		}
 	}
-	return S;
+	return CAPASITY;
 }
 
 int getPrimRoot(int s, int lp)
@@ -3652,7 +3652,7 @@ int removeLP_0(int lp)
 
 	isactive[lp] = 0;
 	if(lp==midlp) midlp = REQUEST_NUM;
-	//	cout << "S" << lp << " removed." << endl;
+	//	cout << "CAPASITY" << lp << " removed." << endl;
 	//	printSpec();
 	}
 	return 0;
@@ -3678,7 +3678,7 @@ int removeLP(int lp)
 
 	isactive[lp] = 0;
 	if(lp==midlp) midlp = REQUEST_NUM;
-	//	cout << "S" << lp << " removed." << endl;
+	//	cout << "CAPASITY" << lp << " removed." << endl;
 	//	printSpec();
 	}
 
@@ -3797,7 +3797,7 @@ int checkMoveUp(int lp){
 		d = dest[lp];
 		eol = 0;
 
-		while(index < S && !eol){		// Check to what extend it can be retuned
+		while(index < CAPASITY && !eol){		// Check to what extend it can be retuned
 			for(j=0;j<LINK_NUM;j++){							//Check path availibility
 				if(spec[index][j] && path[s][d][j]){
 					eol = 1;

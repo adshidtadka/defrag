@@ -40,8 +40,8 @@ int main(int argc, char* argv[])
             return 1;
     }
 
-	ofs1 << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
-	cout << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
+	ofs1 << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", req_Max=" << req_Max <<", START_LOAD= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
+	cout << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", req_Max=" << req_Max <<", START_LOAD= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
 		//number of nodes, number of slots, maxi demand size, Traffic load, retuning period, Vaiting time allowed to retune before adding new request
 	ofs1 << endl << " REQUEST_NUM= "<< REQUEST_NUM << endl;
 		//max number of demand
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 		cout << endl;
 		cout << endl << "Sorting= "<< Sorting << endl;
 
-		A = A1;//現在の通信量
+		A = START_LOAD;//現在の通信量
 		ofs1 << endl << " A= "<< A << endl;
 		cout << endl << " A= "<< A << endl;
 		for(l=0; l<10; l++){ //通信量を変更するためのループ
@@ -614,11 +614,11 @@ int writeOutput()
 
 	ofs2 << endl;
 	ofs2 << "param REQUEST_NUM := " << m <<";" << endl;
-	ofs2 << "param B := " << S <<";" << endl;
+	ofs2 << "param B := " << CAPASITY <<";" << endl;
 	ofs2 << "param LINK_NUM := " << LINK_NUM <<";" << endl;
 	ofs2 << "param C := " << c <<";" << endl;
 	ofs2 << endl;
-	ofs2 << "param : S K NODE_NUM F0 := " << endl;
+	ofs2 << "param : CAPASITY K NODE_NUM F0 := " << endl;
 
 	ofstream ofs3;
 	ofs3.open("running.txt");
@@ -696,9 +696,9 @@ int writeOutputPy()
 		cur = cur->next;
 	}
 
-	ofs2 << "param S   := " << m   << endl;
+	ofs2 << "param CAPASITY   := " << m   << endl;
 	ofs2 << "param absP:= " << m*2 << endl;
-	ofs2 << "param absF:= " << S   << endl;
+	ofs2 << "param absF:= " << CAPASITY   << endl;
 	ofs2 << "param absE:= " << LINK_NUM   << endl;
 	ofs2 << "param T   := " << c   << endl;
 	ofs2 << endl;
@@ -791,9 +791,9 @@ int writeOutputReroutingPy()
 		cur = cur->next;
 	}
 
-	ofs2 << "param S   := " << m   << endl;
+	ofs2 << "param CAPASITY   := " << m   << endl;
 	ofs2 << "param absP:= " << m*2 << endl;
-	ofs2 << "param absF:= " << S   << endl;
+	ofs2 << "param absF:= " << CAPASITY   << endl;
 	ofs2 << "param absE:= " << LINK_NUM   << endl;
 	ofs2 << "param absV:= " << NODE_NUM   << endl;
 	ofs2 << "param T   := " << c   << endl;
