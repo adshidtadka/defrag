@@ -1,40 +1,4 @@
-/* Add retuning time for 1+1 */
-/* Stop retuning if new request */
-/* Use speed up retuning */
-/* Use T_temp, put high value if not needed */
-/* include sorted list*/
-/* Including backup first */
-/* Parallel realloc used for conventional, Check retuning function*/
-
-#define INF 999999999
-#define T_end 1245201000        //28270000000
-
-#define IT 3             // Number of ramdom sample
-
-#define M 10000	     // Maximum number of demands
-
-#define N 11          	// N number of Nodes.
-#define L 52			// L number of directed Links. 有方向グラフ (N,L) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
-#define S 400			// S number of spec slots per link
-
-#define A1 350		// Traffic load
-#define H  10			// 1/mu, Average holding time in Tu
-#define req_Max 16		// Maximum demand size 占有帯域スロット数
-
-#define K 1000			//to explore less possibility of repeating of next arrival time of requests.  
-
-#define DEFRAG_TIME 0.1			//to explore less possibility of repeating of next arrival time of requests.  
-
-#define  T_temp 100     	// Vaiting time allowed to retune before adding new request
-#define R_int 0.2		// Retuning period
-// #define Sorting 1		// 0 if not used, 1 by length, 2 by size, 3 by blocks
-//ソート方法が3種類与えられている
-#define maxStep 3
-
-#define spfact 1
-
-#define LIMIT_HOP_NUM 99999
-
+#include "assumption.h"
 #include "allfunction_206.h"
 
 using namespace std; //名前空間の指定
