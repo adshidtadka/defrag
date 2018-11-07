@@ -129,8 +129,8 @@ using namespace std;
 //{
 	int lp_ind=0, lp_size[REQUEST_NUM], source[REQUEST_NUM], dest[REQUEST_NUM], spec_ind[REQUEST_NUM];    // Each LP has an arrival index, a couple s/d,
 															// and a given size. It is allocated to a spectrum index
-	bool spec[S][L], path[N][N][L];				// Spectrum is a slots*links matrix, path(s,d,link) 1 if sd use l
-	bool linked_path[N][N][N][N], linked_bp[N][N][N][N], linked_crosspath[N][N][N][N];				// Paths sharing at least a link
+	bool spec[S][L], path[NODE_NUM][NODE_NUM][L];				// Spectrum is a slots*links matrix, path(s,d,link) 1 if sd use l
+	bool linked_path[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_bp[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_crosspath[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];				// Paths sharing at least a link
 
 	int low_ind, high_ind;						// Lowest used index for lastfit and highest for firstfit
 	int blocked;					// Counting blocked request //ブロッキングを起こしたリクエストの数
@@ -138,8 +138,8 @@ using namespace std;
 	int t_req[REQUEST_NUM], t_hold[REQUEST_NUM], t_exp[REQUEST_NUM];			// Tracking request arrival time and lp expiration time
 	double t_req_event[REQUEST_NUM], t_hold_event[REQUEST_NUM], t_exp_event[REQUEST_NUM];
 
-	int hops[N][N], bhops[N][N];
-	int link[N][N];
+	int hops[NODE_NUM][NODE_NUM], bhops[NODE_NUM][NODE_NUM];
+	int link[NODE_NUM][NODE_NUM];
 
 	int max_hold, last_lp;
 
@@ -181,7 +181,7 @@ using namespace std;
 
 	bool path_rr[L][REQUEST_NUM], bp_rr[L][REQUEST_NUM];//リルーティングのための変数
 
-	int part[N][N];
+	int part[NODE_NUM][NODE_NUM];
 
 	int algoCall;
 	int retOp;
@@ -196,7 +196,7 @@ using namespace std;
 	double t;
 
 	int bp_ind[REQUEST_NUM];
-	bool bp[N][N][L];
+	bool bp[NODE_NUM][NODE_NUM][L];
 
 	int togOp;
 	int realOp;
@@ -918,9 +918,9 @@ int statReroutingAlgo()
 					{
 						path_rr_prev[i] = 0;
 					}
-					for (int i = 0; i < N; ++i)
+					for (int i = 0; i < NODE_NUM; ++i)
 					{
-						for (int j = 0; j < N; ++j)
+						for (int j = 0; j < NODE_NUM; ++j)
 						{
 							if (link[i][j] > L) continue;
 							path_rr_prev[link[i][j]] = path_rr[link[i][j]][lp];
@@ -935,9 +935,9 @@ int statReroutingAlgo()
 						// std::cout << " after checkFirstFitRerouting a = " << a << '\n';
 					}
 					bool isSame = true; //check the rerouted or not rerouted
-					for (int i = 0; i < N; ++i)
+					for (int i = 0; i < NODE_NUM; ++i)
 					{
-						for (int j = 0; j < N; ++j)
+						for (int j = 0; j < NODE_NUM; ++j)
 						{
 							if (link[i][j] > L) continue;
 							if (path_rr_prev[link[i][j]] != path_rr[link[i][j]][lp])
@@ -968,9 +968,9 @@ int statReroutingAlgo()
 					{
 						bp_rr_prev[i] = 0;
 					}
-					for (int i = 0; i < N; ++i)
+					for (int i = 0; i < NODE_NUM; ++i)
 					{
-						for (int j = 0; j < N; ++j)
+						for (int j = 0; j < NODE_NUM; ++j)
 						{
 							if (link[i][j] > L) continue;
 							bp_rr_prev[link[i][j]] = bp_rr[link[i][j]][lp];
@@ -986,9 +986,9 @@ int statReroutingAlgo()
 						// std::cout << " after checkFirstFitRerouting a = " << a << '\n';
 					}
 					bool isSame = true; //check the rerouted or not rerouted
-					for (int i = 0; i < N; ++i)
+					for (int i = 0; i < NODE_NUM; ++i)
 					{
-						for (int j = 0; j < N; ++j)
+						for (int j = 0; j < NODE_NUM; ++j)
 						{
 							if (link[i][j] > L) continue;
 							if (bp_rr_prev[link[i][j]] != bp_rr[link[i][j]][lp])
@@ -1214,9 +1214,9 @@ int retuneDownRerouting_0()
 				{
 					path_rr_prev[b] = 0;
 				}
-				for (int b = 0; b < N; ++b)
+				for (int b = 0; b < NODE_NUM; ++b)
 				{
-					for (int c = 0; c < N; ++c)
+					for (int c = 0; c < NODE_NUM; ++c)
 					{
 						if (link[b][c] > L) continue;
 						path_rr_prev[link[b][c]] = path_rr[link[b][c]][i];
@@ -1231,9 +1231,9 @@ int retuneDownRerouting_0()
 					// std::cout << " after checkFirstFitRerouting a = " << a << '\n';
 				}
 				bool isSame = true; //check the rerouted or not rerouted
-				for (int b = 0; b < N; ++b)
+				for (int b = 0; b < NODE_NUM; ++b)
 				{
-					for (int c = 0; c < N; ++c)
+					for (int c = 0; c < NODE_NUM; ++c)
 					{
 						if (link[b][c] > L) continue;
 						if (path_rr_prev[link[b][c]] != path_rr[link[b][c]][i])
@@ -1264,9 +1264,9 @@ int retuneDownRerouting_0()
 				{
 					bp_rr_prev[b] = 0;
 				}
-				for (int b = 0; b < N; ++b)
+				for (int b = 0; b < NODE_NUM; ++b)
 				{
-					for (int c = 0; c < N; ++c)
+					for (int c = 0; c < NODE_NUM; ++c)
 					{
 						if (link[b][c] > L) continue;
 						bp_rr_prev[link[b][c]] = bp_rr[link[b][c]][i];
@@ -1280,9 +1280,9 @@ int retuneDownRerouting_0()
 					a = checkFirstBpRerouting(i);
 				}
 				bool isSame = true; //check the rerouted or not rerouted
-				for (int b = 0; b < N; ++b)
+				for (int b = 0; b < NODE_NUM; ++b)
 				{
-					for (int c = 0; c < N; ++c)
+					for (int c = 0; c < NODE_NUM; ++c)
 					{
 						if (link[b][c] > L) continue;
 						if (bp_rr_prev[link[b][c]] != bp_rr[link[b][c]][i])
@@ -1803,14 +1803,14 @@ int initialize(void)						  // Set everything to zero
 {
 	int i,j, p, k, l;
 
-	for(i=0;i<N;i++){
-		for(j=0;j<N;j++){
+	for(i=0;i<NODE_NUM;i++){
+		for(j=0;j<NODE_NUM;j++){
 			for(p=0;p<L;p++) path[i][j][p] = 0;
 			hops[i][j]=0;
 			part[i][j]=0;
 			link[i][j]= INF;
-			for (k=0;k<N;k++){
-				for (l=0;l<N;l++){
+			for (k=0;k<NODE_NUM;k++){
+				for (l=0;l<NODE_NUM;l++){
 					linked_path[i][j][k][l] = 0;
 					linked_bp[i][j][k][l] = 0;
 					linked_crosspath[i][j][k][l] = 0;
@@ -2003,9 +2003,9 @@ int genDemands()
 		arr_int_event = next_arr(generator);
 		arr_int = int(arr_int_event)+1; //ポアソン分布で到着間隔を得る
 		lp_size[i] = traff_dist(generator); //等確率で占有帯域スロット数を得る
-		source[i] = rand() %N;//発ノードをランダムで得る
-		dest[i] = rand() %N;//着ノードをランダムに得る
-			while(source[i] == dest[i]) dest[i] = rand() %N;//発ノードと着ノードが同じにならないようにする
+		source[i] = rand() %NODE_NUM;//発ノードをランダムで得る
+		dest[i] = rand() %NODE_NUM;//着ノードをランダムに得る
+			while(source[i] == dest[i]) dest[i] = rand() %NODE_NUM;//発ノードと着ノードが同じにならないようにする
 		t_exp[i] = t_req[i] + t_hold[i]; //継続時間と到着時刻を合わせて切断時刻を計算
 		t_exp_event[i] = t_req_event[i] + t_hold_event[i]; //event driven
 		ofs1 << i  << ": "<< source[i]  <<" " << dest[i]  <<" " << lp_size[i]  <<" " << t_req[i] <<" " << t_hold[i] << endl;
@@ -2013,8 +2013,8 @@ int genDemands()
 		t_req[i+1]= t_req[i] + arr_int; //到着時刻と到着間隔を合わせて次の到着時刻を計算
 		t_req_event[i+1] = t_req_event[i] + arr_int_event; //event driven
 		//lp番号ごとのルートを持つ変数も定める
-		for(j=0;j<N;j++){
-			for(k=0;k<N;k++){
+		for(j=0;j<NODE_NUM;j++){
+			for(k=0;k<NODE_NUM;k++){
 				if(link[j][k] < L){
 					path_rr[link[j][k]][i] = path[source[i]][dest[i]][link[j][k]];
 					bp_rr[link[j][k]][i] = bp[source[i]][dest[i]][link[j][k]];
@@ -3198,13 +3198,13 @@ double checkFrag(int lp, int index)
 	int lp1, index1, s1, d1;
 
 	bool temp_spec[S][L];
-	double pathFrag[N][N];
+	double pathFrag[NODE_NUM][NODE_NUM];
 	double specFrag =0;
 	double totalfrag=0, avefrag=0;
 	int totalhops=0;
 
-	for(i=0;i<N;i++){				// Initialise
-		for(j=0;j<N;j++) 	pathFrag[i][j] = 0;
+	for(i=0;i<NODE_NUM;i++){				// Initialise
+		for(j=0;j<NODE_NUM;j++) 	pathFrag[i][j] = 0;
 	}
 
 	for(i=0;i<S;i++){				// Duplicating spectrum
@@ -3248,8 +3248,8 @@ double checkFrag(int lp, int index)
 	// }
 	// cout << endl;
 
-	for(s1=0;s1<N;s1++){					// Determine avalaible SB and max SB
-		for(d1=0;d1<N;d1++){						// for all paths
+	for(s1=0;s1<NODE_NUM;s1++){					// Determine avalaible SB and max SB
+		for(d1=0;d1<NODE_NUM;d1++){						// for all paths
 			int maxSB = 0, avSB = 0;
 			int nonalign = 0, consecSB =0, maxcons=0;
 
@@ -3281,8 +3281,8 @@ double checkFrag(int lp, int index)
 		}
 	}
 
-	for(i=0;i<N;i++){				// Determining fragmentation
-		for(j=0;j<N;j++){
+	for(i=0;i<NODE_NUM;i++){				// Determining fragmentation
+		for(j=0;j<NODE_NUM;j++){
 			if(linked_path[s][d][i][j]){
 //				cout << "2: pathFrag[" << i << "][" <<j<<"]= " << pathFrag[i][j] << endl;
 				totalfrag += hops[i][j]*pathFrag[i][j];
@@ -3425,12 +3425,12 @@ int getPrimRoot(int s, int lp)
 
 	priority_queue<Node, vector<Node>, greater<Node> > q; // 優先度付き待ち行列
 
-	Node Nodes[N];
+	Node Nodes[NODE_NUM];
 	Node doneNode;
 
 	//ノード情報input
-	for(i=0; i<N; i++){
-		for(j=0; j<N; j++){
+	for(i=0; i<NODE_NUM; i++){
+		for(j=0; j<NODE_NUM; j++){
 			if(link[i][j]>L) continue;
 			unconnectedFlag = 0;
 			for(k=0; k<lp_size[lp]; k++){
@@ -3447,7 +3447,7 @@ int getPrimRoot(int s, int lp)
 	}
 
 	// 初期化
-	for(i=0; i<N; i++){
+	for(i=0; i<NODE_NUM; i++){
 		Nodes[i].done = false;
 		Nodes[i].cost = -1;
 		Nodes[i].nodeNum = i;
@@ -3486,7 +3486,7 @@ int getPrimRoot(int s, int lp)
 
 	// limit hop number
 	int hop_counter = 0;
-	while (b < N && a != b) {
+	while (b < NODE_NUM && a != b) {
 		a = b;
 		b = Nodes[a].from;
 		hop_counter++;
@@ -3500,15 +3500,15 @@ int getPrimRoot(int s, int lp)
 	a = dest[lp];
 	b = Nodes[a].from;
 
-	if (b < N) {
-		for (j = 0; j < N; j++) {//initialize
-			for (k = 0; k < N; k++) {
+	if (b < NODE_NUM) {
+		for (j = 0; j < NODE_NUM; j++) {//initialize
+			for (k = 0; k < NODE_NUM; k++) {
 				if(link[j][k]>L)continue;
 				path_rr[link[j][k]][lp] = 0;
 			}
 		}
 		// bool isSame = true;
-		while (b < N && a != b) {
+		while (b < NODE_NUM && a != b) {
 			path_rr[link[b][a]][lp] = 1;
 			// std::cout << "path_rr[" << link[b][a] << "][" << lp << "] = " << path_rr[link[b][a]][lp] << '\n';
 			a = b;
@@ -3530,12 +3530,12 @@ int getBackRoot(int s, int lp)
 
 	priority_queue<Node, vector<Node>, greater<Node> > q; // 優先度付き待ち行列
 
-	Node Nodes[N];
+	Node Nodes[NODE_NUM];
 	Node doneNode;
 
 	//ノード情報input
-	for(i=0; i<N; i++){
-		for(j=0; j<N; j++){
+	for(i=0; i<NODE_NUM; i++){
+		for(j=0; j<NODE_NUM; j++){
 			if(link[i][j]>L) continue;
 			unconnectedFlag = 0;
 			for(k=0; k<lp_size[lp]; k++){
@@ -3553,14 +3553,14 @@ int getBackRoot(int s, int lp)
 		}
 	}
 
-	for(i= 0; i < N ; i++){
+	for(i= 0; i < NODE_NUM ; i++){
 	    for(j=0;j < Nodes[i].edges_to.size() ; j++){
 	      // cout << "Nodes[" << i << "] = " << Nodes[i].edges_to[j] << '\n';
 	    }
  	}
 
 	// 初期化
-	for(i=0; i<N; i++){
+	for(i=0; i<NODE_NUM; i++){
 		Nodes[i].done = false;
 		Nodes[i].cost = -1;
 		Nodes[i].nodeNum = i;
@@ -3598,7 +3598,7 @@ int getBackRoot(int s, int lp)
 
 	// limit hop number
 	int hop_counter = 0;
-	while (b < N && a != b) {
+	while (b < NODE_NUM && a != b) {
 		a = b;
 		b = Nodes[a].from;
 		hop_counter++;
@@ -3612,14 +3612,14 @@ int getBackRoot(int s, int lp)
 	a = dest[lp];
 	b = Nodes[a].from;
 
-	if (b < N && a != b) {
-		for (j = 0; j < N; j++) {//initialize
-			for (k = 0; k < N; k++) {
+	if (b < NODE_NUM && a != b) {
+		for (j = 0; j < NODE_NUM; j++) {//initialize
+			for (k = 0; k < NODE_NUM; k++) {
 				if(link[j][k]>L)continue;
 				bp_rr[link[j][k]][lp] = 0;
 			}
 		}
-		while (b < N && a != b) {
+		while (b < NODE_NUM && a != b) {
 			bp_rr[link[b][a]][lp] = 1;
 			// std::cout << "bp_rr[" << link[b][a] << "][" << lp << "] = " << bp_rr[link[b][a]][lp] << '\n';
 			a = b;

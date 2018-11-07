@@ -7,10 +7,10 @@
 #define REQUEST_NUM 100
 
 // node num
-#define N 11
+#define NODE_NUM 11
 
 // link num 
-// directional links (N,L) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
+// directional links (NODE_NUM,L) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
 #define L 52
 
 // capacity per link

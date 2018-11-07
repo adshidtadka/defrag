@@ -1,9 +1,7 @@
 #include "params.h"
 #include "func.h"
 
-using namespace std; //名前空間の指定
-
-	// Declaring functions
+using namespace std;
 
 int main(int argc, char* argv[])
 {
@@ -42,8 +40,8 @@ int main(int argc, char* argv[])
             return 1;
     }
 
-	ofs1 << "Simulation for N= "<< N <<", Links = " << L << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
-	cout << "Simulation for N= "<< N <<", Links = " << L << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
+	ofs1 << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << L << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
+	cout << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << L << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
 		//number of nodes, number of slots, maxi demand size, Traffic load, retuning period, Vaiting time allowed to retune before adding new request
 	ofs1 << endl << " REQUEST_NUM= "<< REQUEST_NUM << endl;
 		//max number of demand
@@ -566,10 +564,10 @@ int readInput(int argc, char* argv[0])
 	}
 	fin.close();
 
-	for (i=0;i<N;i++){				//Comparing path, may be usefull
-		for (j=0;j<N;j++){
-			for (k=0;k<N;k++){
-				for (l=0;l<N;l++){
+	for (i=0;i<NODE_NUM;i++){				//Comparing path, may be usefull
+		for (j=0;j<NODE_NUM;j++){
+			for (k=0;k<NODE_NUM;k++){
+				for (l=0;l<NODE_NUM;l++){
 					if(k == i && l == j) linked_path[i][j][k][l] = 0; //2組の発着ノードの組が同じ発着ノードであれば無視する
 					else{
 						for(p=0;p<L;p++){ //リンクの数だけforループを回す
@@ -620,7 +618,7 @@ int writeOutput()
 	ofs2 << "param L := " << L <<";" << endl;
 	ofs2 << "param C := " << c <<";" << endl;
 	ofs2 << endl;
-	ofs2 << "param : S K N F0 := " << endl;
+	ofs2 << "param : S K NODE_NUM F0 := " << endl;
 
 	ofstream ofs3;
 	ofs3.open("running.txt");
@@ -797,7 +795,7 @@ int writeOutputReroutingPy()
 	ofs2 << "param absP:= " << m*2 << endl;
 	ofs2 << "param absF:= " << S   << endl;
 	ofs2 << "param absE:= " << L   << endl;
-	ofs2 << "param absV:= " << N   << endl;
+	ofs2 << "param absV:= " << NODE_NUM   << endl;
 	ofs2 << "param T   := " << c   << endl;
 	ofs2 << endl;
 
@@ -842,8 +840,8 @@ int writeOutputReroutingPy()
 	// cout << endl;
 
 	ofs2 << "E := " << endl;
-	for ( i = 0; i < N; i++){
-		for ( j = 0; j < N; j++){
+	for ( i = 0; i < NODE_NUM; i++){
+		for ( j = 0; j < NODE_NUM; j++){
 			if (link[i][j] < L){
 				ofs2 << i << " " << j << endl;
 			}
@@ -858,8 +856,8 @@ int writeOutputReroutingPy()
 	while ( cur != NULL ){
 		lp = cur->x;
 		cur = cur->next;
-		for ( i = 0; i < N; i++) {
-			for ( j = 0; j < N; j++ ){
+		for ( i = 0; i < NODE_NUM; i++) {
+			for ( j = 0; j < NODE_NUM; j++ ){
 				if(link[i][j] < L){
 					if (path_rr[link[i][j]][lp]){
 						ofs2 << ind << " " << i << " " << j << endl;
@@ -870,8 +868,8 @@ int writeOutputReroutingPy()
 		}
 
 		ind++;//バックアップパスが連番になっている
-		for ( i = 0; i < N; i++) {
-			for ( j = 0; j < N; j++ ){
+		for ( i = 0; i < NODE_NUM; i++) {
+			for ( j = 0; j < NODE_NUM; j++ ){
 				if(link[i][j] < L){
 					if (bp_rr[link[i][j]][lp]){
 						ofs2 << ind << " " << i << " " << j << endl;
