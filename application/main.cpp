@@ -1,5 +1,5 @@
-#include "assumption.h"
-#include "allfunction_206.h"
+#include "assumptions.h"
+#include "func.h"
 
 using namespace std; //名前空間の指定
 
