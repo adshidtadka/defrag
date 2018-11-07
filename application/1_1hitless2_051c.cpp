@@ -73,8 +73,8 @@ int main(int argc, char* argv[])
 			int togOpItConv[10] = {}, togOpItProp[10] = {};
 			int realOpItConv[10] = {}, realOpItProp[10] = {};
 			int rerouteOpItProp[10] = {};
-			double stdItNoneArr[10][IT] = {{}}, stdItConvArr[10][IT] = {{}}, stdItPropArr[10][IT] = {{}}, stdItConvIlpArr[10][IT] = {{}}, stdItPropIlpArr[10][IT] = {{}};
-			for(it = 0; it<IT; it++){ //ランダムサンプルの数_5回				
+			double stdItNoneArr[10][ITERATION] = {{}}, stdItConvArr[10][ITERATION] = {{}}, stdItPropArr[10][ITERATION] = {{}}, stdItConvIlpArr[10][ITERATION] = {{}}, stdItPropIlpArr[10][ITERATION] = {{}};
+			for(it = 0; it<ITERATION; it++){ //ランダムサンプルの数_5回				
 				ofs1 << endl << " Iteration= "<< it << endl;//何回めなのかを表示
 				cout << endl << " Iteration= "<< it << endl;//何回めなのかを表示
 				if(it==0) seed1 =  1448601515;  //time(NULL); 1444196111 1419542268 1424246601
@@ -364,57 +364,57 @@ int main(int argc, char* argv[])
 				//信頼区間の計算
 				double stdItNone, stdItConv, stdItProp, stdItConvIlp, stdItPropIlp;
 				double stdItNoneDiff, stdItConvDiff, stdItPropDiff, stdItConvIlpDiff, stdItPropIlpDiff;
-				stdItNone = standard(stdItNoneArr[k], IT);
-				stdItConv = standard(stdItConvArr[k], IT);
-				stdItProp = standard(stdItPropArr[k], IT);
-				stdItConvIlp = standard(stdItConvIlpArr[k], IT);
-				stdItPropIlp = standard(stdItPropIlpArr[k], IT);
+				stdItNone = standard(stdItNoneArr[k], ITERATION);
+				stdItConv = standard(stdItConvArr[k], ITERATION);
+				stdItProp = standard(stdItPropArr[k], ITERATION);
+				stdItConvIlp = standard(stdItConvIlpArr[k], ITERATION);
+				stdItPropIlp = standard(stdItPropIlpArr[k], ITERATION);
 				stdItNoneDiff = blkdItNone[k]*0.05 - stdItNone*1.96;
 				stdItConvDiff = blkdItConv[k]*0.05 - stdItConv*1.96;
 				stdItPropDiff = blkdItProp[k]*0.05 - stdItProp*1.96;
 				stdItConvIlpDiff = blkdItConvIlp[k]*0.05 - stdItConvIlp*1.96;
 				stdItPropIlpDiff = blkdItPropIlp[k]*0.05 - stdItPropIlp*1.96;
 
-				cout << "Av blocked request blkdItNone:         " << blkdItNone[k]/IT << endl;
-				ofs1 << "Av blocked request blkdItNone:         " << blkdItNone[k]/IT << endl;
-				ofs4 << blkdItNone[k]/IT << ",";
+				cout << "Av blocked request blkdItNone:         " << blkdItNone[k]/ITERATION << endl;
+				ofs1 << "Av blocked request blkdItNone:         " << blkdItNone[k]/ITERATION << endl;
+				ofs4 << blkdItNone[k]/ITERATION << ",";
 				cout << "Confidence interval blkdItNone:        " << stdItNone << endl;
 				ofs1 << "Confidence interval blkdItNone:        " << stdItNone << endl;
-				cout << "Av blocked request blkdItConv:         " << blkdItConv[k]/IT << endl;
-				ofs1 << "Av blocked request blkdItConv:         " << blkdItConv[k]/IT << endl;
-				ofs4 << blkdItConv[k]/IT << ",";
+				cout << "Av blocked request blkdItConv:         " << blkdItConv[k]/ITERATION << endl;
+				ofs1 << "Av blocked request blkdItConv:         " << blkdItConv[k]/ITERATION << endl;
+				ofs4 << blkdItConv[k]/ITERATION << ",";
 				cout << "Confidence interval blkdItConv:        " << stdItConv << endl;
 				ofs1 << "Confidence interval blkdItConv:        " << stdItConv << endl;
-				cout << "Av blocked request blkdItProp:         " << blkdItProp[k]/IT << endl;
-				ofs1 << "Av blocked request blkdItProp:         " << blkdItProp[k]/IT << endl;
-				ofs4 << blkdItProp[k]/IT << ",";
+				cout << "Av blocked request blkdItProp:         " << blkdItProp[k]/ITERATION << endl;
+				ofs1 << "Av blocked request blkdItProp:         " << blkdItProp[k]/ITERATION << endl;
+				ofs4 << blkdItProp[k]/ITERATION << ",";
 				cout << "Confidence interval blkdItProp:        " << stdItProp << endl;
 				ofs1 << "Confidence interval blkdItProp:        " << stdItProp << endl;
-				cout << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp[k]/IT << endl;
-				ofs1 << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp[k]/IT << endl;
-				ofs4 << blkdItConvIlp[k]/IT << ",";
+				cout << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp[k]/ITERATION << endl;
+				ofs1 << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp[k]/ITERATION << endl;
+				ofs4 << blkdItConvIlp[k]/ITERATION << ",";
 				cout << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
 				ofs1 << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
-				cout << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp[k]/IT << endl;
-				ofs1 << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp[k]/IT << endl;
-				ofs4 << blkdItPropIlp[k]/IT << endl;
+				cout << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp[k]/ITERATION << endl;
+				ofs1 << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp[k]/ITERATION << endl;
+				ofs4 << blkdItPropIlp[k]/ITERATION << endl;
 				cout << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
 				ofs1 << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
-				cout << "Av toggle operations togOpItConv:      " << togOpItConv[k]/IT << endl;
-				ofs1 << "Av toggle operations togOpItConv:      " << togOpItConv[k]/IT << endl;
-				ofs5 << togOpItConv[k]/IT << ",";
-				cout << "Av move operations realOpItConv:       " << realOpItConv[k]/IT << endl;
-				ofs1 << "Av move operations realOpItConv:       " << realOpItConv[k]/IT << endl;
-				ofs5 << realOpItConv[k]/IT << ",";
-				cout << "Av toggle operations togOpItProp:      " << togOpItProp[k]/IT << endl;
-				ofs1 << "Av toggle operations togOpItProp:      " << togOpItProp[k]/IT << endl;
-				ofs5 << togOpItProp[k]/IT << ",";
-				cout << "Av move operations realOpItProp:       " << realOpItProp[k]/IT << endl;
-				ofs1 << "Av move operations realOpItProp:       " << realOpItProp[k]/IT << endl;
-            	ofs5 << realOpItProp[k]/IT << ",";
-            	cout << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp[k]/IT << endl << endl;
-            	ofs1 << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp[k]/IT << endl << endl;
-            	ofs5 << rerouteOpItProp[k]/IT << endl;
+				cout << "Av toggle operations togOpItConv:      " << togOpItConv[k]/ITERATION << endl;
+				ofs1 << "Av toggle operations togOpItConv:      " << togOpItConv[k]/ITERATION << endl;
+				ofs5 << togOpItConv[k]/ITERATION << ",";
+				cout << "Av move operations realOpItConv:       " << realOpItConv[k]/ITERATION << endl;
+				ofs1 << "Av move operations realOpItConv:       " << realOpItConv[k]/ITERATION << endl;
+				ofs5 << realOpItConv[k]/ITERATION << ",";
+				cout << "Av toggle operations togOpItProp:      " << togOpItProp[k]/ITERATION << endl;
+				ofs1 << "Av toggle operations togOpItProp:      " << togOpItProp[k]/ITERATION << endl;
+				ofs5 << togOpItProp[k]/ITERATION << ",";
+				cout << "Av move operations realOpItProp:       " << realOpItProp[k]/ITERATION << endl;
+				ofs1 << "Av move operations realOpItProp:       " << realOpItProp[k]/ITERATION << endl;
+            	ofs5 << realOpItProp[k]/ITERATION << ",";
+            	cout << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp[k]/ITERATION << endl << endl;
+            	ofs1 << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp[k]/ITERATION << endl << endl;
+            	ofs5 << rerouteOpItProp[k]/ITERATION << endl;
             }
 		}
 	}

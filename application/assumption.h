@@ -1,8 +1,7 @@
 #define INF 999999999
-#define T_end 1245201000
 
 // iteration
-#define IT 3
+#define ITERATION 3
 
 // demand
 #define M 10000
