@@ -8,16 +8,8 @@
 
 #define CAPASITY 400
 #define START_LOAD 350
-
-// average holding time
 #define HOLDING_TIME 10
-
-// max demand size
 #define REQ_SIZE_MAX 16
-
-// fixme:smallness but it is not used
-#define K 1000
-
 #define DEFRAG_TIME 0.1
 
 // maximum total defrag time
