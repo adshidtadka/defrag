@@ -7,12 +7,10 @@
 #define LINK_NUM 52
 
 #define CAPASITY 400
-
-// start traffic load
 #define START_LOAD 350
 
 // average holding time
-#define H  10
+#define HOLDING_TIME 10
 
 // max demand size
 #define req_Max 16

@@ -1945,11 +1945,11 @@ int genDemands()
 	double arr_int_event;
 	double temp1;
 
-	double mu = 1/double(H);
-	// for exponentially-distributed duration with mean H=1/mu
+	double mu = 1/double(HOLDING_TIME);
+	// for exponentially-distributed duration with mean HOLDING_TIME=1/mu
 	//指数関数分布の継続時間 0.1
-	double inter_arr = double(H)/A;
-	// Inter-arrival time for poisson distribution A=H/inter_arr
+	double inter_arr = double(HOLDING_TIME)/A;
+	// Inter-arrival time for poisson distribution A=HOLDING_TIME/inter_arr
 	//ポアソン分布の到着間隔 10/74
 
 	srand (seed2);					//time(NULL)2種類ある
@@ -1962,8 +1962,8 @@ int genDemands()
 	// 100* to clock the steps to a 10ms, does not change A,
 	//平均値K*inter_arr(100*10/74)でnext_arrというポアソン分布が得られる
 	exponential_distribution<double> hold_time(mu);
-	// A = 100*H/100*inter_arr
-	// ρ = λ × H
+	// A = 100*HOLDING_TIME/100*inter_arr
+	// ρ = λ × HOLDING_TIME
 	//   = 100 * 10 / 74 * 10
 	//	 = 135
 	// 平均値mu(0.1)でhold_timeという指数関数分布が得られる
