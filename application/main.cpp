@@ -11,8 +11,8 @@ int main(int argc, char* argv[])
 
 	int lp;
 
-	double ret_int = R_int;
-	int Sorting;
+	double ret_int = DEFRAG_INTERVAL;
+	int SORT_TYPE;
 
 	int it;
 
@@ -40,17 +40,17 @@ int main(int argc, char* argv[])
             return 1;
     }
 
-	ofs1 << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", START_LOAD= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
-	cout << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", START_LOAD= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
+	ofs1 << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", START_LOAD= "<< A<< ", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
+	cout << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", START_LOAD= "<< A<< ", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
 		//number of nodes, number of slots, maxi demand size, Traffic load, retuning period, Vaiting time allowed to retune before adding new request
 	ofs1 << endl << " REQ_NUM= "<< REQ_NUM << endl;
 		//max number of demand
 
 	for(p=1; p<2; p++){ //Listを作る方法の違い
-		Sorting= p;
-		ofs1 << endl << "Sorting= "<< Sorting << endl;
+		SORT_TYPE= p;
+		ofs1 << endl << "SORT_TYPE= "<< SORT_TYPE << endl;
 		cout << endl;
-		cout << endl << "Sorting= "<< Sorting << endl;
+		cout << endl << "SORT_TYPE= "<< SORT_TYPE << endl;
 
 		A = START_LOAD;//現在の通信量
 		ofs1 << endl << " A= "<< A << endl;
@@ -80,8 +80,8 @@ int main(int argc, char* argv[])
 				seed1 = (it+1) * seed1;//種を変える
 				seed2 = (it+2) * seed1;						//(k+2) * time(NULL);
 
-				ret_int = R_int;//最大ステップ数
-				temp_max = T_temp;//新しいパスが来ないときのデフラグ時間
+				ret_int = DEFRAG_INTERVAL;//最大ステップ数
+				temp_max = DEFRAG_TOTAL_TIME_MAX;//新しいパスが来ないときのデフラグ時間
 
 				reInitialize();//経路とパス以外をゼロにする
 				genDemands();//10万のパス情報を取り直す
@@ -221,15 +221,15 @@ int main(int argc, char* argv[])
 
 									//新しくきたパスを評価する
 									int s= source[nowEvent.lpNum], d= dest[nowEvent.lpNum], sort_val1 = 0, sort_val2 = 0;
-									if(Sorting == 1){
+									if(SORT_TYPE == 1){
 										sort_val1 = hops[s][d];
 										sort_val2 = bhops[s][d];
 									}
-									if(Sorting == 3){
+									if(SORT_TYPE == 3){
 										sort_val1 = lp_size[nowEvent.lpNum];
 										sort_val2 = lp_size[nowEvent.lpNum];
 									}
-									if(Sorting == 2){
+									if(SORT_TYPE == 2){
 										sort_val1 = lp_size[nowEvent.lpNum] *hops[s][d];
 										sort_val2 = lp_size[nowEvent.lpNum] *bhops[s][d];
 									}

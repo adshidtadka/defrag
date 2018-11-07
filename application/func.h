@@ -6,7 +6,7 @@
 /* Stop retuning if new request */
 /*include sorted list*/
 // Adding both primary and backup to the same list with initial state given
-/* Use T_temp, put high value if not needed */
+/* Use DEFRAG_TOTAL_TIME_MAX, put high value if not needed */
 /* include sorted list*/
 /* Including backup first */
 /* Parallel realloc used for conventional, Check retuning function*/
@@ -189,7 +189,7 @@ using namespace std;
 
 	int t_temp =0;
 	int last_ret= 0;
-	int temp_max = T_temp;
+	int temp_max = DEFRAG_TOTAL_TIME_MAX;
 
 	int A= START_LOAD;
 

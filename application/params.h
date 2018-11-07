@@ -13,14 +13,14 @@
 #define DEFRAG_TIME 0.1
 
 // maximum total defrag time
-#define  T_temp 100
+#define  DEFRAG_TOTAL_TIME_MAX 100
 
 // Retuning period
-#define R_int 0.2
+#define DEFRAG_INTERVAL 0.2
 
 // sort type
 // 0 if not used, 1 by length, 2 by size, 3 by blocks
-// #define Sorting 1
+// #define SORT_TYPE 1
 
 // maxSteo for ILP
 #define maxStep 3
