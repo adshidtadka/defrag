@@ -1967,7 +1967,7 @@ int genDemands()
 	//   = 100 * 10 / 74 * 10
 	//	 = 135
 	// 平均値mu(0.1)でhold_timeという指数関数分布が得られる
-	uniform_int_distribution<int> traff_dist(1, req_Max);
+	uniform_int_distribution<int> traff_dist(1, REQ_SIZE_MAX);
 	//1からreq_Maxまでの整数がtraff_distで等確率で得られる
 
 	ofstream ofs1;
@@ -2111,7 +2111,7 @@ int retuneUp_0()
 void retune(){
 	int i, j, a, b;
 
-	if(low_ind - high_ind - 1 < 4*req_Max){
+	if(low_ind - high_ind - 1 < 4*REQ_SIZE_MAX){
 //		releaseMiddle();
 		isactive[midlp] = 1;
 		midlp = REQ_NUM;
@@ -2713,7 +2713,7 @@ int midFitAllocLP(int lp)
 		return 0;
 	}
 
-	if(low_ind - high_ind < 4*req_Max+1){			//Avoiding blocking caused by middle fit LPs
+	if(low_ind - high_ind < 4*REQ_SIZE_MAX+1){			//Avoiding blocking caused by middle fit LPs
 		minFragAllocLP(lp);
 	//	cout << "LP index " << lp << " minmax-asigned to index  " << spec_ind[lp] << endl;
 		return 1;
@@ -3032,7 +3032,7 @@ int midFitAllocLP1(int lp)
 
 	int index1 = (high_ind + low_ind - c + 2) / 2;                 // Center index
 
-	if(low_ind - high_ind < 4*req_Max+1){			//Avoiding blocking caused by middle fit LPs
+	if(low_ind - high_ind < 4*REQ_SIZE_MAX+1){			//Avoiding blocking caused by middle fit LPs
 		minFragAllocLP(lp);
 	//	cout << "LP index " << lp << " minmax-asigned to index  " << spec_ind[lp] << endl;
 		return 1;

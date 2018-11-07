@@ -13,7 +13,7 @@
 #define HOLDING_TIME 10
 
 // max demand size
-#define req_Max 16
+#define REQ_SIZE_MAX 16
 
 // fixme:smallness but it is not used
 #define K 1000
