@@ -40,8 +40,8 @@ int main(int argc, char* argv[])
             return 1;
     }
 
-	ofs1 << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << L << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
-	cout << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << L << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
+	ofs1 << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
+	cout << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< S <<", req_Max=" << req_Max <<", A1= "<< A<< ", R_int = "<< R_int <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", LIMIT_HOP_NUM = " << LIMIT_HOP_NUM << endl;
 		//number of nodes, number of slots, maxi demand size, Traffic load, retuning period, Vaiting time allowed to retune before adding new request
 	ofs1 << endl << " REQUEST_NUM= "<< REQUEST_NUM << endl;
 		//max number of demand
@@ -459,7 +459,7 @@ int readInput(int argc, char* argv[0])
 	}
 
 	fin.ignore(INT_MAX,'=');
-	for(k=0; k<L; k++){
+	for(k=0; k<LINK_NUM; k++){
 		fin >> a >> b ;
 		link[a][b]=k;
 	}
@@ -570,7 +570,7 @@ int readInput(int argc, char* argv[0])
 				for (l=0;l<NODE_NUM;l++){
 					if(k == i && l == j) linked_path[i][j][k][l] = 0; //2組の発着ノードの組が同じ発着ノードであれば無視する
 					else{
-						for(p=0;p<L;p++){ //リンクの数だけforループを回す
+						for(p=0;p<LINK_NUM;p++){ //リンクの数だけforループを回す
 							if(path[i][j][p] && path[k][l][p]) linked_path[i][j][k][l] = 1;
 							//linked_path[i][j][k][l]はプライマリパスに関して2組の発着ノードを代入したとき
 							//同じリンクを使っているようであれば1をとるバイナリ変数
@@ -615,7 +615,7 @@ int writeOutput()
 	ofs2 << endl;
 	ofs2 << "param REQUEST_NUM := " << m <<";" << endl;
 	ofs2 << "param B := " << S <<";" << endl;
-	ofs2 << "param L := " << L <<";" << endl;
+	ofs2 << "param LINK_NUM := " << LINK_NUM <<";" << endl;
 	ofs2 << "param C := " << c <<";" << endl;
 	ofs2 << endl;
 	ofs2 << "param : S K NODE_NUM F0 := " << endl;
@@ -659,11 +659,11 @@ int writeOutput()
 		s = source[lp];
 		d= dest[lp];
 
-		for(j=0;j<L;j++){
+		for(j=0;j<LINK_NUM;j++){
 			if(path[s][d][j]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
-		for(j=0;j<L;j++){
+		for(j=0;j<LINK_NUM;j++){
 			if(bp[s][d][j]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
@@ -699,7 +699,7 @@ int writeOutputPy()
 	ofs2 << "param S   := " << m   << endl;
 	ofs2 << "param absP:= " << m*2 << endl;
 	ofs2 << "param absF:= " << S   << endl;
-	ofs2 << "param absE:= " << L   << endl;
+	ofs2 << "param absE:= " << LINK_NUM   << endl;
 	ofs2 << "param T   := " << c   << endl;
 	ofs2 << endl;
 
@@ -752,11 +752,11 @@ int writeOutputPy()
 		s = source[lp];
 		d= dest[lp];
 
-		for(j=0;j<L;j++){
+		for(j=0;j<LINK_NUM;j++){
 			if(path[s][d][j]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
-		for(j=0;j<L;j++){
+		for(j=0;j<LINK_NUM;j++){
 			if(bp[s][d][j]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
@@ -794,7 +794,7 @@ int writeOutputReroutingPy()
 	ofs2 << "param S   := " << m   << endl;
 	ofs2 << "param absP:= " << m*2 << endl;
 	ofs2 << "param absF:= " << S   << endl;
-	ofs2 << "param absE:= " << L   << endl;
+	ofs2 << "param absE:= " << LINK_NUM   << endl;
 	ofs2 << "param absV:= " << NODE_NUM   << endl;
 	ofs2 << "param T   := " << c   << endl;
 	ofs2 << endl;
@@ -842,7 +842,7 @@ int writeOutputReroutingPy()
 	ofs2 << "E := " << endl;
 	for ( i = 0; i < NODE_NUM; i++){
 		for ( j = 0; j < NODE_NUM; j++){
-			if (link[i][j] < L){
+			if (link[i][j] < LINK_NUM){
 				ofs2 << i << " " << j << endl;
 			}
 		}
@@ -858,7 +858,7 @@ int writeOutputReroutingPy()
 		cur = cur->next;
 		for ( i = 0; i < NODE_NUM; i++) {
 			for ( j = 0; j < NODE_NUM; j++ ){
-				if(link[i][j] < L){
+				if(link[i][j] < LINK_NUM){
 					if (path_rr[link[i][j]][lp]){
 						ofs2 << ind << " " << i << " " << j << endl;
 						// cout << ind << " " << i << " " << j << endl;
@@ -870,7 +870,7 @@ int writeOutputReroutingPy()
 		ind++;//バックアップパスが連番になっている
 		for ( i = 0; i < NODE_NUM; i++) {
 			for ( j = 0; j < NODE_NUM; j++ ){
-				if(link[i][j] < L){
+				if(link[i][j] < LINK_NUM){
 					if (bp_rr[link[i][j]][lp]){
 						ofs2 << ind << " " << i << " " << j << endl;
 						// cout << ind << " " << i << " " << j << endl;

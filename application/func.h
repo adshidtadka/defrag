@@ -129,7 +129,7 @@ using namespace std;
 //{
 	int lp_ind=0, lp_size[REQUEST_NUM], source[REQUEST_NUM], dest[REQUEST_NUM], spec_ind[REQUEST_NUM];    // Each LP has an arrival index, a couple s/d,
 															// and a given size. It is allocated to a spectrum index
-	bool spec[S][L], path[NODE_NUM][NODE_NUM][L];				// Spectrum is a slots*links matrix, path(s,d,link) 1 if sd use l
+	bool spec[S][LINK_NUM], path[NODE_NUM][NODE_NUM][LINK_NUM];				// Spectrum is a slots*links matrix, path(s,d,link) 1 if sd use l
 	bool linked_path[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_bp[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_crosspath[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];				// Paths sharing at least a link
 
 	int low_ind, high_ind;						// Lowest used index for lastfit and highest for firstfit
@@ -179,7 +179,7 @@ using namespace std;
 		}
 	};
 
-	bool path_rr[L][REQUEST_NUM], bp_rr[L][REQUEST_NUM];//リルーティングのための変数
+	bool path_rr[LINK_NUM][REQUEST_NUM], bp_rr[LINK_NUM][REQUEST_NUM];//リルーティングのための変数
 
 	int part[NODE_NUM][NODE_NUM];
 
@@ -196,7 +196,7 @@ using namespace std;
 	double t;
 
 	int bp_ind[REQUEST_NUM];
-	bool bp[NODE_NUM][NODE_NUM][L];
+	bool bp[NODE_NUM][NODE_NUM][LINK_NUM];
 
 	int togOp;
 	int realOp;
@@ -365,7 +365,7 @@ int readResult()
 	ifstream fin, fin1;
 
 	for(i=0;i<S;i++){
-		for(j=0;j<L;j++)  spec[i][j]= 0;
+		for(j=0;j<LINK_NUM;j++)  spec[i][j]= 0;
 	}
 
 	fin.open ("smpe_fhm_result.txt");
@@ -409,7 +409,7 @@ int readResultPy()
 	ifstream fin, fin1;
 
 	for(i=0;i<S;i++){
-		for(j=0;j<L;j++)  spec[i][j]= 0;
+		for(j=0;j<LINK_NUM;j++)  spec[i][j]= 0;
 	}
 
 	fin.open ("./../result/ssr_lno_result.txt");
@@ -454,7 +454,7 @@ int readResultReroutingPy()
 	ifstream fin, fin1;
 
 	for(i=0;i<S;i++){
-		for(j=0;j<L;j++)  spec[i][j]= 0;
+		for(j=0;j<LINK_NUM;j++)  spec[i][j]= 0;
 	}
 
 	fin.open ("./../result/ssrr_lno_result.txt");
@@ -477,7 +477,7 @@ int readResultReroutingPy()
 			cur = cur->next;
 
 			//initialize
-			for(i=0;i<L;i++){
+			for(i=0;i<LINK_NUM;i++){
 				path_rr[i][lp] = 0;
 				bp_rr[i][lp]   = 0;
 			}
@@ -870,22 +870,22 @@ int statReroutingAlgo()
 
 						if(lpState[cur2->x]){//プライマリ
 							if(lpState[lp]){
-								for(i=0;i<L;i++){
+								for(i=0;i<LINK_NUM;i++){
 									if(path_rr[i][cur2->x] && path_rr[i][lp]) conf =1;
 								}
 							}else{
-								for(i=0;i<L;i++){
+								for(i=0;i<LINK_NUM;i++){
 									if(path_rr[i][cur2->x] && bp_rr[i][lp])conf =1;
 								}
 
 							}
 						}else{//バックアップ
 							if(lpState[lp]){
-								for(i=0;i<L;i++){
+								for(i=0;i<LINK_NUM;i++){
 									if(bp_rr[i][cur2->x] && path_rr[i][lp]) conf =1;
 								}
 							}else{
-								for(i=0;i<L;i++){
+								for(i=0;i<LINK_NUM;i++){
 									if(bp_rr[i][cur2->x] && bp_rr[i][lp]) conf =1;
 								}
 							}
@@ -913,8 +913,8 @@ int statReroutingAlgo()
 				b =  lpState[lp];
 				cur2 = cur2->next;
 				if(b){//プライマリパスならば
-					int path_rr_prev[L]; //to compare the previous root and new route
-					for (int i = 0; i < L; ++i)
+					int path_rr_prev[LINK_NUM]; //to compare the previous root and new route
+					for (int i = 0; i < LINK_NUM; ++i)
 					{
 						path_rr_prev[i] = 0;
 					}
@@ -922,7 +922,7 @@ int statReroutingAlgo()
 					{
 						for (int j = 0; j < NODE_NUM; ++j)
 						{
-							if (link[i][j] > L) continue;
+							if (link[i][j] > LINK_NUM) continue;
 							path_rr_prev[link[i][j]] = path_rr[link[i][j]][lp];
 						}
 					}
@@ -939,7 +939,7 @@ int statReroutingAlgo()
 					{
 						for (int j = 0; j < NODE_NUM; ++j)
 						{
-							if (link[i][j] > L) continue;
+							if (link[i][j] > LINK_NUM) continue;
 							if (path_rr_prev[link[i][j]] != path_rr[link[i][j]][lp])
 							{
 								isSame = false;
@@ -963,8 +963,8 @@ int statReroutingAlgo()
 				}
 			//	cout << "cur2 = realList 3" << endl<< endl;
 				if(!b){//バックアップパスならば
-					int bp_rr_prev[L]; //to compare the previous root and new route
-					for (int i = 0; i < L; ++i)
+					int bp_rr_prev[LINK_NUM]; //to compare the previous root and new route
+					for (int i = 0; i < LINK_NUM; ++i)
 					{
 						bp_rr_prev[i] = 0;
 					}
@@ -972,7 +972,7 @@ int statReroutingAlgo()
 					{
 						for (int j = 0; j < NODE_NUM; ++j)
 						{
-							if (link[i][j] > L) continue;
+							if (link[i][j] > LINK_NUM) continue;
 							bp_rr_prev[link[i][j]] = bp_rr[link[i][j]][lp];
 						}
 					}
@@ -990,7 +990,7 @@ int statReroutingAlgo()
 					{
 						for (int j = 0; j < NODE_NUM; ++j)
 						{
-							if (link[i][j] > L) continue;
+							if (link[i][j] > LINK_NUM) continue;
 							if (bp_rr_prev[link[i][j]] != bp_rr[link[i][j]][lp])
 							{
 								isSame = false;
@@ -1080,7 +1080,7 @@ int retuneDown_0()
 				eol = 0;
 				while(index2 >= 0 && !eol){		// Check to what extend it can be retuned
 
-					for(j=0;j<L;j++){							//Check path availibility
+					for(j=0;j<LINK_NUM;j++){							//Check path availibility
 						if(spec[index2][j] && path[s][d][j]){
 						//	cout << "2: i " << i << ", Spec ind "<< spec_ind[i] << " index1 " << index1 <<  ",  index2 " << index2 << endl;
 							eol = 1;
@@ -1096,7 +1096,7 @@ int retuneDown_0()
 
 			if(isactive[i] &&(index2 + 1) < index1 && spec_ind[i] == index1){			// Retune retunables
 				for(p=0; p<lp_size[i]; p++){						// an xor with its path will remove it
-					for(j=0;j<L;j++){
+					for(j=0;j<LINK_NUM;j++){
 						spec[index1+p][j] = path[s][d][j] ^	spec[index1+p][j];
 					}
 				}
@@ -1209,8 +1209,8 @@ int retuneDownRerouting_0()
 			i = cur->x;
 			cur = cur->next;
 			if(isactive[i] == 1 && spec_ind[i] == index1){
-				int path_rr_prev[L]; //to compare the previous root and new route
-				for (int b = 0; b < L; ++b)
+				int path_rr_prev[LINK_NUM]; //to compare the previous root and new route
+				for (int b = 0; b < LINK_NUM; ++b)
 				{
 					path_rr_prev[b] = 0;
 				}
@@ -1218,7 +1218,7 @@ int retuneDownRerouting_0()
 				{
 					for (int c = 0; c < NODE_NUM; ++c)
 					{
-						if (link[b][c] > L) continue;
+						if (link[b][c] > LINK_NUM) continue;
 						path_rr_prev[link[b][c]] = path_rr[link[b][c]][i];
 					}
 				}
@@ -1235,7 +1235,7 @@ int retuneDownRerouting_0()
 				{
 					for (int c = 0; c < NODE_NUM; ++c)
 					{
-						if (link[b][c] > L) continue;
+						if (link[b][c] > LINK_NUM) continue;
 						if (path_rr_prev[link[b][c]] != path_rr[link[b][c]][i])
 						{
 							isSame = false;
@@ -1259,8 +1259,8 @@ int retuneDownRerouting_0()
 			}
 
 			if(isactive[i] == 1 && bp_ind[i] == index1){
-				int bp_rr_prev[L]; //to compare the previous root and new route
-				for (int b = 0; b < L; ++b)
+				int bp_rr_prev[LINK_NUM]; //to compare the previous root and new route
+				for (int b = 0; b < LINK_NUM; ++b)
 				{
 					bp_rr_prev[b] = 0;
 				}
@@ -1268,7 +1268,7 @@ int retuneDownRerouting_0()
 				{
 					for (int c = 0; c < NODE_NUM; ++c)
 					{
-						if (link[b][c] > L) continue;
+						if (link[b][c] > LINK_NUM) continue;
 						bp_rr_prev[link[b][c]] = bp_rr[link[b][c]][i];
 					}
 				}
@@ -1284,7 +1284,7 @@ int retuneDownRerouting_0()
 				{
 					for (int c = 0; c < NODE_NUM; ++c)
 					{
-						if (link[b][c] > L) continue;
+						if (link[b][c] > LINK_NUM) continue;
 						if (bp_rr_prev[link[b][c]] != bp_rr[link[b][c]][i])
 						{
 							isSame = false;
@@ -1568,7 +1568,7 @@ int removeLP1_1(int lp, int algoCall) //切断するパスのlpindexをもらう
 	if(algoCall == 2 || algoCall == 4){
 		if(a){										// a xor a =0, therefore if a lp is active
 			for(i=0; i<b; i++){//占有する帯域スロットの回数繰り返す									// an xor with its path will remove it
-				for(j=0;j<L;j++){//全てのリンクについて
+				for(j=0;j<LINK_NUM;j++){//全てのリンクについて
 					spec[index+i][j] = path_rr[j][lp] ^ spec[index+i][j];
 					//全てのリンクの占有する帯域スロット番号について
 					//プライマリパスが通っているところはビット反転させる
@@ -1578,7 +1578,7 @@ int removeLP1_1(int lp, int algoCall) //切断するパスのlpindexをもらう
 			index = bp_ind[lp];
 			if(index < INF){
 				for(i=0; i<b; i++){									// an xor with its path will remove it
-					for(j=0;j<L;j++){
+					for(j=0;j<LINK_NUM;j++){
 						spec[index+i][j] = bp_rr[j][lp] ^ spec[index+i][j];
 						//全てのリンクの占有する帯域スロット番号について
 						//バックアップパスが通っているところはビット反転させる
@@ -1592,7 +1592,7 @@ int removeLP1_1(int lp, int algoCall) //切断するパスのlpindexをもらう
 	}else{
 		if(a){										// a xor a =0, therefore if a lp is active
 			for(i=0; i<b; i++){//占有する帯域スロットの回数繰り返す									// an xor with its path will remove it
-				for(j=0;j<L;j++){//全てのリンクについて
+				for(j=0;j<LINK_NUM;j++){//全てのリンクについて
 					spec[index+i][j] = path[s][d][j] ^ spec[index+i][j];
 					//全てのリンクの占有する帯域スロット番号について
 					//プライマリパスが通っているところはビット反転させる
@@ -1602,7 +1602,7 @@ int removeLP1_1(int lp, int algoCall) //切断するパスのlpindexをもらう
 			index = bp_ind[lp];
 			if(index < INF){
 				for(i=0; i<b; i++){									// an xor with its path will remove it
-					for(j=0;j<L;j++){
+					for(j=0;j<LINK_NUM;j++){
 						spec[index+i][j] = bp[s][d][j] ^ spec[index+i][j];
 						//全てのリンクの占有する帯域スロット番号について
 						//バックアップパスが通っているところはビット反転させる
@@ -1631,7 +1631,7 @@ int checkFirstBp(int lp)
 	{
 		if(!b) break;
 
-		for(i=0;i<L;i++){							//Check path availibility
+		for(i=0;i<LINK_NUM;i++){							//Check path availibility
 			if(spec[index][i] && bp[s][d][i]){
 				index++;
 				break;
@@ -1647,7 +1647,7 @@ int checkFirstBp(int lp)
 			}
 			if(nofit) break;
 		}
-		if(i==L && !nofit){
+		if(i==LINK_NUM && !nofit){
 			asigned= 1;
 			return index;
 		}
@@ -1699,7 +1699,7 @@ int asignBp(int lp, int index)
 //	if(t >= 1300) cout << "2: high_ind at t=" << t << endl;
 
 	for(j=0;j<b;j++){
-		for(p=0;p<L;p++){
+		for(p=0;p<LINK_NUM;p++){
 			if(spec[index+j][p] == 1 && bp[s][d][p] ==1){
 				cout << "spec[" <<  index+j << "][" << p << "] = " << spec[index+j][p] << endl;
 				cout << "bp[" << s << "][" << d << "][" << p << "] = " << bp[s][d][p] << endl;
@@ -1722,11 +1722,11 @@ int asignBpRerouting(int lp, int index)
 	bp_ind[lp] = index;
 
 //	if(t >= 1300) cout << "2: high_ind at t=" << t << endl;
-	// for(i = 0; i < L ; i ++){
+	// for(i = 0; i < LINK_NUM ; i ++){
 	// 	cout << "bp_rr[" << i << "][" << lp << "] = " << bp_rr[i][lp] << endl;
 	// }
 	for(j=0;j<b;j++){
-		for(p=0;p<L;p++){
+		for(p=0;p<LINK_NUM;p++){
 			if(spec[index+j][p] == 1 && bp_rr[p][lp] ==1) throw "バックアップパス割り当てエラー";
 			spec[index+j][p] = spec[index+j][p] || bp_rr[p][lp];
 		}
@@ -1805,7 +1805,7 @@ int initialize(void)						  // Set everything to zero
 
 	for(i=0;i<NODE_NUM;i++){
 		for(j=0;j<NODE_NUM;j++){
-			for(p=0;p<L;p++) path[i][j][p] = 0;
+			for(p=0;p<LINK_NUM;p++) path[i][j][p] = 0;
 			hops[i][j]=0;
 			part[i][j]=0;
 			link[i][j]= INF;
@@ -1819,7 +1819,7 @@ int initialize(void)						  // Set everything to zero
 		}
 	}
 
-	for(i=0; i<L; i++){
+	for(i=0; i<LINK_NUM; i++){
 		for(j=0;j<REQUEST_NUM;j++){
 			path_rr[i][j] = 0;
 			bp_rr[i][j] = 0;
@@ -1856,7 +1856,7 @@ int reInitialize(void)						// Set everything to zero save routings and demands
 	}
 
 	for(i=0;i<S;i++){
-		for(j=0;j<L;j++)  spec[i][j]= 0;
+		for(j=0;j<LINK_NUM;j++)  spec[i][j]= 0;
 	}
 
 	activeList = NULL;
@@ -2015,7 +2015,7 @@ int genDemands()
 		//lp番号ごとのルートを持つ変数も定める
 		for(j=0;j<NODE_NUM;j++){
 			for(k=0;k<NODE_NUM;k++){
-				if(link[j][k] < L){
+				if(link[j][k] < LINK_NUM){
 					path_rr[link[j][k]][i] = path[source[i]][dest[i]][link[j][k]];
 					bp_rr[link[j][k]][i] = bp[source[i]][dest[i]][link[j][k]];
 				}
@@ -2070,7 +2070,7 @@ int retuneUp_0()
 				eol = 0;
 
 				while(index2 < S && !eol){		// Check to what extend it can be retuned
-					for(j=0;j<L;j++){							//Check path availibility
+					for(j=0;j<LINK_NUM;j++){							//Check path availibility
 						if(spec[index2][j] && path[s][d][j]){
 
 	//		cout << "2: i " << i << ", Spec ind "<< spec_ind[i]+a << " index1 " << index1 <<  ",  index2 " << index2 << endl;
@@ -2089,7 +2089,7 @@ int retuneUp_0()
 			//	removeLP(i);
 	//		cout << "3: i " << i << ", Spec ind "<< spec_ind[i]+a << " index1 " << index1 <<  ",  index2 " << index2 << endl;
 				for(p=0; p<lp_size[i]; p++){									// an xor with its path will remove it
-					for(j=0;j<L;j++){
+					for(j=0;j<LINK_NUM;j++){
 						spec[spec_ind[i]+p][j] = path[s][d][j] ^ spec[spec_ind[i]+p][j];
 					}
 				}
@@ -2157,7 +2157,7 @@ int retuneDown()
 				eol = 0;
 			//	while(index2 >= 0 && !eol){		// Check to what extend it can be retuned
 
-					for(j=0;j<L;j++){							//Check path availibility
+					for(j=0;j<LINK_NUM;j++){							//Check path availibility
 						if(spec[index2][j] && path[s][d][j]){
 							eol = 1;
 							break;
@@ -2170,7 +2170,7 @@ int retuneDown()
 
 			if(isactive[i]==1 && !eol && spec_ind[i] == index1){		// Retune retunables
 				for(p=0; p<lp_size[i]; p++){									// an xor with its path will remove it
-					for(j=0;j<L;j++){
+					for(j=0;j<LINK_NUM;j++){
 						spec[index1+p][j] = path[s][d][j] ^	spec[index1+p][j];
 					}
 				}
@@ -2213,7 +2213,7 @@ int retuneUp()
 				eol = 0;
 
 			//	while(index2 < S && !eol){		// Check to what extend it can be retuned
-					for(j=0;j<L;j++){							//Check path availibility
+					for(j=0;j<LINK_NUM;j++){							//Check path availibility
 						if(spec[index2][j] && path[s][d][j]){
 							eol = 1;
 							break;
@@ -2225,7 +2225,7 @@ int retuneUp()
 			}
 			if(isactive[i]==2 && !eol && spec_ind[i] + a == index1){						// Retune retunables
 				for(p=0; p<lp_size[i]; p++){									// an xor with its path will remove it
-					for(j=0;j<L;j++){
+					for(j=0;j<LINK_NUM;j++){
 						spec[spec_ind[i]+p][j] = path[s][d][j] ^ spec[spec_ind[i]+p][j];
 					}
 				}
@@ -2318,7 +2318,7 @@ int firstFit(int lp)
 	{
 	//	cout << "LP checking index: " << lp << ", "<< index << endl;
 
-		for(i=0;i<L;i++){							//Check path availibility
+		for(i=0;i<LINK_NUM;i++){							//Check path availibility
 			if(spec[index][i] && path[s][d][i]){
 				index++;
 				break;
@@ -2334,7 +2334,7 @@ int firstFit(int lp)
 			}
 			if(nofit) break;
 		}
-		if(i==L && !nofit){
+		if(i==LINK_NUM && !nofit){
 			isactive[lp]= 1;			// Side is defined before asign
 			asign(lp, index);
 			asigned= 1;
@@ -2366,7 +2366,7 @@ int checkFirstFit(int lp)
 
 	//	cout << "LP checking index: " << lp << ", "<< index << endl;
 
-		for(i=0;i<L;i++){		//Check path availibility
+		for(i=0;i<LINK_NUM;i++){		//Check path availibility
 			if(spec[index][i] && path[s][d][i]){ //リンクが使われていたならば
 				index++;
 				break;
@@ -2382,7 +2382,7 @@ int checkFirstFit(int lp)
 			}
 			if(nofit) break;
 		}
-		if(i==L && !nofit){//もし全てのリンクを調べ終え、リンクが使われていなければ
+		if(i==LINK_NUM && !nofit){//もし全てのリンクを調べ終え、リンクが使われていなければ
 			asigned= 1;//割り当て確定
 		//	cout << "LP index " << lp << " will be first-asigned to index " << index << endl;
 		//	cout << "LP index is allocated #" << isactive[lp] << endl;
@@ -2444,7 +2444,7 @@ int lastFit(int lp)
 		if(!b) break;
 
 	//	cout << "LP checking index: " << lp << ", "<< index << endl;
-		for(i=0;i<L;i++){							//Check path availibility
+		for(i=0;i<LINK_NUM;i++){							//Check path availibility
 	//		cout << "before break" << endl;
 			if(spec[index][i] && path[s][d][i]){
 				index--;
@@ -2463,7 +2463,7 @@ int lastFit(int lp)
 	//		cout << "Index " << index << ", lp " << lp << endl;
 		}
 
-		if(i==L && !nofit){
+		if(i==LINK_NUM && !nofit){
 			isactive[lp]= 2;
 			asign(lp, index);
 			asigned= 1;
@@ -2495,7 +2495,7 @@ int checkLastFit(int lp)
 		if(!b) break;
 
 	//	cout << "LP checking index: " << lp << ", "<< index << endl;
-		for(i=0;i<L;i++){							//Check path availibility
+		for(i=0;i<LINK_NUM;i++){							//Check path availibility
 	//		cout << "before break" << endl;
 			if(spec[index][i] && path[s][d][i]){
 				index--;
@@ -2514,7 +2514,7 @@ int checkLastFit(int lp)
 	//		cout << "Index " << index << ", lp " << lp << endl;
 		}
 
-		if(i==L && !nofit){
+		if(i==LINK_NUM && !nofit){
 			asigned= 1;
 	//		cout << "LP index " << lp << " will be last-asigned to index " << index << endl;
 			return index;
@@ -2872,7 +2872,7 @@ int firstFit1(int lp)
 	{
 	//	cout << "LP checking index: " << lp << ", "<< index << endl;
 
-		for(i=0;i<L;i++){							//Check path availibility
+		for(i=0;i<LINK_NUM;i++){							//Check path availibility
 			if(spec[index][i] && path[s][d][i]){
 				index++;
 				break;
@@ -2888,7 +2888,7 @@ int firstFit1(int lp)
 			}
 			if(nofit) break;
 		}
-		if(i==L && !nofit){
+		if(i==LINK_NUM && !nofit){
 			isactive[lp]= 1;			// Side is defined before asign
 			asign(lp, index);
 			asigned= 1;
@@ -3136,19 +3136,19 @@ int printSpec()
 	cout << "1:high_ind " << high_ind << ", low_ind " << low_ind << endl;
 	cout << " Spectrum :=" << endl;						//Just for checking
 	cout << "  l :";
-	for (i=0;i<L;i++) cout <<"  "<< i ;
+	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
 	cout << endl;
 	for (i=S-1; i>=0; i--){
 		if(i / 10 < 1) cout << " ";
 		if(i / 100 <1) cout << " ";
 		cout << i << " :";
-		for(j=0;j<L;j++){
+		for(j=0;j<LINK_NUM;j++){
 			cout << "  " << spec[i][j];
 		}
 		cout << endl;
 	}
 	cout << "  l :";
-	for (i=0;i<L;i++) cout <<"  "<< i ;
+	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
 	cout << endl;
 	cout << endl;
 	return 0;
@@ -3162,7 +3162,7 @@ int asign(int lp, int index)
 	spec_ind[lp] = index;
 
 	for(j=0;j<b;j++){						//Asigning
-		for(p=0;p<L;p++){
+		for(p=0;p<LINK_NUM;p++){
 			if(spec[index+j][p] == 1 && path[s][d][p] ==1){
 				cout << "index + j  = " << index + j << endl;
 				cout << "link_num = " << p << endl;
@@ -3182,7 +3182,7 @@ int asignRerouting(int lp, int index)
 
 	spec_ind[lp] = index;
 	for(j=0;j<b;j++){						//Asigning
-		for(p=0;p<L;p++){
+		for(p=0;p<LINK_NUM;p++){
 			if(spec[index+j][p] == 1 && path_rr[p][lp] ==1) throw "プライマリパス割り当てエラー";
 			spec[index+j][p] = spec[index+j][p] || path_rr[p][lp];
 		}
@@ -3197,7 +3197,7 @@ double checkFrag(int lp, int index)
 	int s = source[lp], d= dest[lp], b= lp_size[lp];
 	int lp1, index1, s1, d1;
 
-	bool temp_spec[S][L];
+	bool temp_spec[S][LINK_NUM];
 	double pathFrag[NODE_NUM][NODE_NUM];
 	double specFrag =0;
 	double totalfrag=0, avefrag=0;
@@ -3208,21 +3208,21 @@ double checkFrag(int lp, int index)
 	}
 
 	for(i=0;i<S;i++){				// Duplicating spectrum
-		for(p=0;p<L;p++)
+		for(p=0;p<LINK_NUM;p++)
 			temp_spec[i][p] = spec[i][p];
 	}
 
 	for(j=0;j<b;j++){				// Temporary asigning
-		for(p=0;p<L;p++) temp_spec[index+j][p] = temp_spec[index+j][p] || path[s][d][p];
+		for(p=0;p<LINK_NUM;p++) temp_spec[index+j][p] = temp_spec[index+j][p] || path[s][d][p];
 	}
 
 	// cout << " Spectrum :=" << endl;						//Just for checking
 	// cout << "l:";
-	// for (i=0;i<=L;i++) cout <<"  "<< i ;
+	// for (i=0;i<=LINK_NUM;i++) cout <<"  "<< i ;
 	// cout << endl;
 	// for (i=S-1 ; i>=0; i--){
 		// cout << i << " :";
-		// for(j=0;j<L;j++){
+		// for(j=0;j<LINK_NUM;j++){
 			// cout << "  " << temp_spec[i][j];
 		// }
 		// cout << endl;
@@ -3232,16 +3232,16 @@ double checkFrag(int lp, int index)
 	// cout << "1:high_ind " << high_ind << ", low_ind " << low_ind << endl;
 
 	for(j=high_ind+b+2;j<low_ind-b;j++){				// Temporary removal of midfit LPs
-		for(p=0;p<L;p++) temp_spec[j][p] = 0;
+		for(p=0;p<LINK_NUM;p++) temp_spec[j][p] = 0;
 	}
 
 	// cout << " Spectrum :=" << endl;						//Just for checking
 	// cout << "l:";
-	// for (i=0;i<=L;i++) cout <<"  "<< i ;
+	// for (i=0;i<=LINK_NUM;i++) cout <<"  "<< i ;
 	// cout << endl;
 	// for (i=S-1 ; i>=0; i--){
 		// cout << i << " :";
-		// for(j=0;j<L;j++){
+		// for(j=0;j<LINK_NUM;j++){
 			// cout << "  " << temp_spec[i][j];
 		// }
 		// cout << endl;
@@ -3256,7 +3256,7 @@ double checkFrag(int lp, int index)
 //			if(linked_path[s][d][s1][d1]){			// For shared path
 				for(i=0;i<S;i++){					// Checking spectrum for available aligned SB
 					nonalign =0 ;
-					for(j=0;j<L;j++){
+					for(j=0;j<LINK_NUM;j++){
 						if(path[s1][d1][j]){		// Path s1-d1 using link j
 							if(!temp_spec[i][j])  avSB++;		// Available SB i on link j
 							if(temp_spec[i][j])  nonalign =1;	// SB i not aligned through the path of s1-d1
@@ -3311,7 +3311,7 @@ int checkExactFit(int lp)
 
 	for(i=0;i<S;i++){		// Checking spectrum for available aligned SB
 		nonalign =0 ;
-		for(j=0;j<L;j++){//全てのリンクについて
+		for(j=0;j<LINK_NUM;j++){//全てのリンクについて
 			if(path[s][d][j]){		// Path s-d using link j
 				if(spec[i][j])  nonalign =1;	// SB i not aligned through the path of s-d
 			}
@@ -3347,7 +3347,7 @@ int checkExactBp(int lp)
 
 	for(i=0;i<S;i++){		// Checking spectrum for available aligned SB
 		nonalign =0 ;
-		for(j=0;j<L;j++){//全てのリンクについて
+		for(j=0;j<LINK_NUM;j++){//全てのリンクについて
 			if(bp[s][d][j]){		// Path s-d using link j
 				if(spec[i][j])  nonalign =1;	// SB i not aligned through the path of s-d
 			}
@@ -3431,7 +3431,7 @@ int getPrimRoot(int s, int lp)
 	//ノード情報input
 	for(i=0; i<NODE_NUM; i++){
 		for(j=0; j<NODE_NUM; j++){
-			if(link[i][j]>L) continue;
+			if(link[i][j]>LINK_NUM) continue;
 			unconnectedFlag = 0;
 			for(k=0; k<lp_size[lp]; k++){
 				if(spec[s+k][link[i][j]] == 1 || bp_rr[link[i][j]][lp]){//使われているまたはバックアップパスが使っている
@@ -3503,7 +3503,7 @@ int getPrimRoot(int s, int lp)
 	if (b < NODE_NUM) {
 		for (j = 0; j < NODE_NUM; j++) {//initialize
 			for (k = 0; k < NODE_NUM; k++) {
-				if(link[j][k]>L)continue;
+				if(link[j][k]>LINK_NUM)continue;
 				path_rr[link[j][k]][lp] = 0;
 			}
 		}
@@ -3536,7 +3536,7 @@ int getBackRoot(int s, int lp)
 	//ノード情報input
 	for(i=0; i<NODE_NUM; i++){
 		for(j=0; j<NODE_NUM; j++){
-			if(link[i][j]>L) continue;
+			if(link[i][j]>LINK_NUM) continue;
 			unconnectedFlag = 0;
 			for(k=0; k<lp_size[lp]; k++){
 				if(spec[s+k][link[i][j]] == 1 || path_rr[link[i][j]][lp]){//使われているまたはプライマリパスが使っている
@@ -3615,7 +3615,7 @@ int getBackRoot(int s, int lp)
 	if (b < NODE_NUM && a != b) {
 		for (j = 0; j < NODE_NUM; j++) {//initialize
 			for (k = 0; k < NODE_NUM; k++) {
-				if(link[j][k]>L)continue;
+				if(link[j][k]>LINK_NUM)continue;
 				bp_rr[link[j][k]][lp] = 0;
 			}
 		}
@@ -3643,7 +3643,7 @@ int removeLP_0(int lp)
 
 	if(a){										// a xor a =0, therefore if a lp is active
 		for(i=0; i<b; i++){									// an xor with its path will remove it
-			for(j=0;j<L;j++){
+			for(j=0;j<LINK_NUM;j++){
 				spec[index+i][j] = path[s][d][j] ^	spec[index+i][j];
 			}
 		}
@@ -3669,7 +3669,7 @@ int removeLP(int lp)
 
 	if(a){										// a xor a =0, therefore if a lp is active
 		for(i=0; i<b; i++){									// an xor with its path will remove it
-			for(j=0;j<L;j++){
+			for(j=0;j<LINK_NUM;j++){
 				spec[index+i][j] = path[s][d][j] ^	spec[index+i][j];
 			}
 		}
@@ -3701,7 +3701,7 @@ void deleteLP(int lp, int p)	// p=0 delete both, 1 del prim and 2 del backup
 		if(p==0 || p==1){
 		//	if(lp==181) cout << "index= " << index << endl;
 			for(i=0; i<b; i++){//占有帯域スロット
-				for(j=0;j<L;j++){//全てのリンクに関して
+				for(j=0;j<LINK_NUM;j++){//全てのリンクに関して
 					if(spec[index+i][j] == 0 && path[s][d][j] == 1) throw "プライマリパス消去エラー";
 					spec[index+i][j] = path[s][d][j] ^	spec[index+i][j];//pathが1ならspecは1
 				}
@@ -3713,7 +3713,7 @@ void deleteLP(int lp, int p)	// p=0 delete both, 1 del prim and 2 del backup
 			if(index == INF) return;//ブロッキングしている
 		//	if(lp==181) cout << "Big index= " << index << endl;
 			for(i=0; i<b; i++){									// an xor with its path will remove it
-				for(j=0;j<L;j++){
+				for(j=0;j<LINK_NUM;j++){
 					if(spec[index+i][j] == 0 && bp[s][d][j] == 1) throw "バックアップパス消去エラー";
 					spec[index+i][j] = bp[s][d][j] ^ spec[index+i][j];//pathが1ならspecは1
 				}
@@ -3735,7 +3735,7 @@ void deleteLPRerouting(int lp, int p)	// p=0 delete both, 1 del prim and 2 del b
 		if(p==0 || p==1){
 		//	if(lp==181) cout << "index= " << index << endl;
 			for(i=0; i<b; i++){//占有帯域スロット
-				for(j=0;j<L;j++){//全てのリンクに関して
+				for(j=0;j<LINK_NUM;j++){//全てのリンクに関して
 					if(spec[index+i][j] == 0 && path_rr[j][lp] == 1) throw "プライマリパス消去エラー";
 					spec[index+i][j] = path_rr[j][lp] ^	spec[index+i][j];//pathが1ならspecは1
 				}
@@ -3747,7 +3747,7 @@ void deleteLPRerouting(int lp, int p)	// p=0 delete both, 1 del prim and 2 del b
 			if(index == INF) return;//ブロッキングしている
 		//	if(lp==181) cout << "Big index= " << index << endl;
 			for(i=0; i<b; i++){									// an xor with its path will remove it
-				for(j=0;j<L;j++){
+				for(j=0;j<LINK_NUM;j++){
 					if(spec[index+i][j] == 0 && bp_rr[j][lp] == 1) throw "バックアップパス消去エラー";
 					spec[index+i][j] = bp_rr[j][lp] ^ spec[index+i][j];//pathが1ならspecは1
 				}
@@ -3771,7 +3771,7 @@ void fixMiddle()
 		d = dest[midlp];
 
 		for(i=0; i<b; i++){									// an xor with its path will remove it
-			for(j=0;j<L;j++){
+			for(j=0;j<LINK_NUM;j++){
 				spec[index+i][j] = path[s][d][j] ^	spec[index+i][j];
 			}
 		}
@@ -3798,7 +3798,7 @@ int checkMoveUp(int lp){
 		eol = 0;
 
 		while(index < S && !eol){		// Check to what extend it can be retuned
-			for(j=0;j<L;j++){							//Check path availibility
+			for(j=0;j<LINK_NUM;j++){							//Check path availibility
 				if(spec[index][j] && path[s][d][j]){
 					eol = 1;
 					break;
@@ -3828,7 +3828,7 @@ int checkMoveDown(int lp){
 		d = dest[lp];
 		eol = 0;
 		while(index >= 0 && !eol){
-			for(j=0;j<L;j++){							//Check path availibility
+			for(j=0;j<LINK_NUM;j++){							//Check path availibility
 				if(spec[index][j] && path[s][d][j]){
 					eol = 1;
 					break;

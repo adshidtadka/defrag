@@ -1,17 +1,11 @@
 #define INF 999999999
-
-// iteration
 #define ITERATION 3
-
-// demand
 #define REQUEST_NUM 100
-
-// node num
 #define NODE_NUM 11
 
 // link num 
-// directional links (NODE_NUM,L) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
-#define L 52
+// directional links (NODE_NUM,LINK_NUM) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
+#define LINK_NUM 52
 
 // capacity per link
 #define S 400
