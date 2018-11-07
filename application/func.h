@@ -3491,7 +3491,7 @@ int getPrimRoot(int s, int lp)
 		b = Nodes[a].from;
 		hop_counter++;
 	}
-	if (hop_counter > LIMIT_HOP_NUM)
+	if (hop_counter > MAX_HOP_NUM)
 	{
 		return 0;
 	}
@@ -3603,7 +3603,7 @@ int getBackRoot(int s, int lp)
 		b = Nodes[a].from;
 		hop_counter++;
 	}
-	if (hop_counter > LIMIT_HOP_NUM)
+	if (hop_counter > MAX_HOP_NUM)
 	{
 		return 0;
 	}

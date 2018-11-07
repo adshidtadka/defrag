@@ -14,9 +14,4 @@
 // 0 if not used, 1 by length, 2 by size, 3 by blocks
 // #define SORT_TYPE 1
 #define MAX_STEP 3
-
-// defrag speed but it is not used
-#define spfact 1
-
-// max hop num
-#define LIMIT_HOP_NUM 99999
+#define MAX_HOP_NUM 99999
