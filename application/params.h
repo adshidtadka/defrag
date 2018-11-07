@@ -11,7 +11,5 @@
 #define DEFRAG_TIME 			0.1
 #define DEFRAG_TOTAL_TIME_MAX 	100
 #define DEFRAG_INTERVAL 		0.2
-// 0 if not used, 1 by length, 2 by size, 3 by blocks
-// #define SORT_TYPE 1
-#define MAX_STEP 3
-#define MAX_HOP_NUM 99999
+#define MAX_STEP 				3
+#define MAX_HOP_NUM 			99999

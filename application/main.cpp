@@ -12,7 +12,6 @@ int main(int argc, char* argv[])
 	int lp;
 
 	double ret_int = DEFRAG_INTERVAL;
-	int SORT_TYPE;
 
 	int it;
 
@@ -46,11 +45,7 @@ int main(int argc, char* argv[])
 	ofs1 << endl << " REQ_NUM= "<< REQ_NUM << endl;
 		//max number of demand
 
-	for(p=1; p<2; p++){ //Listを作る方法の違い
-		SORT_TYPE= p;
-		ofs1 << endl << "SORT_TYPE= "<< SORT_TYPE << endl;
-		cout << endl;
-		cout << endl << "SORT_TYPE= "<< SORT_TYPE << endl;
+	for(p=1; p<2; p++){
 
 		A = START_LOAD;//現在の通信量
 		ofs1 << endl << " A= "<< A << endl;
@@ -206,18 +201,6 @@ int main(int argc, char* argv[])
 
 									//新しくきたパスを評価する
 									int s= source[nowEvent.lpNum], d= dest[nowEvent.lpNum], sort_val1 = 0, sort_val2 = 0;
-									if(SORT_TYPE == 1){
-										sort_val1 = hops[s][d];
-										sort_val2 = bhops[s][d];
-									}
-									if(SORT_TYPE == 3){
-										sort_val1 = lp_size[nowEvent.lpNum];
-										sort_val2 = lp_size[nowEvent.lpNum];
-									}
-									if(SORT_TYPE == 2){
-										sort_val1 = lp_size[nowEvent.lpNum] *hops[s][d];
-										sort_val2 = lp_size[nowEvent.lpNum] *bhops[s][d];
-									}
 									//ブロッキングが起きていなければパスをリストに加える
 									if(b) addToList(nowEvent.lpNum, sort_val1, sort_val2);//activeList, backupList, mixtListに加えられる
 									//最終パスならばシミュレーション終了
