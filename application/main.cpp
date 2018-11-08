@@ -15,24 +15,24 @@ int main(int argc, char* argv[])
 
 	lpNode *cur;
 
-	ofstream ofs_result_txt; //出力用ストリーム
-	ofs_result_txt.open("./../result/result.txt"); //出力ファイルをオープンする
+	ofstream ofs_result_txt;
+	ofs_result_txt.open("./../result/result.txt");
 	if(!ofs_result_txt){
-		cout<< "Cannot open blocked file"<<endl;
+		cout << "[error] Cannot open ./../result/result.txt" << endl;
 		return 1;
 	}
 
-    ofstream ofs4;
-    ofs4.open("./../result/result.csv"); //blocking probability
-    if(!ofs4){
-            cout<< "Cannot open csv blocked file"<<endl;
+    ofstream ofs_result_csv;
+    ofs_result_csv.open("./../result/result.csv"); //blocking probability
+    if(!ofs_result_csv){
+            cout << "[error] Cannot open ./../result/result.csv" << endl;
             return 1;
     }
 
-    ofstream ofs5;
-    ofs5.open("./../result/operation_num.csv"); //operation number
-    if(!ofs5){
-            cout<< "Cannot open csv operation_num file"<<endl;
+    ofstream operation_num_csv;
+    operation_num_csv.open("./../result/operation_num.csv"); //operation number
+    if(!operation_num_csv){
+            cout << "[error] Cannot open ./../result/operation_num.csv file" << endl;
             return 1;
     }
 
@@ -306,8 +306,8 @@ int main(int argc, char* argv[])
 			for(k=1; k<=1; k++){//k=1のみのループ
 
 				//traffic load
-				ofs4 << A << ",";
-				ofs5 << A << ",";
+				ofs_result_csv << A << ",";
+				operation_num_csv << A << ",";
 
 				//信頼区間の計算
 				double stdItNone, stdItConv, stdItProp, stdItConvIlp, stdItPropIlp;
@@ -325,44 +325,44 @@ int main(int argc, char* argv[])
 
 				cout << "Av blocked request blkdItNone:         " << blkdItNone[k]/ITERATION << endl;
 				ofs_result_txt << "Av blocked request blkdItNone:         " << blkdItNone[k]/ITERATION << endl;
-				ofs4 << blkdItNone[k]/ITERATION << ",";
+				ofs_result_csv << blkdItNone[k]/ITERATION << ",";
 				cout << "Confidence interval blkdItNone:        " << stdItNone << endl;
 				ofs_result_txt << "Confidence interval blkdItNone:        " << stdItNone << endl;
 				cout << "Av blocked request blkdItConv:         " << blkdItConv[k]/ITERATION << endl;
 				ofs_result_txt << "Av blocked request blkdItConv:         " << blkdItConv[k]/ITERATION << endl;
-				ofs4 << blkdItConv[k]/ITERATION << ",";
+				ofs_result_csv << blkdItConv[k]/ITERATION << ",";
 				cout << "Confidence interval blkdItConv:        " << stdItConv << endl;
 				ofs_result_txt << "Confidence interval blkdItConv:        " << stdItConv << endl;
 				cout << "Av blocked request blkdItProp:         " << blkdItProp[k]/ITERATION << endl;
 				ofs_result_txt << "Av blocked request blkdItProp:         " << blkdItProp[k]/ITERATION << endl;
-				ofs4 << blkdItProp[k]/ITERATION << ",";
+				ofs_result_csv << blkdItProp[k]/ITERATION << ",";
 				cout << "Confidence interval blkdItProp:        " << stdItProp << endl;
 				ofs_result_txt << "Confidence interval blkdItProp:        " << stdItProp << endl;
 				cout << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp[k]/ITERATION << endl;
 				ofs_result_txt << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp[k]/ITERATION << endl;
-				ofs4 << blkdItConvIlp[k]/ITERATION << ",";
+				ofs_result_csv << blkdItConvIlp[k]/ITERATION << ",";
 				cout << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
 				ofs_result_txt << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
 				cout << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp[k]/ITERATION << endl;
 				ofs_result_txt << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp[k]/ITERATION << endl;
-				ofs4 << blkdItPropIlp[k]/ITERATION << endl;
+				ofs_result_csv << blkdItPropIlp[k]/ITERATION << endl;
 				cout << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
 				ofs_result_txt << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
 				cout << "Av toggle operations togOpItConv:      " << togOpItConv[k]/ITERATION << endl;
 				ofs_result_txt << "Av toggle operations togOpItConv:      " << togOpItConv[k]/ITERATION << endl;
-				ofs5 << togOpItConv[k]/ITERATION << ",";
+				operation_num_csv << togOpItConv[k]/ITERATION << ",";
 				cout << "Av move operations realOpItConv:       " << realOpItConv[k]/ITERATION << endl;
 				ofs_result_txt << "Av move operations realOpItConv:       " << realOpItConv[k]/ITERATION << endl;
-				ofs5 << realOpItConv[k]/ITERATION << ",";
+				operation_num_csv << realOpItConv[k]/ITERATION << ",";
 				cout << "Av toggle operations togOpItProp:      " << togOpItProp[k]/ITERATION << endl;
 				ofs_result_txt << "Av toggle operations togOpItProp:      " << togOpItProp[k]/ITERATION << endl;
-				ofs5 << togOpItProp[k]/ITERATION << ",";
+				operation_num_csv << togOpItProp[k]/ITERATION << ",";
 				cout << "Av move operations realOpItProp:       " << realOpItProp[k]/ITERATION << endl;
 				ofs_result_txt << "Av move operations realOpItProp:       " << realOpItProp[k]/ITERATION << endl;
-            	ofs5 << realOpItProp[k]/ITERATION << ",";
+            	operation_num_csv << realOpItProp[k]/ITERATION << ",";
             	cout << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp[k]/ITERATION << endl << endl;
             	ofs_result_txt << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp[k]/ITERATION << endl << endl;
-            	ofs5 << rerouteOpItProp[k]/ITERATION << endl;
+            	operation_num_csv << rerouteOpItProp[k]/ITERATION << endl;
             }
 		}
 	}
