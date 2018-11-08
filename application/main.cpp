@@ -72,8 +72,8 @@ int main(int argc, char* argv[])
 				cout << endl << " Iteration= "<< it << endl;//何回めなのかを表示
 				if(it==0) seed1 =  1448601515;  //time(NULL); 1444196111 1419542268 1424246601
 				//最初は種を設定する
-				seed1 = (it+1) * seed1;//種を変える
-				seed2 = (it+2) * seed1;						//(k+2) * time(NULL);
+				seed1 = (it+1) * seed1;
+				seed2 = (it+2) * seed1;
 
 				ret_int = DEFRAG_INTERVAL;//最大ステップ数
 				temp_max = DEFRAG_TOTAL_TIME_MAX;//新しいパスが来ないときのデフラグ時間
@@ -81,12 +81,11 @@ int main(int argc, char* argv[])
 				reInitialize();//経路とパス以外をゼロにする
 				genDemands();//10万のパス情報を取り直す
 
-				for(k=1; k<=1; k++){//k=1のみのループ
+				for(k=1; k<=1; k++){
 					reInitialize();//経路とパスの情報をゼロにする
 
 					initializeEvent(); //initialize startEvent endEvent defragEvent
 
-					if(k){
 						for(int i=0; i<REQ_NUM; i++){
 							t_req[i]= double (t_req[i]);
 							t_exp[i]= double (t_exp[i]);
@@ -116,7 +115,6 @@ int main(int argc, char* argv[])
 							defragEvent[c].type = 2;
 						}
 						// cout << "defragEvent[" << defragCount-1 << "].time = " << defragEvent[defragCount-1].time << endl;
-					}
 
 					for(int j=0; j<=2; j++){	// To do all algorithms sequentially連続してアルゴリズムを実行する c=0なら2回ループ
 						algoCall = j;
