@@ -11,22 +11,19 @@ int main(int argc, char* argv[])
 
 	int lp;
 
-	double ret_int = DEFRAG_INTERVAL;
-
 	int it;
 
-	lpNode *cur; //curというポインタ宣言, lpNodeは構造体
-	//xはスロット番号, yは占有帯域の大きさ(ソート用),zはプライマリ・バックアップ判別子
+	lpNode *cur;
 
-	ofstream ofs1; //出力用ストリーム
-	ofs1.open("./../result/blocked_205_b.txt"); //出力ファイルをオープンする
-	if(!ofs1){
+	ofstream ofs_result_txt; //出力用ストリーム
+	ofs_result_txt.open("./../result/result.txt"); //出力ファイルをオープンする
+	if(!ofs_result_txt){
 		cout<< "Cannot open blocked file"<<endl;
 		return 1;
 	}
 
     ofstream ofs4;
-    ofs4.open("./../result/blocked_205_b.csv"); //blocking probability
+    ofs4.open("./../result/result.csv"); //blocking probability
     if(!ofs4){
             cout<< "Cannot open csv blocked file"<<endl;
             return 1;
@@ -39,22 +36,22 @@ int main(int argc, char* argv[])
             return 1;
     }
 
-	ofs1 << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", START_LOAD= "<< A<< ", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
+	ofs_result_txt << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", START_LOAD= "<< A<< ", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
 	cout << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", START_LOAD= "<< A<< ", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
 		//number of nodes, number of slots, maxi demand size, Traffic load, retuning period, Vaiting time allowed to retune before adding new request
-	ofs1 << endl << " REQ_NUM= "<< REQ_NUM << endl;
+	ofs_result_txt << endl << " REQ_NUM= "<< REQ_NUM << endl;
 		//max number of demand
 
 	for(p=1; p<2; p++){
 
 		A = START_LOAD;//現在の通信量
-		ofs1 << endl << " A= "<< A << endl;
+		ofs_result_txt << endl << " A= "<< A << endl;
 		cout << endl << " A= "<< A << endl;
 		for(l=0; l<10; l++){ //通信量を変更するためのループ
 			cout << "TERM NUMBER = " << l << endl;
 			if(l){
 				A = A + 10;//通信量
-				ofs1 << endl << " A= "<< A << endl;
+				ofs_result_txt << endl << " A= "<< A << endl;
 				cout << endl << " A= "<< A << endl;
 			} //l=0のときは既にAを表示しているため実行しない
 			initialize(); //色々全部0にする
@@ -68,14 +65,12 @@ int main(int argc, char* argv[])
 			int rerouteOpItProp[10] = {};
 			double stdItNoneArr[10][ITERATION] = {{}}, stdItConvArr[10][ITERATION] = {{}}, stdItPropArr[10][ITERATION] = {{}}, stdItConvIlpArr[10][ITERATION] = {{}}, stdItPropIlpArr[10][ITERATION] = {{}};
 			for(it = 0; it<ITERATION; it++){ //ランダムサンプルの数_5回				
-				ofs1 << endl << " Iteration= "<< it << endl;//何回めなのかを表示
+				ofs_result_txt << endl << " Iteration= "<< it << endl;//何回めなのかを表示
 				cout << endl << " Iteration= "<< it << endl;//何回めなのかを表示
 				if(it==0) seed1 =  1448601515;  //time(NULL); 1444196111 1419542268 1424246601
 				//最初は種を設定する
 				seed1 = (it+1) * seed1;
 				seed2 = (it+2) * seed1;
-
-				ret_int = DEFRAG_INTERVAL;//最大ステップ数
 				temp_max = DEFRAG_TOTAL_TIME_MAX;//新しいパスが来ないときのデフラグ時間
 
 				reInitialize();//経路とパス以外をゼロにする
@@ -103,15 +98,15 @@ int main(int argc, char* argv[])
 							startEvent[i].lpNum = i;
 						}
 						
-						cout << "endEvent[" << REQ_NUM-1 << "].time = " << endEvent[REQ_NUM-1].time << ", ret_int = " << ret_int << endl;
+						cout << "endEvent[" << REQ_NUM-1 << "].time = " << endEvent[REQ_NUM-1].time << ", DEFRAG_INTERVAL = " << DEFRAG_INTERVAL << endl;
 
 						//make defrag event
-						defragCount = round(endEvent[REQ_NUM-1].time/ret_int);
+						defragCount = round(endEvent[REQ_NUM-1].time/DEFRAG_INTERVAL);
 						cout << "defragCount = " << defragCount << endl;
 						defragEvent.clear();
 						defragEvent.resize(defragCount);
 						for (int c = 0; c < defragCount ; c++){
-							defragEvent[c].time = c * ret_int;
+							defragEvent[c].time = c * DEFRAG_INTERVAL;
 							defragEvent[c].type = 2;
 						}
 						// cout << "defragEvent[" << defragCount-1 << "].time = " << defragEvent[defragCount-1].time << endl;
@@ -222,14 +217,14 @@ int main(int argc, char* argv[])
 						////////////////////////////////////////////////////////////////////////
 						end = clock();
    						cout << "Simulation time = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
-   						ofs1 << "Simulation time = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
+   						ofs_result_txt << "Simulation time = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
 
 						if(j==0){							// Reinitializing for next loop
 							blockedff = blocked;
 							blkdItNone[k] += blocked;
 							stdItNoneArr[k][it] = blocked;
 							cout << "Blocked request: First-fit w/o defragment                " << blockedff << endl;
-							ofs1 << "Blocked request: First-fit w/o defragment                " << blockedff << endl << endl;
+							ofs_result_txt << "Blocked request: First-fit w/o defragment                " << blockedff << endl << endl;
 							// printSpec();
 							// writeOutput();
 							// statDefrag();
@@ -243,11 +238,11 @@ int main(int argc, char* argv[])
 							togOpItConv[k]  += togOp;
 							realOpItConv[k] += realOp;
 							cout << "Blocked request: First-fit w/ stat defragment            " << blockedff << endl;
-							ofs1 << "Blocked request: First-fit w/ stat defragment            " << blockedff << endl << endl;
+							ofs_result_txt << "Blocked request: First-fit w/ stat defragment            " << blockedff << endl << endl;
 							cout << "Number of switching operations:                          " << togOp << endl;
-							ofs1 << "Number of switching operations:                          " << togOp << endl;
+							ofs_result_txt << "Number of switching operations:                          " << togOp << endl;
 							cout << "Number of reallocating operations:                       " << realOp << endl;
-							ofs1 << "Number of reallocating operations:                       " << realOp << endl << endl;
+							ofs_result_txt << "Number of reallocating operations:                       " << realOp << endl << endl;
 							// printSpec();
 							// statDefrag();
 							// printSpec();
@@ -261,13 +256,13 @@ int main(int argc, char* argv[])
 							realOpItProp[k] += realOp;
 							rerouteOpItProp[k] += rerouteOp;
 							cout << "Blocked request: First-fit w/ stat rerouting defragment  " << blockedff << endl;
-							ofs1 << "Blocked request: First-fit w/ stat rerouting defragment  " << blockedff << endl << endl;
+							ofs_result_txt << "Blocked request: First-fit w/ stat rerouting defragment  " << blockedff << endl << endl;
 							cout << "Number of switching operations:                          " << togOp << endl;
-							ofs1 << "Number of switching operations:                          " << togOp << endl;
+							ofs_result_txt << "Number of switching operations:                          " << togOp << endl;
 							cout << "Number of reallocating operations:                       " << realOp << endl;
-							ofs1 << "Number of reallocating operations:                       " << realOp << endl << endl;
+							ofs_result_txt << "Number of reallocating operations:                       " << realOp << endl << endl;
 							cout << "Number of rerouting operations:                          " << rerouteOp << endl;
-                            ofs1 << "Number of rerouting operations:                          " << rerouteOp << endl << endl;
+                            ofs_result_txt << "Number of rerouting operations:                          " << rerouteOp << endl << endl;
 							// printSpec();
 							// statDefrag();
 							// printSpec();
@@ -278,11 +273,11 @@ int main(int argc, char* argv[])
 							blkdItConvIlp[k] += blocked;
 							stdItConvIlpArr[k][it] = blocked;
 							cout << "Blocked request: First-fit w/ stat ilp defragment        " << blockedff << endl;
-							ofs1 << "Blocked request: First-fit w/ stat ilp defragment        " << blockedff << endl << endl;
+							ofs_result_txt << "Blocked request: First-fit w/ stat ilp defragment        " << blockedff << endl << endl;
 							cout << "Number of switching operations:                          " << togOp << endl;
-							ofs1 << "Number of switching operations:                          " << togOp << endl;
+							ofs_result_txt << "Number of switching operations:                          " << togOp << endl;
 							cout << "Number of reallocating operations:                       " << realOp << endl;
-							ofs1 << "Number of reallocating operations:                       " << realOp << endl << endl;
+							ofs_result_txt << "Number of reallocating operations:                       " << realOp << endl << endl;
 							// printSpec();
 							// statDefrag();
 							// printSpec();
@@ -293,11 +288,11 @@ int main(int argc, char* argv[])
 							blkdItPropIlp[k] += blocked;
 							stdItPropIlpArr[k][it] = blocked;
 							cout << "Blocked request: First-fit w/ stat ilp reroute defragment" << blockedff << endl;
-							ofs1 << "Blocked request: First-fit w/ stat ilp reroute defragment" << blockedff << endl << endl;
+							ofs_result_txt << "Blocked request: First-fit w/ stat ilp reroute defragment" << blockedff << endl << endl;
 							cout << "Number of switching operations:                          " << togOp << endl;
-							ofs1 << "Number of switching operations:                          " << togOp << endl;
+							ofs_result_txt << "Number of switching operations:                          " << togOp << endl;
 							cout << "Number of reallocating operations:                       " << realOp << endl;
-							ofs1 << "Number of reallocating operations:                       " << realOp << endl << endl;
+							ofs_result_txt << "Number of reallocating operations:                       " << realOp << endl << endl;
 							// printSpec();
 							// statDefrag();
 							// printSpec();
@@ -329,49 +324,49 @@ int main(int argc, char* argv[])
 				stdItPropIlpDiff = blkdItPropIlp[k]*0.05 - stdItPropIlp*1.96;
 
 				cout << "Av blocked request blkdItNone:         " << blkdItNone[k]/ITERATION << endl;
-				ofs1 << "Av blocked request blkdItNone:         " << blkdItNone[k]/ITERATION << endl;
+				ofs_result_txt << "Av blocked request blkdItNone:         " << blkdItNone[k]/ITERATION << endl;
 				ofs4 << blkdItNone[k]/ITERATION << ",";
 				cout << "Confidence interval blkdItNone:        " << stdItNone << endl;
-				ofs1 << "Confidence interval blkdItNone:        " << stdItNone << endl;
+				ofs_result_txt << "Confidence interval blkdItNone:        " << stdItNone << endl;
 				cout << "Av blocked request blkdItConv:         " << blkdItConv[k]/ITERATION << endl;
-				ofs1 << "Av blocked request blkdItConv:         " << blkdItConv[k]/ITERATION << endl;
+				ofs_result_txt << "Av blocked request blkdItConv:         " << blkdItConv[k]/ITERATION << endl;
 				ofs4 << blkdItConv[k]/ITERATION << ",";
 				cout << "Confidence interval blkdItConv:        " << stdItConv << endl;
-				ofs1 << "Confidence interval blkdItConv:        " << stdItConv << endl;
+				ofs_result_txt << "Confidence interval blkdItConv:        " << stdItConv << endl;
 				cout << "Av blocked request blkdItProp:         " << blkdItProp[k]/ITERATION << endl;
-				ofs1 << "Av blocked request blkdItProp:         " << blkdItProp[k]/ITERATION << endl;
+				ofs_result_txt << "Av blocked request blkdItProp:         " << blkdItProp[k]/ITERATION << endl;
 				ofs4 << blkdItProp[k]/ITERATION << ",";
 				cout << "Confidence interval blkdItProp:        " << stdItProp << endl;
-				ofs1 << "Confidence interval blkdItProp:        " << stdItProp << endl;
+				ofs_result_txt << "Confidence interval blkdItProp:        " << stdItProp << endl;
 				cout << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp[k]/ITERATION << endl;
-				ofs1 << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp[k]/ITERATION << endl;
+				ofs_result_txt << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp[k]/ITERATION << endl;
 				ofs4 << blkdItConvIlp[k]/ITERATION << ",";
 				cout << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
-				ofs1 << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
+				ofs_result_txt << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
 				cout << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp[k]/ITERATION << endl;
-				ofs1 << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp[k]/ITERATION << endl;
+				ofs_result_txt << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp[k]/ITERATION << endl;
 				ofs4 << blkdItPropIlp[k]/ITERATION << endl;
 				cout << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
-				ofs1 << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
+				ofs_result_txt << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
 				cout << "Av toggle operations togOpItConv:      " << togOpItConv[k]/ITERATION << endl;
-				ofs1 << "Av toggle operations togOpItConv:      " << togOpItConv[k]/ITERATION << endl;
+				ofs_result_txt << "Av toggle operations togOpItConv:      " << togOpItConv[k]/ITERATION << endl;
 				ofs5 << togOpItConv[k]/ITERATION << ",";
 				cout << "Av move operations realOpItConv:       " << realOpItConv[k]/ITERATION << endl;
-				ofs1 << "Av move operations realOpItConv:       " << realOpItConv[k]/ITERATION << endl;
+				ofs_result_txt << "Av move operations realOpItConv:       " << realOpItConv[k]/ITERATION << endl;
 				ofs5 << realOpItConv[k]/ITERATION << ",";
 				cout << "Av toggle operations togOpItProp:      " << togOpItProp[k]/ITERATION << endl;
-				ofs1 << "Av toggle operations togOpItProp:      " << togOpItProp[k]/ITERATION << endl;
+				ofs_result_txt << "Av toggle operations togOpItProp:      " << togOpItProp[k]/ITERATION << endl;
 				ofs5 << togOpItProp[k]/ITERATION << ",";
 				cout << "Av move operations realOpItProp:       " << realOpItProp[k]/ITERATION << endl;
-				ofs1 << "Av move operations realOpItProp:       " << realOpItProp[k]/ITERATION << endl;
+				ofs_result_txt << "Av move operations realOpItProp:       " << realOpItProp[k]/ITERATION << endl;
             	ofs5 << realOpItProp[k]/ITERATION << ",";
             	cout << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp[k]/ITERATION << endl << endl;
-            	ofs1 << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp[k]/ITERATION << endl << endl;
+            	ofs_result_txt << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp[k]/ITERATION << endl << endl;
             	ofs5 << rerouteOpItProp[k]/ITERATION << endl;
             }
 		}
 	}
-	ofs1.close();
+	ofs_result_txt.close();
 
 //	printSpec();
 

@@ -1970,9 +1970,9 @@ int genDemands()
 	uniform_int_distribution<int> traff_dist(1, REQ_SIZE_MAX);
 	//1からreq_Maxまでの整数がtraff_distで等確率で得られる
 
-	ofstream ofs1;
-    ofs1.open("./../result/input_demands1.txt");
-	if(!ofs1){
+	ofstream ofs_result_txt;
+    ofs_result_txt.open("./../result/input_demands1.txt");
+	if(!ofs_result_txt){
 		cout<< "Cannot open input_demands1 file"<<endl;
 		return 1;
 	}
@@ -1984,8 +1984,8 @@ int genDemands()
 		return 1;
 	}
 
-	ofs1 << "mu and inter:=" << mu <<", "<<  inter_arr<< endl;
-	ofs1 << "LP number, s, d, size, Arrival time, holding time:=" << endl;
+	ofs_result_txt << "mu and inter:=" << mu <<", "<<  inter_arr<< endl;
+	ofs_result_txt << "LP number, s, d, size, Arrival time, holding time:=" << endl;
 	ofs2 << "mu and inter:=" << mu <<", "<<  inter_arr << endl;
 	ofs2 << "LP number, s, d, size, Arrival time, holding time:=" << endl;
 
@@ -2008,7 +2008,7 @@ int genDemands()
 			while(source[i] == dest[i]) dest[i] = rand() %NODE_NUM;//発ノードと着ノードが同じにならないようにする
 		t_exp[i] = t_req[i] + t_hold[i]; //継続時間と到着時刻を合わせて切断時刻を計算
 		t_exp_event[i] = t_req_event[i] + t_hold_event[i]; //event driven
-		ofs1 << i  << ": "<< source[i]  <<" " << dest[i]  <<" " << lp_size[i]  <<" " << t_req[i] <<" " << t_hold[i] << endl;
+		ofs_result_txt << i  << ": "<< source[i]  <<" " << dest[i]  <<" " << lp_size[i]  <<" " << t_req[i] <<" " << t_hold[i] << endl;
 		ofs2 << i  << ": "<< source[i]  <<" " << dest[i]  <<" " << lp_size[i]  <<" " << t_req_event[i] <<" " << t_hold_event[i] << endl;
 		t_req[i+1]= t_req[i] + arr_int; //到着時刻と到着間隔を合わせて次の到着時刻を計算
 		t_req_event[i+1] = t_req_event[i] + arr_int_event; //event driven
@@ -2023,8 +2023,8 @@ int genDemands()
 		}
 	}
 
-	ofs1 << ":;"<< endl << endl;
-	ofs1.close();
+	ofs_result_txt << ":;"<< endl << endl;
+	ofs_result_txt.close();
 	ofs2 << ":;"<< endl << endl;
 	ofs2.close();
 	return 0;
