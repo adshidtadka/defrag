@@ -23,36 +23,35 @@ int main(int argc, char* argv[])
 	}
 
     ofstream ofs_result_csv;
-    ofs_result_csv.open("./../result/result.csv"); //blocking probability
+    ofs_result_csv.open("./../result/result.csv");
     if(!ofs_result_csv){
             cout << "[error] Cannot open ./../result/result.csv" << endl;
             return 1;
     }
 
     ofstream operation_num_csv;
-    operation_num_csv.open("./../result/operation_num.csv"); //operation number
+    operation_num_csv.open("./../result/operation_num.csv");
     if(!operation_num_csv){
             cout << "[error] Cannot open ./../result/operation_num.csv file" << endl;
             return 1;
     }
 
-	ofs_result_txt << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", START_LOAD= "<< A<< ", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
-	cout << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", START_LOAD= "<< A<< ", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
-		//number of nodes, number of slots, maxi demand size, Traffic load, retuning period, Vaiting time allowed to retune before adding new request
+	ofs_result_txt << "Simulation for NODE_NUM= "<< NODE_NUM <<", LINK_NUM = " << LINK_NUM << ", CAPASITY= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", START_LOAD= "<< load<< ", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
+	cout << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", START_LOAD= "<< load<< ", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
 	ofs_result_txt << endl << " REQ_NUM= "<< REQ_NUM << endl;
 		//max number of demand
 
 	for(p=1; p<2; p++){
 
-		A = START_LOAD;//現在の通信量
-		ofs_result_txt << endl << " A= "<< A << endl;
-		cout << endl << " A= "<< A << endl;
+		load = START_LOAD;//現在の通信量
+		ofs_result_txt << endl << " load= "<< load << endl;
+		cout << endl << " load= "<< load << endl;
 		for(l=0; l<10; l++){ //通信量を変更するためのループ
 			cout << "TERM NUMBER = " << l << endl;
 			if(l){
-				A = A + 10;//通信量
-				ofs_result_txt << endl << " A= "<< A << endl;
-				cout << endl << " A= "<< A << endl;
+				load = load + 10;//通信量
+				ofs_result_txt << endl << " load= "<< load << endl;
+				cout << endl << " load= "<< load << endl;
 			} //l=0のときは既にAを表示しているため実行しない
 			initialize(); //色々全部0にする
 			if (readInput(argc, &argv[0]) == 1){
@@ -306,8 +305,8 @@ int main(int argc, char* argv[])
 			for(k=1; k<=1; k++){//k=1のみのループ
 
 				//traffic load
-				ofs_result_csv << A << ",";
-				operation_num_csv << A << ",";
+				ofs_result_csv << load << ",";
+				operation_num_csv << load << ",";
 
 				//信頼区間の計算
 				double stdItNone, stdItConv, stdItProp, stdItConvIlp, stdItPropIlp;
@@ -576,11 +575,11 @@ int writeOutput()
 		cout<< "Cannot open ouput file"<<endl;
 		return 1;
 	}
-	ofs3 << "Load A := " << A <<";" << endl;
+	ofs3 << "Load load := " << load <<";" << endl;
 	ofs3 << "param REQ_NUM := " << m <<";" << endl;
 	ofs3 << "Last LP := " << lp <<";" << endl;
 	ofs3.close();
-	// cout << "Load A := " << A <<";" << endl;
+	// cout << "Load load := " << load <<";" << endl;
 	// cout << "param REQ_NUM := " << m <<";" << endl;
 	// cout << "Last LP := " << lp <<";" << endl;
 
@@ -659,11 +658,11 @@ int writeOutputPy()
 		cout<< "Cannot open ouput file"<<endl;
 		return 1;
 	}
-	ofs3 << "Load A := " << A <<";" << endl;
+	ofs3 << "Load load := " << load <<";" << endl;
 	ofs3 << "param REQ_NUM := " << m <<";" << endl;
 	ofs3 << "Last LP := " << lp <<";" << endl;
 	ofs3.close();
-	// cout << "Load A := " << A <<";" << endl;
+	// cout << "Load load := " << load <<";" << endl;
 	// cout << "param REQ_NUM := " << m <<";" << endl;
 	// cout << "Last LP := " << lp <<";" << endl;
 
@@ -755,11 +754,11 @@ int writeOutputReroutingPy()
 		cout<< "Cannot open ouput file"<<endl;
 		return 1;
 	}
-	ofs3 << "Load A := " << A <<";" << endl;
+	ofs3 << "Load load := " << load <<";" << endl;
 	ofs3 << "param REQ_NUM := " << m <<";" << endl;
 	ofs3 << "Last LP := " << lp <<";" << endl;
 	ofs3.close();
-	// cout << "Load A := " << A <<";" << endl;
+	// cout << "Load load := " << load <<";" << endl;
 	// cout << "param REQ_NUM := " << m <<";" << endl;
 	// cout << "Last LP := " << lp <<";" << endl;
 
