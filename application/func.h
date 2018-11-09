@@ -1,16 +1,3 @@
-/* This program is a simulation of hitless retuning */
-
-/* If (algCall==0 || == 2) no retuning option */
-/* When using middle fit, retune() after adding lp*/
-/* Add retuning time for 1+1 */
-/* Stop retuning if new request */
-/*include sorted list*/
-// Adding both primary and backup to the same list with initial state given
-/* Use DEFRAG_TOTAL_TIME_MAX, put high value if not needed */
-/* include sorted list*/
-/* Including backup first */
-/* Parallel realloc used for conventional, Check retuning function*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
