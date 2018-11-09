@@ -5,7 +5,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	int k, l;
+	int k;
 	int a, b;
 	int blockedff=0, blockedffh=0;
 
@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
 
 	lpNode *cur;
 
+	// open output file
 	ofstream ofs_result_txt;
 	ofs_result_txt.open("./../result/result.txt");
 	if(!ofs_result_txt){
@@ -41,27 +42,25 @@ int main(int argc, char* argv[])
 	ofs_result_txt 	<< endl << "REQ_NUM= "<< REQ_NUM << endl;
 	cout 			<< endl << "REQ_NUM= "<< REQ_NUM << endl;
 
+
+	for(int l=0; l<10; l++){
 		int load = START_LOAD;
-		ofs_result_txt 	<< endl << " load= "<< load << endl;
-		cout 			<< endl << " load= "<< load << endl;
-		for(l=0; l<10; l++){ //通信量を変更するためのループ
-			cout << "TERM NUMBER = " << l << endl;
-			if(l){
-				load = load + 10;//通信量
-				ofs_result_txt << endl << " load= "<< load << endl;
-				cout << endl << " load= "<< load << endl;
-			} //l=0のときは既にAを表示しているため実行しない
-			initialize(); //色々全部0にする
-			if (readInput(argc, &argv[0], load) == 1){
-                cout << "cannot read input" << endl;
-                return 1;
-            }//入力する情報を持って来る		
-			int blkdItNone[10] = {}, blkdItConv[10] = {}, blkdItProp[10] = {}, blkdItConvIlp[10] = {}, blkdItPropIlp[10] = {};
-			int togOpItConv[10] = {}, togOpItProp[10] = {};
-			int realOpItConv[10] = {}, realOpItProp[10] = {};
-			int rerouteOpItProp[10] = {};
-			double stdItNoneArr[10][ITERATION] = {{}}, stdItConvArr[10][ITERATION] = {{}}, stdItPropArr[10][ITERATION] = {{}}, stdItConvIlpArr[10][ITERATION] = {{}}, stdItPropIlpArr[10][ITERATION] = {{}};
-			for(it = 0; it<ITERATION; it++){ //ランダムサンプルの数_5回				
+		if(l != 0){
+			load = load + 10;
+		}
+		ofs_result_txt 	<< endl << "load= "<< load << endl;
+		cout 			<< endl << "load= "<< load << endl;
+		initialize();
+		if (readInput(argc, &argv[0], load) == 1){
+		    cout << "cannot read input" << endl;
+		    return 1;
+		}//入力する情報を持って来る		
+		int blkdItNone[10] = {}, blkdItConv[10] = {}, blkdItProp[10] = {}, blkdItConvIlp[10] = {}, blkdItPropIlp[10] = {};
+		int togOpItConv[10] = {}, togOpItProp[10] = {};
+		int realOpItConv[10] = {}, realOpItProp[10] = {};
+		int rerouteOpItProp[10] = {};
+		double stdItNoneArr[10][ITERATION] = {{}}, stdItConvArr[10][ITERATION] = {{}}, stdItPropArr[10][ITERATION] = {{}}, stdItConvIlpArr[10][ITERATION] = {{}}, stdItPropIlpArr[10][ITERATION] = {{}};
+		for(it = 0; it<ITERATION; it++){ //ランダムサンプルの数_5回				
 				ofs_result_txt << endl << " Iteration= "<< it << endl;//何回めなのかを表示
 				cout << endl << " Iteration= "<< it << endl;//何回めなのかを表示
 				if(it==0) seed1 =  1448601515;  //time(NULL); 1444196111 1419542268 1424246601

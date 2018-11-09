@@ -1781,7 +1781,7 @@ int reAllocBp(int p)
 	return 0;
 }
 
-int initialize(void)						  // Set everything to zero
+int initialize(void)
 {
 	int i,j, p, k, l;
 
