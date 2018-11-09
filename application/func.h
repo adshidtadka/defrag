@@ -1783,28 +1783,35 @@ int reAllocBp(int p)
 
 int initialize(void)
 {
-	int i,j, p, k, l;
-
-	for(i=0;i<NODE_NUM;i++){
-		for(j=0;j<NODE_NUM;j++){
-			for(p=0;p<LINK_NUM;p++) path[i][j][p] = 0;
-			hops[i][j]=0;
-			part[i][j]=0;
-			link[i][j]= INF;
-			for (k=0;k<NODE_NUM;k++){
-				for (l=0;l<NODE_NUM;l++){
-					linked_path[i][j][k][l] = 0;
-					linked_bp[i][j][k][l] = 0;
-					linked_crosspath[i][j][k][l] = 0;
+	for (int i = 0; i < NODE_NUM; i++)
+	{
+		for (int j = 0; j < NODE_NUM; j++)
+		{
+			for (int p = 0; p < LINK_NUM; p++)
+			{
+				path[i][j][p] = 0;
+			}
+			hops[i][j] = 0;
+			part[i][j] = 0;
+			link[i][j] = INF;
+			for (int k = 0; k < NODE_NUM; k++)
+			{
+				for (int l = 0; l < NODE_NUM; l++)
+				{
+					linked_path[i][j][k][l] 		= 0;
+					linked_bp[i][j][k][l] 			= 0;
+					linked_crosspath[i][j][k][l]	= 0;
 				}
 			}
 		}
 	}
 
-	for(i=0; i<LINK_NUM; i++){
-		for(j=0;j<REQ_NUM;j++){
-			path_rr[i][j] = 0;
-			bp_rr[i][j] = 0;
+	for (int i = 0; i < LINK_NUM; i++)
+	{
+		for (int j = 0; j < REQ_NUM; j++)
+		{
+			path_rr[i][j] 	= 0;
+			bp_rr[i][j] 	= 0;
 		}
 	}
 
