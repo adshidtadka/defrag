@@ -59,9 +59,11 @@ double ave(double, int);
 double var(double, int);
 double standard(double, int);
 double finTime();
-int lp_ind=0, lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM], spec_ind[REQ_NUM];
+int lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM], spec_ind[REQ_NUM];
 bool spec[CAPASITY][LINK_NUM], path[NODE_NUM][NODE_NUM][LINK_NUM];
-bool linked_path[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_bp[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_crosspath[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
+bool linked_path[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
+bool linked_bp[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
+bool linked_crosspath[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
 int low_ind, high_ind;
 int blocked;
 int isactive[REQ_NUM];
@@ -69,7 +71,7 @@ int t_req[REQ_NUM], t_hold[REQ_NUM], t_exp[REQ_NUM];
 double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
 int hops[NODE_NUM][NODE_NUM], bhops[NODE_NUM][NODE_NUM];
 int link[NODE_NUM][NODE_NUM];
-int max_hold, last_lp;
+int last_lp;
 int midlp = REQ_NUM;
 unsigned seed1 = 123;
 unsigned seed2 =  125;
@@ -783,113 +785,6 @@ int readResultReroutingPy()
 			fin.ignore(INT_MAX,'\n');
 		}
 	fin.close();
-	return 0;
-}
-
-
-int hopretune(int index)   				// Index is the starting point
-{
-	int a, b, lp, lp2;
-	int ret_time = 0;
-	int realMov = 1;
-	int s1, d1, s2, d2;
-
-	lpNode *cur;
-	lpNode *cur1;
-	lpNode *cur2;
-
-	tempList = NULL;
-	cur = mixtList;//lpnodeのカーソル
-	while ( cur != NULL ) {
-		addToList2(2, cur->x, cur->z);
-	//	cout << "cur x, z= " << cur->x << ", " << cur->z << endl;
-		cur= cur->next;
-	}
-	cur = tempList;
-//	cout << "Before"  << endl ;
-//	printSpec();
-
-	realList = NULL;
-	cur1 = NULL;
-//	cout << "cur = mixtList " << endl<< endl;
-
-	while ( cur != NULL ) {						// Checking all active LPs
-		realList = NULL;
-		cur1 = cur;
-		cur = cur->next;
-//		cout << "cur1 = cur " << endl<< endl;
-
-		while ( cur1 != NULL ) {	  // List for parallel realloc.
-			lp = cur1->x;
-		//	int st = cur1->z;
-			cur1 = cur1->next;
-
-			cur2 = realList;
-//			cout << "cur2 = realList 1 " << endl<< endl;
-
-			if(cur2 == NULL){
-				addToList2(1, lp, 1);
-				if(cur && cur->x == lp) cur = cur->next;
-				delFromList2(4, lp, 1);
-			}else{
-				int conf = 0;
-				while(cur2 != NULL){
-					s2 = source[cur2->x];
-					d2= dest[cur2->x];
-					cur2 = cur2->next;
-					s1 = source[lp];
-					d1= dest[lp];
-					if(linked_path[s1][d1][s2][d2] || linked_bp[s1][d1][s2][d2] || linked_crosspath[s1][d1][s2][d2]){
-						conf =1;
-						break;
-					}
-				}
-				if(conf==0){
-					addToList2(1, lp, 1);
-					if(cur && cur->x == lp) cur = cur->next;
-					delFromList2(4, lp, 1);
-				}
-			}
-		}
-
-		cur2 = realList;
-	//	cout << "cur2 = realList 2" << endl<< endl;
-		int realcheck = realOp;
-		while ( cur2 != NULL ){				// Parallel realloc.
-			lp = cur2->x;
-		//	b =  cur2->z;
-			cur2 = cur2->next;
-			if(spec_ind[lp] > index){
-				deleteLP(lp, 1);        // Remove LP from spec to avoid self-conflict
-			//	printSpec();
-				a = checkFirstFit(lp);				// Return spec_ind[lp] at worst
-				if(a==CAPASITY || a > spec_ind[lp]) a = checkFirstFit(lp);
-	//			cout << "In while-If"  << endl ;
-				if(a != spec_ind[lp]){
-					togOp++;
-					realOp++;
-					realMov++;
-					lpState[lp]= 0;
-					bpState[lp]= 1;
-				} // retOp++;
-				if(a< INF) asign(lp, a);
-			//	if(a>=INF) blocked++;
-	//			cout << "Out while-If"  << endl ;
-			//	ret_time++ ;
-			//	if(t+ret_time >= t_req[last_lp+1] || ret_time >= temp_max) return 0;
-			}
-		}
-		cur2 = realList;
-		while ( cur2 != NULL ){
-			lp = cur2->x;
-			cur2 = cur2->next;
-			delFromList(3, lp);
-		}
-		if(realcheck != realOp){
-			ret_time++ ;
-			if(t+ret_time >= t_req[last_lp+1] || ret_time >= temp_max) return 0;
-		}
-	}
 	return 0;
 }
 
@@ -1889,14 +1784,7 @@ int asignBp(int lp, int index)
 {
 	int i,j,p;
 	int s = source[lp], d= dest[lp], b= lp_size[lp];
-
-
-//	if(t >= 1300) cout << "1: high_ind for lp, ind=" << lp <<", "<< index << endl;
-
 	bp_ind[lp] = index;
-
-//	if(t >= 1300) cout << "2: high_ind at t=" << t << endl;
-
 	for(j=0;j<b;j++){
 		for(p=0;p<LINK_NUM;p++){
 			if(spec[index+j][p] == 1 && bp[s][d][p] ==1){
@@ -1915,15 +1803,7 @@ int asignBpRerouting(int lp, int index)
 	int i,j,p;
 	int s = source[lp], d= dest[lp], b= lp_size[lp];
 
-
-//	if(t >= 1300) cout << "1: high_ind for lp, ind=" << lp <<", "<< index << endl;
-
 	bp_ind[lp] = index;
-
-//	if(t >= 1300) cout << "2: high_ind at t=" << t << endl;
-	// for(i = 0; i < LINK_NUM ; i ++){
-	// 	cout << "bp_rr[" << i << "][" << lp << "] = " << bp_rr[i][lp] << endl;
-	// }
 	for(j=0;j<b;j++){
 		for(p=0;p<LINK_NUM;p++){
 			if(spec[index+j][p] == 1 && bp_rr[p][lp] ==1) throw "バックアップパス割り当てエラー";
@@ -1976,7 +1856,7 @@ int reInitialize(void)
 {
 	int i,j;
 
-	low_ind = CAPASITY-1; high_ind=0; lp_ind=0;
+	low_ind = CAPASITY-1; high_ind=0;
 	blocked=0;
 	retOp = 0;
 	eol_count = 0;
@@ -2063,7 +1943,7 @@ int genDemands(int load)
 	ofs2 << "mu and inter:=" << mu <<", "<<  inter_arr << endl;
 	ofs2 << "LP number, s, d, size, Arrival time, holding time:=" << endl;
 
-	max_hold = 0;
+	int max_hold = 0;
 	t_req[0]= 0;
 	t_req_event[0] = 0;
 
@@ -2188,7 +2068,7 @@ int printSpec()
 {
 	int i,j;
 	cout << "1:high_ind " << high_ind << ", low_ind " << low_ind << endl;
-	cout << " Spectrum :=" << endl;						//Just for checking
+	cout << " Spectrum :=" << endl;
 	cout << "  l :";
 	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
 	cout << endl;
@@ -2243,111 +2123,6 @@ int asignRerouting(int lp, int index)
 	}
 
 	return 0;
-}
-
-double checkFrag(int lp, int index)
-{
-	int i,j,p;
-	int s = source[lp], d= dest[lp], b= lp_size[lp];
-	int lp1, index1, s1, d1;
-
-	bool temp_spec[CAPASITY][LINK_NUM];
-	double pathFrag[NODE_NUM][NODE_NUM];
-	double specFrag =0;
-	double totalfrag=0, avefrag=0;
-	int totalhops=0;
-
-	for(i=0;i<NODE_NUM;i++){				// Initialise
-		for(j=0;j<NODE_NUM;j++) 	pathFrag[i][j] = 0;
-	}
-
-	for(i=0;i<CAPASITY;i++){				// Duplicating spectrum
-		for(p=0;p<LINK_NUM;p++)
-			temp_spec[i][p] = spec[i][p];
-	}
-
-	for(j=0;j<b;j++){				// Temporary asigning
-		for(p=0;p<LINK_NUM;p++) temp_spec[index+j][p] = temp_spec[index+j][p] || path[s][d][p];
-	}
-
-	// cout << " Spectrum :=" << endl;						//Just for checking
-	// cout << "l:";
-	// for (i=0;i<=LINK_NUM;i++) cout <<"  "<< i ;
-	// cout << endl;
-	// for (i=CAPASITY-1 ; i>=0; i--){
-		// cout << i << " :";
-		// for(j=0;j<LINK_NUM;j++){
-			// cout << "  " << temp_spec[i][j];
-		// }
-		// cout << endl;
-	// }
-	// cout << endl;
-
-	// cout << "1:high_ind " << high_ind << ", low_ind " << low_ind << endl;
-
-	for(j=high_ind+b+2;j<low_ind-b;j++){				// Temporary removal of midfit LPs
-		for(p=0;p<LINK_NUM;p++) temp_spec[j][p] = 0;
-	}
-
-	// cout << " Spectrum :=" << endl;						//Just for checking
-	// cout << "l:";
-	// for (i=0;i<=LINK_NUM;i++) cout <<"  "<< i ;
-	// cout << endl;
-	// for (i=CAPASITY-1 ; i>=0; i--){
-		// cout << i << " :";
-		// for(j=0;j<LINK_NUM;j++){
-			// cout << "  " << temp_spec[i][j];
-		// }
-		// cout << endl;
-	// }
-	// cout << endl;
-
-	for(s1=0;s1<NODE_NUM;s1++){					// Determine avalaible SB and max SB
-		for(d1=0;d1<NODE_NUM;d1++){						// for all paths
-			int maxSB = 0, avSB = 0;
-			int nonalign = 0, consecSB =0, maxcons=0;
-
-//			if(linked_path[s][d][s1][d1]){			// For shared path
-				for(i=0;i<CAPASITY;i++){					// Checking spectrum for available aligned SB
-					nonalign =0 ;
-					for(j=0;j<LINK_NUM;j++){
-						if(path[s1][d1][j]){		// Path s1-d1 using link j
-							if(!temp_spec[i][j])  avSB++;		// Available SB i on link j
-							if(temp_spec[i][j])  nonalign =1;	// SB i not aligned through the path of s1-d1
-						}
-					}
-					if(nonalign==0) consecSB++;		// Increasing consecutive aligned SB
-					if(nonalign || i==CAPASITY-1){			// End of consecutive aligned SB
-						if(maxcons < consecSB){
-							maxcons = consecSB;
-						}
-						consecSB = 0;
-					}
-				}
-				maxSB = hops[s1][d1]*maxcons;
-				if(!avSB) pathFrag[s1][d1] = 0;
-				if(avSB) pathFrag[s1][d1]= 1 - double(maxSB) / avSB;
-				if(lp==8){
-			//		cout << "Hops[" << s1 << "][" <<d1<<"]= " << hops[s1][d1] <<" maxSB and avSB: "<< maxSB <<" " <<avSB  << endl;
-			//		cout << "1: pathFrag[" << s1 << "][" <<d1<<"]= " << pathFrag[s1][d1] << endl;
-				}
-//			}
-		}
-	}
-
-	for(i=0;i<NODE_NUM;i++){				// Determining fragmentation
-		for(j=0;j<NODE_NUM;j++){
-			if(linked_path[s][d][i][j]){
-//				cout << "2: pathFrag[" << i << "][" <<j<<"]= " << pathFrag[i][j] << endl;
-				totalfrag += hops[i][j]*pathFrag[i][j];
-				totalhops += hops[i][j];
-			}
-		}
-	}
-	specFrag = totalfrag / totalhops;
-//		cout << "specFrag= " << specFrag << endl;
-
-	return specFrag;
 }
 
 int checkExactFit(int lp)

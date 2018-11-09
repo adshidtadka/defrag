@@ -9,7 +9,6 @@ int main(int argc, char* argv[])
 
 	int lp;
 
-	// open output file
 	ofstream ofs_result_txt;
 	ofs_result_txt.open("./../result/result.txt");
 	if(!ofs_result_txt){
