@@ -5,7 +5,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	int k, l, p;
+	int k, l;
 	int a, b;
 	int blockedff=0, blockedffh=0;
 
@@ -36,16 +36,14 @@ int main(int argc, char* argv[])
             return 1;
     }
 
-	ofs_result_txt << "Simulation for NODE_NUM= "<< NODE_NUM <<", LINK_NUM = " << LINK_NUM << ", CAPASITY= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", START_LOAD= "<< load<< ", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
-	cout << "Simulation for NODE_NUM= "<< NODE_NUM <<", Links = " << LINK_NUM << ", Spec= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", START_LOAD= "<< load<< ", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
-	ofs_result_txt << endl << " REQ_NUM= "<< REQ_NUM << endl;
-		//max number of demand
+	ofs_result_txt 	<< "Simulation for NODE_NUM= "<< NODE_NUM <<", LINK_NUM = " << LINK_NUM << ", CAPASITY= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
+	cout 			<< "Simulation for NODE_NUM= "<< NODE_NUM <<", LINK_NUM = " << LINK_NUM << ", CAPASITY= "<< CAPASITY <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", temp_max= "<< temp_max << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
+	ofs_result_txt 	<< endl << "REQ_NUM= "<< REQ_NUM << endl;
+	cout 			<< endl << "REQ_NUM= "<< REQ_NUM << endl;
 
-	for(p=1; p<2; p++){
-
-		load = START_LOAD;//現在の通信量
-		ofs_result_txt << endl << " load= "<< load << endl;
-		cout << endl << " load= "<< load << endl;
+		int load = START_LOAD;
+		ofs_result_txt 	<< endl << " load= "<< load << endl;
+		cout 			<< endl << " load= "<< load << endl;
 		for(l=0; l<10; l++){ //通信量を変更するためのループ
 			cout << "TERM NUMBER = " << l << endl;
 			if(l){
@@ -54,7 +52,7 @@ int main(int argc, char* argv[])
 				cout << endl << " load= "<< load << endl;
 			} //l=0のときは既にAを表示しているため実行しない
 			initialize(); //色々全部0にする
-			if (readInput(argc, &argv[0]) == 1){
+			if (readInput(argc, &argv[0], load) == 1){
                 cout << "cannot read input" << endl;
                 return 1;
             }//入力する情報を持って来る		
@@ -73,7 +71,7 @@ int main(int argc, char* argv[])
 				temp_max = DEFRAG_TOTAL_TIME_MAX;//新しいパスが来ないときのデフラグ時間
 
 				reInitialize();//経路とパス以外をゼロにする
-				genDemands();//10万のパス情報を取り直す
+				genDemands(load);//10万のパス情報を取り直す
 
 				for(k=1; k<=1; k++){
 					reInitialize();//経路とパスの情報をゼロにする
@@ -183,7 +181,7 @@ int main(int argc, char* argv[])
 
 									if(!b){//もしブロッキングが起こってしまったら
 										try{
-											retuneBp();//デフラグを行う
+											retuneBp(load);//デフラグを行う
 										}
 										catch(const char* err){
 											cout << "ERR:ブロッキング中における" << err << endl;
@@ -205,7 +203,7 @@ int main(int argc, char* argv[])
 	 						}
 							if(nowEvent.type == 2){//デフラグメンテーションがret_intごとに行われる
 								try{
-									retuneBp();//デフラグを行う
+									retuneBp(load);//デフラグを行う
 								}
 								catch(const char* err){
 									cout << "ERR:デフラグ中における" << err << endl;
@@ -364,7 +362,6 @@ int main(int argc, char* argv[])
             	operation_num_csv << rerouteOpItProp[k]/ITERATION << endl;
             }
 		}
-	}
 	ofs_result_txt.close();
 
 //	printSpec();
@@ -388,7 +385,7 @@ int main(int argc, char* argv[])
 //	printSpec();
 }
 
-int readInput(int argc, char* argv[0])
+int readInput(int argc, char* argv[0], int load)
 {
 	int i,j,k,l, p;
 	int a, b;
@@ -535,11 +532,11 @@ int readInput(int argc, char* argv[0])
 			}
 		}
 	}
-	genDemands();
+	genDemands(load);
 	return 0;
 }
 
-int writeOutput()
+int writeOutput(int load)
 {
 	int i,j,ind=0;
 	int lp,n,f0;
@@ -623,7 +620,7 @@ int writeOutput()
 	return 0;
 }
 
-int writeOutputPy()
+int writeOutputPy(int load)
 {
 	int i,j,ind=0;
 	int lp,n,f0,k;
@@ -718,7 +715,7 @@ int writeOutputPy()
 	return 0;
 }
 
-int writeOutputReroutingPy()
+int writeOutputReroutingPy(int load)
 {
 	int i,j,ind=0;
 	int lp,n,f0,k;

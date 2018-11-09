@@ -33,7 +33,7 @@ using namespace std;
 	int initialize(void);
 	int reInitialize(void);
 	int initializeEvent(void);
-	int readInput(int, char**);
+	int readInput(int, char**, int);
 	int readDemands(void);
 	int firstFit(int);
 	int lastFit(int);
@@ -56,7 +56,7 @@ using namespace std;
 	int minIndAllocLP(int);
 	int minFragAllocLP(int);
 	double checkFrag(int, int);
-	int genDemands(void);
+	int genDemands(int);
 	int midFitAllocLP(int);
 
 	void delFromList(int, int);
@@ -98,21 +98,21 @@ using namespace std;
 	int checkFirstBpRerouting(int);
 	int asignBp(int, int);
 	int asignBpRerouting(int, int);
-	int retuneBp(void);
+	int retuneBp(int);
 	int removeBp(int);
 	int reAllocBp(int);
 	int readResult();
 	int readResultPy();
 	int readResultReroutingPy();
-	void statDefrag(void);
-	void statDefragPy(void);
-	void statDefragReroutingPy(void);
+	void statDefrag(int);
+	void statDefragPy(int);
+	void statDefragReroutingPy(int);
 	int statAlgo(void);
 	int statReroutingAlgo(void);
 	int readInput(void);
-	int writeOutput(void);
-	int writeOutputPy(void);
-	int writeOutputReroutingPy(void);
+	int writeOutput(int);
+	int writeOutputPy(int);
+	int writeOutputReroutingPy(int);
 	void addToList2(int, int, int);
 
 	void delFromList2(int, int, int);
@@ -191,8 +191,6 @@ using namespace std;
 	int last_ret= 0;
 	int temp_max = DEFRAG_TOTAL_TIME_MAX;
 
-	int load = START_LOAD;
-
 	double t;
 
 	int bp_ind[REQ_NUM];
@@ -231,7 +229,7 @@ using namespace std;
 
 //}
 
-int retuneBp()
+int retuneBp(int load)
 {
 //	if(t == 700) printSpec();
 	if(!algoCall) return 0;
@@ -257,7 +255,7 @@ int retuneBp()
 	if(algoCall==3){
 	//	statDefrag();
 	//	cout << "checkpoint6 "<< endl;
-		statDefragPy();
+		statDefragPy(load);
 	//	cout << "checkpoint7 "<< endl;
 		return 0;
 	}
@@ -265,7 +263,7 @@ int retuneBp()
 	if(algoCall==4){
 	//	statDefrag();
 	//	cout << "checkpoint6 "<< endl;
-		statDefragReroutingPy();
+		statDefragReroutingPy(load);
 	//	cout << "checkpoint7 "<< endl;
 		return 0;
 	}
@@ -328,34 +326,18 @@ double standard(double data[], int n) {
     return sqrt(var(data, n));                  // 標準偏差=分散の平方根
 }
 
-
-void statDefrag(){
-	writeOutput();
-//	printSpec();
-	system("ampl smpe_f.run > runresult.txt");
-//	system("ampl smpe_fhm.run > runresult.txt");
-	readResult();
-//	printSpec();
-}
-
-void statDefragPy(){
-
-	writeOutputPy();
-	// printSpec();
+void statDefragPy(int load)
+{
+	writeOutputPy(load);
 	system("python ssr_lno.py");
-//	system("ampl smpe_fhm.run > runresult.txt");
 	readResultPy();
-//	printSpec();
 }
 
-void statDefragReroutingPy(){
-
-	writeOutputReroutingPy();
-	// printSpec();
+void statDefragReroutingPy(int load)
+{
+	writeOutputReroutingPy(load);
 	system("python ssrr_lno.py");
-//	system("ampl smpe_fhm.run > runresult.txt");
 	readResultReroutingPy();
-//	printSpec();
 }
 
 int readResult()
@@ -1938,7 +1920,7 @@ int readDemands()
 	return 0;
 }
 
-int genDemands()
+int genDemands(int load)
 {
 	int i,j,k;
 	int arr_int;
@@ -1946,29 +1928,14 @@ int genDemands()
 	double temp1;
 
 	double mu = 1/double(HOLDING_TIME);
-	// for exponentially-distributed duration with mean HOLDING_TIME=1/mu
-	//指数関数分布の継続時間 0.1
 	double inter_arr = double(HOLDING_TIME)/load;
-	// Inter-arrival time for poisson distribution load=HOLDING_TIME/inter_arr
-	//ポアソン分布の到着間隔 10/74
 
-	srand (seed2);					//time(NULL)2種類ある
+	srand (seed2);
 
 	default_random_engine generator (seed1);
-	//generatorという擬似乱数生成エンジンを定義 種はseed1
-	// poisson_distribution<int> next_arr(K*inter_arr);
-	// exponential_distribution<double> next_arr(1/(K*inter_arr));
 	exponential_distribution<double> next_arr(1/inter_arr);
-	// 100* to clock the steps to a 10ms, does not change load,
-	//平均値K*inter_arr(100*10/74)でnext_arrというポアソン分布が得られる
 	exponential_distribution<double> hold_time(mu);
-	// load = 100*HOLDING_TIME/100*inter_arr
-	// ρ = λ × HOLDING_TIME
-	//   = 100 * 10 / 74 * 10
-	//	 = 135
-	// 平均値mu(0.1)でhold_timeという指数関数分布が得られる
 	uniform_int_distribution<int> traff_dist(1, REQ_SIZE_MAX);
-	//1からreq_Maxまでの整数がtraff_distで等確率で得られる
 
 	ofstream ofs_result_txt;
     ofs_result_txt.open("./../result/input_demands1.txt");
