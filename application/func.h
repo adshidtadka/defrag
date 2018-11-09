@@ -26,173 +26,131 @@
 #include <sstream>
 
 using namespace std;
-//名前を簡潔に指定するための記述
 
-// Declaring functions
-//{
-	int initialize(void);
-	int reInitialize(void);
-	int initializeEvent(void);
-	int readInput(int, char**, int);
+int initialize(void);
+int reInitialize(void);
+int initializeEvent(void);
+int readInput(int, char**, int);
+int checkFirstFit(int);
+int checkFirstFitRerouting(int);
+int retuneDownNonRerouting_0();
+int retuneDownRerouting_0();
+int asign(int, int);
+int asignRerouting(int,int);
+int asignBp(int, int);
+int asignBpRerouting(int, int);
+int printSpec(void);
+int genDemands(int);
+void delFromList(int, int);
+void addToList(int, int, int);
+int checkExactFit(int);
+int checkExactBp(int);
+int checkExactFitRerouting(int);
+int checkExactBpRerouting(int);
+int getPrimRoot(int, int);
+int getBackRoot(int, int);
+void deleteLP(int, int);
+void deleteLPRerouting(int, int);
+int removeLP1_1(int, int);
+int firstFit1_1(int, int);
+int checkFirstBp(int);
+int checkFirstBpRerouting(int);
+int retuneBp(int);
+int readResultPy();
+int readResultReroutingPy();
+void statDefragPy(int);
+void statDefragReroutingPy(int);
+int statAlgo(void);
+int statReroutingAlgo(void);
+int writeOutput(int);
+int writeOutputPy(int);
+int writeOutputReroutingPy(int);
+void addToList2(int, int, int);
+void delFromList2(int, int, int);
+double sum(double, int);
+double ave(double, int);
+double var(double, int);
+double standard(double, int);
+double finTime();
+int lp_ind=0, lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM], spec_ind[REQ_NUM];
+bool spec[CAPASITY][LINK_NUM], path[NODE_NUM][NODE_NUM][LINK_NUM];
+bool linked_path[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_bp[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_crosspath[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
+int low_ind, high_ind;
+int blocked;
+int isactive[REQ_NUM];
+int t_req[REQ_NUM], t_hold[REQ_NUM], t_exp[REQ_NUM];
+double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
+int hops[NODE_NUM][NODE_NUM], bhops[NODE_NUM][NODE_NUM];
+int link[NODE_NUM][NODE_NUM];
+int max_hold, last_lp;
+int midlp = REQ_NUM;
+unsigned seed1 = 123;
+unsigned seed2 =  125;
+struct lpNode{
+	int x;
+	int y;
+	int z;
+	lpNode *next;
+};
+lpNode *activeList = NULL;
+lpNode *midFitList = NULL;
+lpNode *backupList = NULL;
+lpNode *mixtList = NULL;
+lpNode *realList = NULL;
+lpNode *tempList = NULL;
+struct Node {
+	vector<int> edges_to;
+ 	vector<int> edges_cost;
+	bool done;
+	int cost;
+	int nodeNum;
+	int from;
+	bool operator> (const Node &node) const {
+   	return (cost > node.cost);
+	}
+};
+bool path_rr[LINK_NUM][REQ_NUM], bp_rr[LINK_NUM][REQ_NUM];
+int part[NODE_NUM][NODE_NUM];
+int algoCall;
+int retOp;
+int eol_count;
+int t_temp =0;
+int last_ret= 0;
+int temp_max = DEFRAG_TOTAL_TIME_MAX;
+double t;
+int bp_ind[REQ_NUM];
+bool bp[NODE_NUM][NODE_NUM][LINK_NUM];
+int togOp;
+int realOp;
+int rerouteOp;
+bool lpState[REQ_NUM];
+bool bpState[REQ_NUM];
+int last_blocked = 0;
+struct Event
+{
+	double time;
+	int lpNum;
+	int type;	
+	bool operator> (const Event &event) const {
+   	return (time > event.time);
+	}
+};
+priority_queue<Event, vector<Event>, greater<Event> > eventQueue;
+priority_queue<Event, vector<Event>, greater<Event> > deleteQueue;
+Event startEvent[REQ_NUM];
+Event endEvent[REQ_NUM];
+Event nowEvent;
+Event nextEvent;
+int defragCount;
+vector<Event> defragEvent;
 
-	int checkFirstFit(int);
-	int checkFirstFitRerouting(int);
-	int retuneDownNonRerouting_0();
-	int retuneDownRerouting_0();
-
-	int asign(int, int);
-	int asignRerouting(int,int);
-	int asignBp(int, int);
-	int asignBpRerouting(int, int);
-
-	int printSpec(void);
-
-	int genDemands(int);
-
-	void delFromList(int, int);
-	void addToList(int, int, int);
-
-	int checkExactFit(int);
-	int checkExactBp(int);
-	int checkExactFitRerouting(int);
-	int checkExactBpRerouting(int);
-
-	int getPrimRoot(int, int);
-	int getBackRoot(int, int);
-
-	void deleteLP(int, int);
-	void deleteLPRerouting(int, int);
-
-	int removeLP1_1(int, int);
-	int firstFit1_1(int, int);
-	int checkFirstBp(int);
-	int checkFirstBpRerouting(int);
-	int retuneBp(int);
-	int readResultPy();
-	int readResultReroutingPy();
-	void statDefragPy(int);
-	void statDefragReroutingPy(int);
-	int statAlgo(void);
-	int statReroutingAlgo(void);
-	int writeOutput(int);
-	int writeOutputPy(int);
-	int writeOutputReroutingPy(int);
-	void addToList2(int, int, int);
-	void delFromList2(int, int, int);
-
-	double sum(double, int);
-	double ave(double, int);
-	double var(double, int);
-	double standard(double, int);
-
-	double finTime();
-
-	int lp_ind=0, lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM], spec_ind[REQ_NUM];    // Each LP has an arrival index, a couple s/d,
-															// and a given size. It is allocated to a spectrum index
-	bool spec[CAPASITY][LINK_NUM], path[NODE_NUM][NODE_NUM][LINK_NUM];				// Spectrum is a slots*links matrix, path(s,d,link) 1 if sd use l
-	bool linked_path[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_bp[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM], linked_crosspath[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];				// Paths sharing at least a link
-
-	int low_ind, high_ind;						// Lowest used index for lastfit and highest for firstfit
-	int blocked;					// Counting blocked request //ブロッキングを起こしたリクエストの数
-	int isactive[REQ_NUM];							// Tracking if lp is allocated and where (0-off, 1-firstf, 2-lastf)
-	int t_req[REQ_NUM], t_hold[REQ_NUM], t_exp[REQ_NUM];			// Tracking request arrival time and lp expiration time
-	double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
-
-	int hops[NODE_NUM][NODE_NUM], bhops[NODE_NUM][NODE_NUM];
-	int link[NODE_NUM][NODE_NUM];
-
-	int max_hold, last_lp;
-
-	int midlp = REQ_NUM;
-
-	unsigned seed1 = 123;      //time(NULL);						// Initializing generator
-	unsigned seed2 =  125;
-
-	struct lpNode{
-		int x;							//lp index
-		int y;    				  //lp length or size or both, for sorting purpose
-		int z;							//Initial lp state, 1 prime, 0 for backups
-		lpNode *next;
-	};
-
-	lpNode *activeList = NULL;
-	lpNode *midFitList = NULL;		// This won't change, or we would lose the list in memory
-	lpNode *backupList = NULL;
-	lpNode *mixtList = NULL;
-	lpNode *realList = NULL;
-	lpNode *tempList = NULL;
-
-	struct Node {
-		// このノードから伸びるエッジの情報
-		vector<int> edges_to;    // 各エッジの接続先のノード番号
-	 	vector<int> edges_cost;  // 各エッジのコスト
-
-		// ダイクストラ法のためのデータ
-		bool done;  // 確定ノードか否か
-		int cost;   // このノードへの現時点で判明している最小コスト
-		int nodeNum;
-		int from;
-
-		//比較演算子のオーバーロード
-		bool operator> (const Node &node) const {
-    	return (cost > node.cost);
-		}
-	};
-
-	bool path_rr[LINK_NUM][REQ_NUM], bp_rr[LINK_NUM][REQ_NUM];//リルーティングのための変数
-
-	int part[NODE_NUM][NODE_NUM];
-
-	int algoCall;
-	int retOp;
-	int eol_count;
-
-	int t_temp =0;
-	int last_ret= 0;
-	int temp_max = DEFRAG_TOTAL_TIME_MAX;
-
-	double t;
-
-	int bp_ind[REQ_NUM];
-	bool bp[NODE_NUM][NODE_NUM][LINK_NUM];
-
-	int togOp;
-	int realOp;
-	int rerouteOp; //the number of rerouting operations
-
-	bool lpState[REQ_NUM];
-	bool bpState[REQ_NUM];
-
-	int last_blocked = 0;   // Put to 1 if last allocation try was denied
-
-	struct Event {			// path coming, path disrupution, defrag start
-		
-		double time;   // the time of event
-		int lpNum;  // the lp number
-		int type;  // 0:coming, 1:disruption
-
-		//比較演算子のオーバーロード
-		bool operator> (const Event &event) const {
-    	return (time > event.time);
-		}
-	};
-
-	priority_queue<Event, vector<Event>, greater<Event> > eventQueue; // 優先度付き待ち行列
-	priority_queue<Event, vector<Event>, greater<Event> > deleteQueue;
-
-	Event startEvent[REQ_NUM];
-	Event endEvent[REQ_NUM];
-	Event nowEvent;
-	Event nextEvent;
-	int defragCount;
-	vector<Event> defragEvent;
 int readInput(int argc, char* argv[0], int load)
 {
 	int i,j,k,l, p;
 	int a, b;
 	char tmp= 'r';
 
-	ifstream fin; 									//reading from files　入力用ストリーム
+	ifstream fin;
 
 	//	Register network
 	stringstream ss;

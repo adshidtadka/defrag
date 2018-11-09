@@ -2,7 +2,9 @@
 #define ITERATION 				3
 #define REQ_NUM 				100
 #define CAPASITY 				400
-#define START_LOAD 				350
+#define LOAD_START 				350
+#define LOAD_GAIN 				10
+#define LOAD_REPEAT_NUM			10
 #define HOLDING_TIME 			10
 #define REQ_SIZE_MAX 			16
 #define DEFRAG_TIME 			0.1

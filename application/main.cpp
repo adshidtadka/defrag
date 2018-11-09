@@ -39,10 +39,10 @@ int main(int argc, char* argv[])
 	cout 			<< endl << "REQ_NUM= "<< REQ_NUM << endl;
 
 
-	for(int l=0; l<10; l++){
-		int load = START_LOAD;
+	for(int l=0; l < LOAD_REPEAT_NUM; l++){
+		int load = LOAD_START;
 		if(l != 0){
-			load = load + 10;
+			load = load + LOAD_GAIN;
 		}
 		ofs_result_txt 	<< endl << "load= "<< load << endl;
 		cout 			<< endl << "load= "<< load << endl;
