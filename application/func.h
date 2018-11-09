@@ -74,13 +74,12 @@ using namespace std;
 	void statDefragReroutingPy(int);
 	int statAlgo(void);
 	int statReroutingAlgo(void);
-	int readInput(void);
 	int writeOutput(int);
 	int writeOutputPy(int);
 	int writeOutputReroutingPy(int);
 	void addToList2(int, int, int);
 	void delFromList2(int, int, int);
-	
+
 	double sum(double, int);
 	double ave(double, int);
 	double var(double, int);

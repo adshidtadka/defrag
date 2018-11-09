@@ -11,10 +11,6 @@ int main(int argc, char* argv[])
 
 	int lp;
 
-	int it;
-
-	lpNode *cur;
-
 	// open output file
 	ofstream ofs_result_txt;
 	ofs_result_txt.open("./../result/result.txt");
@@ -52,15 +48,15 @@ int main(int argc, char* argv[])
 		cout 			<< endl << "load= "<< load << endl;
 		initialize();
 		if (readInput(argc, &argv[0], load) == 1){
-		    cout << "cannot read input" << endl;
+		    cout << "[error] cannot read input" << endl;
 		    return 1;
-		}//入力する情報を持って来る		
+		}
 		int blkdItNone[10] = {}, blkdItConv[10] = {}, blkdItProp[10] = {}, blkdItConvIlp[10] = {}, blkdItPropIlp[10] = {};
 		int togOpItConv[10] = {}, togOpItProp[10] = {};
 		int realOpItConv[10] = {}, realOpItProp[10] = {};
 		int rerouteOpItProp[10] = {};
 		double stdItNoneArr[10][ITERATION] = {{}}, stdItConvArr[10][ITERATION] = {{}}, stdItPropArr[10][ITERATION] = {{}}, stdItConvIlpArr[10][ITERATION] = {{}}, stdItPropIlpArr[10][ITERATION] = {{}};
-		for(it = 0; it<ITERATION; it++){ //ランダムサンプルの数_5回				
+		for(int it = 0; it<ITERATION; it++){ //ランダムサンプルの数_5回				
 				ofs_result_txt << endl << " Iteration= "<< it << endl;//何回めなのかを表示
 				cout << endl << " Iteration= "<< it << endl;//何回めなのかを表示
 				if(it==0) seed1 =  1448601515;  //time(NULL); 1444196111 1419542268 1424246601
@@ -363,25 +359,17 @@ int main(int argc, char* argv[])
 		}
 	ofs_result_txt.close();
 
-//	printSpec();
-
+	lpNode *cur;
 	cur = realList;
-	while ( cur != NULL ) {
-	//	if(bp_ind[cur->x] >= 16){
-	//		cout << cur->x << " indexes " << spec_ind[cur->x] << ",  " << bp_ind[cur->x]<< endl;
-	//		 printSpec();
-	//	}
+	while (cur != NULL) {
 		deleteLP(cur->x, 0);
-//		if(cur->z) cout<< cur->x << " prime index " << spec_ind[cur->x]<< endl;
-//		if(!cur->z) cout<< cur->x << " backup index " << bp_ind[cur->x]<< endl;
 		cur = cur->next;
 	}
 
 	cout << endl;
-
 	cout << "t: " << t << " Seed1: " << seed1 << ", Seed2: " << seed2 << endl<< endl;
 
-//	printSpec();
+	return 0;
 }
 
 int readInput(int argc, char* argv[0], int load)
