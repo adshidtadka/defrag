@@ -61,7 +61,9 @@ double standard(double, int);
 double finTime();
 
 int lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM], spec_ind[REQ_NUM];
-bool spec[CAPASITY][LINK_NUM], path[NODE_NUM][NODE_NUM][LINK_NUM];
+bool spec[CAPASITY][LINK_NUM];
+bool path_prim[NODE_NUM][NODE_NUM][LINK_NUM];
+bool path_back[NODE_NUM][NODE_NUM][LINK_NUM];
 bool linked_path[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
 bool linked_bp[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
 bool linked_crosspath[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
@@ -104,7 +106,6 @@ int last_ret= 0;
 int temp_max = DEFRAG_TOTAL_TIME_MAX;
 double t;
 int bp_ind[REQ_NUM];
-bool bp[NODE_NUM][NODE_NUM][LINK_NUM];
 int togOp;
 int realOp;
 int rerouteOp;
@@ -185,7 +186,7 @@ int readInput(int argc, char* argv[0], int load)
 		fin >> i >> j >> a >> b;
 		fin.ignore(INT_MAX,'\n');
 		p = link[a][b];
-		path[i][j][p] = 1;
+		path_prim[i][j][p] = 1;
 		++hops[i][j];
 	}
 	fin.close();
@@ -221,8 +222,8 @@ int readInput(int argc, char* argv[0], int load)
 		int i, j, a, b, p;
 		fin >> i >> j >> a >> b;
 		fin.ignore(INT_MAX,'\n');
-		p= link[a][b];
-		bp[i][j][p] = 1;
+		p = link[a][b];
+		path_back[i][j][p] = 1;
 		++bhops[i][j];
 	}
 	fin.close();
@@ -239,9 +240,9 @@ int readInput(int argc, char* argv[0], int load)
 						linked_path[i][j][k][l] = 0;
 					} else {
 						for(int p = 0; p < LINK_NUM; p++){
-							if(path[i][j][p] && path[k][l][p]) linked_path[i][j][k][l] = 1;
-							if(bp[i][j][p] && bp[k][l][p]) linked_bp[i][j][k][l] = 1;
-							if(path[i][j][p] && bp[k][l][p]) linked_crosspath[i][j][k][l] = 1;
+							if(path_prim[i][j][p] && path_prim[k][l][p]) linked_path[i][j][k][l] = 1;
+							if(path_back[i][j][p] && path_back[k][l][p]) linked_bp[i][j][k][l] = 1;
+							if(path_prim[i][j][p] && path_back[k][l][p]) linked_crosspath[i][j][k][l] = 1;
 						}
 					}
 				}
@@ -321,11 +322,11 @@ int writeOutput(int load)
 		d= dest[lp];
 
 		for(j=0;j<LINK_NUM;j++){
-			if(path[s][d][j]) ofs2 << ind <<" "<< j << endl;
+			if(path_prim[s][d][j]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
 		for(j=0;j<LINK_NUM;j++){
-			if(bp[s][d][j]) ofs2 << ind <<" "<< j << endl;
+			if(path_back[s][d][j]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
 	}
@@ -414,11 +415,11 @@ int writeOutputPy(int load)
 		d= dest[lp];
 
 		for(j=0;j<LINK_NUM;j++){
-			if(path[s][d][j]) ofs2 << ind <<" "<< j << endl;
+			if(path_prim[s][d][j]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
 		for(j=0;j<LINK_NUM;j++){
-			if(bp[s][d][j]) ofs2 << ind <<" "<< j << endl;
+			if(path_back[s][d][j]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
 	}
@@ -1654,7 +1655,7 @@ int removeLP1_1(int lp, int algoCall) //切断するパスのlpindexをもらう
 		if(a){										// a xor a =0, therefore if a lp is active
 			for(i=0; i<b; i++){//占有する帯域スロットの回数繰り返す									// an xor with its path will remove it
 				for(j=0;j<LINK_NUM;j++){//全てのリンクについて
-					spec[index+i][j] = path[s][d][j] ^ spec[index+i][j];
+					spec[index+i][j] = path_prim[s][d][j] ^ spec[index+i][j];
 					//全てのリンクの占有する帯域スロット番号について
 					//プライマリパスが通っているところはビット反転させる
 				}
@@ -1664,7 +1665,7 @@ int removeLP1_1(int lp, int algoCall) //切断するパスのlpindexをもらう
 			if(index < INF){
 				for(i=0; i<b; i++){									// an xor with its path will remove it
 					for(j=0;j<LINK_NUM;j++){
-						spec[index+i][j] = bp[s][d][j] ^ spec[index+i][j];
+						spec[index+i][j] = path_back[s][d][j] ^ spec[index+i][j];
 						//全てのリンクの占有する帯域スロット番号について
 						//バックアップパスが通っているところはビット反転させる
 					}
@@ -1693,13 +1694,13 @@ int checkFirstBp(int lp)
 		if(!b) break;
 
 		for(i=0;i<LINK_NUM;i++){							//Check path availibility
-			if(spec[index][i] && bp[s][d][i]){
+			if(spec[index][i] && path_back[s][d][i]){
 				index++;
 				break;
 			}else{
 				nofit = 0;
 				for(j=0;j<b;j++){							//Checking if it fit (size)
-					if(spec[index+j][i] && bp[s][d][i]){
+					if(spec[index+j][i] && path_back[s][d][i]){
 						index += j;
 						nofit = 1;
 						break;
@@ -1754,12 +1755,12 @@ int asignBp(int lp, int index)
 	bp_ind[lp] = index;
 	for(j=0;j<b;j++){
 		for(p=0;p<LINK_NUM;p++){
-			if(spec[index+j][p] == 1 && bp[s][d][p] ==1){
+			if(spec[index+j][p] == 1 && path_back[s][d][p] ==1){
 				cout << "spec[" <<  index+j << "][" << p << "] = " << spec[index+j][p] << endl;
-				cout << "bp[" << s << "][" << d << "][" << p << "] = " << bp[s][d][p] << endl;
+				cout << "path_back[" << s << "][" << d << "][" << p << "] = " << path_back[s][d][p] << endl;
 				throw "バックアップパス割り当てエラー";
 			}
-			spec[index+j][p] = spec[index+j][p] || bp[s][d][p];
+			spec[index+j][p] = spec[index+j][p] || path_back[s][d][p];
 		}
 	}
 	return 0;
@@ -1789,7 +1790,8 @@ int initialize(void)
 		{
 			for (int p = 0; p < LINK_NUM; p++)
 			{
-				path[i][j][p] = 0;
+				path_prim[i][j][p] = 0;
+				path_back[i][j][p] = 0;
 			}
 			hops[i][j] = 0;
 			part[i][j] = 0;
@@ -1905,8 +1907,8 @@ int genDemands(int load)
 			for (int k = 0; k < NODE_NUM; k++)
 			{
 				if (link[j][k] < LINK_NUM){
-					path_rr[link[j][k]][i] = path[source[i]][dest[i]][link[j][k]];
-					bp_rr[link[j][k]][i] = bp[source[i]][dest[i]][link[j][k]];
+					path_rr[link[j][k]][i] = path_prim[source[i]][dest[i]][link[j][k]];
+					bp_rr[link[j][k]][i] = path_back[source[i]][dest[i]][link[j][k]];
 				}
 			}
 		}
@@ -1936,13 +1938,13 @@ int checkFirstFit(int lp)
 	//	cout << "LP checking index: " << lp << ", "<< index << endl;
 
 		for(i=0;i<LINK_NUM;i++){		//Check path availibility
-			if(spec[index][i] && path[s][d][i]){ //リンクが使われていたならば
+			if(spec[index][i] && path_prim[s][d][i]){ //リンクが使われていたならば
 				index++;
 				break;
 			}else{//リンクが空いていたならば
 				nofit = 0;
 				for(j=0;j<b;j++){	//Checking if it fit (size)
-					if(spec[index+j][i] && path[s][d][i]){ //リンクが使われていたならば
+					if(spec[index+j][i] && path_prim[s][d][i]){ //リンクが使われていたならば
 						index += j;//無駄にさがさない
 						nofit = 1;
 						break;
@@ -2030,12 +2032,12 @@ int asign(int lp, int index)
 
 	for(j=0;j<b;j++){						//Asigning
 		for(p=0;p<LINK_NUM;p++){
-			if(spec[index+j][p] == 1 && path[s][d][p] ==1){
+			if(spec[index+j][p] == 1 && path_prim[s][d][p] ==1){
 				cout << "index + j  = " << index + j << endl;
 				cout << "link_num = " << p << endl;
 				throw "プライマリパス割り当てエラー";
 			}
-			spec[index+j][p] = spec[index+j][p] || path[s][d][p];
+			spec[index+j][p] = spec[index+j][p] || path_prim[s][d][p];
 		}
 	}
 	return 0;
@@ -2074,7 +2076,7 @@ int checkExactFit(int lp)
 	for(i=0;i<CAPASITY;i++){		// Checking spectrum for available aligned SB
 		nonalign =0 ;
 		for(j=0;j<LINK_NUM;j++){//全てのリンクについて
-			if(path[s][d][j]){		// Path s-d using link j
+			if(path_prim[s][d][j]){		// Path s-d using link j
 				if(spec[i][j])  nonalign =1;	// SB i not aligned through the path of s-d
 			}
 		}//もしあるリンクが使用されていたならばnonalign =1となる
@@ -2110,7 +2112,7 @@ int checkExactBp(int lp)
 	for(i=0;i<CAPASITY;i++){		// Checking spectrum for available aligned SB
 		nonalign =0 ;
 		for(j=0;j<LINK_NUM;j++){//全てのリンクについて
-			if(bp[s][d][j]){		// Path s-d using link j
+			if(path_back[s][d][j]){		// Path s-d using link j
 				if(spec[i][j])  nonalign =1;	// SB i not aligned through the path of s-d
 			}
 		}//もしあるリンクが使用されていたならばnonalign =1となる
@@ -2410,8 +2412,8 @@ void deleteLP(int lp, int p)	// p=0 delete both, 1 del prim and 2 del backup
 		//	if(lp==181) cout << "index= " << index << endl;
 			for(i=0; i<b; i++){//占有帯域スロット
 				for(j=0;j<LINK_NUM;j++){//全てのリンクに関して
-					if(spec[index+i][j] == 0 && path[s][d][j] == 1) throw "プライマリパス消去エラー";
-					spec[index+i][j] = path[s][d][j] ^	spec[index+i][j];//pathが1ならspecは1
+					if(spec[index+i][j] == 0 && path_prim[s][d][j] == 1) throw "プライマリパス消去エラー";
+					spec[index+i][j] = path_prim[s][d][j] ^	spec[index+i][j];//pathが1ならspecは1
 				}
 			}
 		}
@@ -2422,8 +2424,8 @@ void deleteLP(int lp, int p)	// p=0 delete both, 1 del prim and 2 del backup
 		//	if(lp==181) cout << "Big index= " << index << endl;
 			for(i=0; i<b; i++){									// an xor with its path will remove it
 				for(j=0;j<LINK_NUM;j++){
-					if(spec[index+i][j] == 0 && bp[s][d][j] == 1) throw "バックアップパス消去エラー";
-					spec[index+i][j] = bp[s][d][j] ^ spec[index+i][j];//pathが1ならspecは1
+					if(spec[index+i][j] == 0 && path_back[s][d][j] == 1) throw "バックアップパス消去エラー";
+					spec[index+i][j] = path_back[s][d][j] ^ spec[index+i][j];//pathが1ならspecは1
 				}
 			}
 		}
