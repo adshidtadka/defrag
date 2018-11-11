@@ -59,6 +59,7 @@ double ave(double, int);
 double var(double, int);
 double standard(double, int);
 double finTime();
+
 int lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM], spec_ind[REQ_NUM];
 bool spec[CAPASITY][LINK_NUM], path[NODE_NUM][NODE_NUM][LINK_NUM];
 bool linked_path[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
@@ -131,145 +132,117 @@ vector<Event> defragEvent;
 
 int readInput(int argc, char* argv[0], int load)
 {
-	int i,j,k,l, p;
-	int a, b;
-	char tmp= 'r';
-
 	ifstream fin;
-
-	//	Register network
+	// register network
 	stringstream ss;
 	string s;
 	ss << "./../network/net_" << argv[1] << ".txt";
 	s = ss.str();
-	fin.open (s);//ノードの接続関係が EM:=で与えられている
+	fin.open (s);
 	if (!fin){
-		cout <<"Cannot open network model" << endl;
+		cout <<"[error] cannot open network model" << endl;
 		return 1;
 	}
-
 	fin.ignore(INT_MAX,'=');
-	for(k=0; k<LINK_NUM; k++){
+	for(int k = 0; k < LINK_NUM; k++)
+	{
+		int a, b;
 		fin >> a >> b ;
 		link[a][b]=k;
 	}
 	fin.close();
 
-//	Register routing table primary
+	// count primary path number
 	ss.str("");
-	ss << "./../network/dp" << argv[1] << "_x_result1.txt";
+	ss << "./../network/path_" << argv[1] << "_prim.txt";
 	s = ss.str();
-	fin.open (s); //行数をカウントしてlに代入する
+	fin.open (s);
 	if (!fin)
 	{
-		cout <<"Cannot open routing file" << endl;
+		cout <<"[error] cannot open primary routing file" << endl;
 		return 1;
 	}
-
-	fin.ignore(INT_MAX,'=');//=が出るまで無視
-	//	fin.ignore(INT_MAX,':');
-	fin >> tmp;					//tmp1 is a char
-
-	l=0;
-	while(tmp !=';'){//もし最終行でなければ
-		l++;
-		fin.ignore(INT_MAX,'\n');//改行まで無視
-		fin >> tmp; //次の行の最初の文字を読み取る
+	char tmp;
+	fin.ignore(INT_MAX,'=');
+	fin >> tmp;
+	int path_num = 0;
+	while(tmp !=';')
+	{
+		path_num++;
+		fin.ignore(INT_MAX,'\n');
+		fin >> tmp;
 	}
 	fin.close();
 
+	// registar primary path
 	ss.str("");
-	ss << "./../network/dp" << argv[1] << "_x_result1.txt";
+	ss << "./../network/path_" << argv[1] << "_prim.txt";
 	s = ss.str();
-	fin.open (s); //今度こそプライマリのパス情報を得る path[i][j][p] hops[i][j]
-	if (!fin)
+	fin.open (s);
+	fin.ignore(INT_MAX,'=');
+	for (int k = 0; k < path_num; k++)
 	{
-		cout <<"Cannot open routing file" << endl;
-		return 1;
-	}
-
-	//cout << l <<": lines" << endl;
-	fin.ignore(INT_MAX,'='); //=まで無視
-	for (k=0;k<l;k++){ //行数分forループ
+		int i, j, a, b, p;
 		fin >> i >> j >> a >> b;
-		fin.ignore(INT_MAX,'\n'); //改行まで無視する
-		p= link[a][b]; //pにリンク番号を代入
-		// cout << p <<": "<< a << b << endl;
-		path[i][j][p] = 1; /*path[i][j][p]は発ノードと着ノードを結ぶパスが使う
-		リンク番号を代入すると1をとるバイナリ変数*/
-	//	if(k<20) cout << i <<" "<< j <<" " << p << endl;　
-		++hops[i][j];  			// Counting number of hops
-		//hops[i][j]発ノードと着ノードを結ぶパスが何ホップでできているか
+		fin.ignore(INT_MAX,'\n');
+		p = link[a][b];
+		path[i][j][p] = 1;
+		++hops[i][j];
 	}
 	fin.close();
 
-//	Register routing table backup
+	// count backup path number
 	ss.str("");
-	ss << "./../network/dp" << argv[1] << "_x_result2.txt";
+	ss << "./../network/path_" << argv[1] << "_back.txt";
 	s = ss.str();
-	fin.open (s);//行数をカウントしてlに代入してる
+	fin.open (s);
+	if (!fin)
 	{
-		if (!fin)
-		{
-			cout <<"Cannot open routing file" << endl;
-			return 1;
-		}
-
-		fin.ignore(INT_MAX,'=');
-	//	fin.ignore(INT_MAX,':');
-		fin >> tmp;					//tmp1 is a char
-
-		l=0;
-		while(tmp !=';'){
-			l++;
-			fin.ignore(INT_MAX,'\n');
-			fin >> tmp;
-		}
+		cout <<"[error] cannot open backup routing file" << endl;
+		return 1;
+	}
+	fin.ignore(INT_MAX,'=');
+	fin >> tmp;
+	path_num = 0;
+	while(tmp !=';'){
+		path_num++;
+		fin.ignore(INT_MAX,'\n');
+		fin >> tmp;
 	}
 	fin.close();
 
+	// registar backup path
 	ss.str("");
-	ss << "./../network/dp" << argv[1] << "_x_result2.txt";
+	ss << "./../network/path_" << argv[1] << "_back.txt";
 	s = ss.str();
-	fin.open (s);//今度こそプライマリのパス情報を得る bp[i][j][p] bhops[i][j]
+	fin.open (s);
+	fin.ignore(INT_MAX,'=');
+	for (int k=0; k < path_num; k++)
 	{
-		if (!fin)
-		{
-			cout <<"Cannot open routing file" << endl;
-			return 1;
-		}
-
-		//cout << l <<": lines" << endl;
-		fin.ignore(INT_MAX,'=');
-		for (k=0;k<l;k++){
-			fin >> i >> j >> a >> b;
-			fin.ignore(INT_MAX,'\n');
-			p= link[a][b];
-		//	cout << p <<": "<< a << b << endl;
-			bp[i][j][p] = 1;
-			// if(k<20) cout << i <<" "<< j <<" " << p << endl;
-			++bhops[i][j];  			// Counting number of hops
-			//bhops[i][j]発ノードと着ノードを結ぶバックアップパスパスが何ホップでできているか
-		}
+		int i, j, a, b, p;
+		fin >> i >> j >> a >> b;
+		fin.ignore(INT_MAX,'\n');
+		p= link[a][b];
+		bp[i][j][p] = 1;
+		++bhops[i][j];
 	}
 	fin.close();
 
-	for (i=0;i<NODE_NUM;i++){				//Comparing path, may be usefull
-		for (j=0;j<NODE_NUM;j++){
-			for (k=0;k<NODE_NUM;k++){
-				for (l=0;l<NODE_NUM;l++){
-					if(k == i && l == j) linked_path[i][j][k][l] = 0; //2組の発着ノードの組が同じ発着ノードであれば無視する
-					else{
-						for(p=0;p<LINK_NUM;p++){ //リンクの数だけforループを回す
+	for (int i = 0; i < NODE_NUM; i++)
+	{
+		for (int j = 0; j < NODE_NUM; j++)
+		{
+			for (int k = 0; k < NODE_NUM; k++)
+			{
+				for (int l = 0; l < NODE_NUM; l++)
+				{
+					if (k == i && l == j){
+						linked_path[i][j][k][l] = 0;
+					} else {
+						for(int p = 0; p < LINK_NUM; p++){
 							if(path[i][j][p] && path[k][l][p]) linked_path[i][j][k][l] = 1;
-							//linked_path[i][j][k][l]はプライマリパスに関して2組の発着ノードを代入したとき
-							//同じリンクを使っているようであれば1をとるバイナリ変数
-							if(bp[i][j][p] && bp[k][l][p]) linked_bp[i][j][k][l] = 1; //
-							//linked_bp[i][j][k][l]はバックアップパスに関して2組の発着ノードを代入したとき
-							//同じリンクを使っているようであれば1をとるバイナリ変数
+							if(bp[i][j][p] && bp[k][l][p]) linked_bp[i][j][k][l] = 1;
 							if(path[i][j][p] && bp[k][l][p]) linked_crosspath[i][j][k][l] = 1;
-							//linked_crosspath[i][j][k][l]はプライマリパスの発着ノードとバックアップパスの発着ノードを代入したとき
-							//同じリンクを使っているようであれば1をとるバイナリ変数
 						}
 					}
 				}
