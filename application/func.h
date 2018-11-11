@@ -98,7 +98,7 @@ struct Node {
    	return (cost > node.cost);
 	}
 };
-bool path_rr[LINK_NUM][REQ_NUM], bp_rr[LINK_NUM][REQ_NUM];
+bool path_prim_rr[LINK_NUM][REQ_NUM], path_back_rr[LINK_NUM][REQ_NUM];
 int part[NODE_NUM][NODE_NUM];
 int algoCall;
 int t_temp =0;
@@ -521,7 +521,7 @@ int writeOutputReroutingPy(int load)
 		for ( i = 0; i < NODE_NUM; i++) {
 			for ( j = 0; j < NODE_NUM; j++ ){
 				if(link[i][j] < LINK_NUM){
-					if (path_rr[link[i][j]][lp]){
+					if (path_prim_rr[link[i][j]][lp]){
 						ofs2 << ind << " " << i << " " << j << endl;
 						// cout << ind << " " << i << " " << j << endl;
 					}
@@ -533,7 +533,7 @@ int writeOutputReroutingPy(int load)
 		for ( i = 0; i < NODE_NUM; i++) {
 			for ( j = 0; j < NODE_NUM; j++ ){
 				if(link[i][j] < LINK_NUM){
-					if (bp_rr[link[i][j]][lp]){
+					if (path_back_rr[link[i][j]][lp]){
 						ofs2 << ind << " " << i << " " << j << endl;
 						// cout << ind << " " << i << " " << j << endl;
 					}
@@ -715,24 +715,24 @@ int readResultReroutingPy()
 
 			//initialize
 			for(i=0;i<LINK_NUM;i++){
-				path_rr[i][lp] = 0;
-				bp_rr[i][lp]   = 0;
+				path_prim_rr[i][lp] = 0;
+				path_back_rr[i][lp]   = 0;
 			}
 
 			fin.ignore(INT_MAX,'=');
 			fin >> a >> b >> c >> d;
 			while(!d){//同じパスなら
-				path_rr[link[b][c]][lp] = 1;
+				path_prim_rr[link[b][c]][lp] = 1;
 				fin.ignore(INT_MAX,'\n');
-				// cout << "path_rr[link[" << b << "][" << c << "]][" << lp << "] = " << path_rr[link[b][c]][lp] << endl;
+				// cout << "path_prim_rr[link[" << b << "][" << c << "]][" << lp << "] = " << path_prim_rr[link[b][c]][lp] << endl;
 				fin >> a >> b >> c >> d;
 			}
 			fin.ignore(INT_MAX,'=');
 			fin >> a >> b >> c >> d;
 			while(!d){//同じパスなら
-				bp_rr[link[b][c]][lp] = 1;
+				path_back_rr[link[b][c]][lp] = 1;
 				fin.ignore(INT_MAX,'\n');
-				// cout << "bp_rr[link[" << b << "][" << c << "]][" << lp << "] = " << bp_rr[link[b][c]][lp] << endl;
+				// cout << "path_back_rr[link[" << b << "][" << c << "]][" << lp << "] = " << path_back_rr[link[b][c]][lp] << endl;
 				fin >> a >> b >> c >> d;
 			}
 		}
@@ -1001,22 +1001,22 @@ int statReroutingAlgo()
 						if(lpState[cur2->x]){//プライマリ
 							if(lpState[lp]){
 								for(i=0;i<LINK_NUM;i++){
-									if(path_rr[i][cur2->x] && path_rr[i][lp]) conf =1;
+									if(path_prim_rr[i][cur2->x] && path_prim_rr[i][lp]) conf =1;
 								}
 							}else{
 								for(i=0;i<LINK_NUM;i++){
-									if(path_rr[i][cur2->x] && bp_rr[i][lp])conf =1;
+									if(path_prim_rr[i][cur2->x] && path_back_rr[i][lp])conf =1;
 								}
 
 							}
 						}else{//バックアップ
 							if(lpState[lp]){
 								for(i=0;i<LINK_NUM;i++){
-									if(bp_rr[i][cur2->x] && path_rr[i][lp]) conf =1;
+									if(path_back_rr[i][cur2->x] && path_prim_rr[i][lp]) conf =1;
 								}
 							}else{
 								for(i=0;i<LINK_NUM;i++){
-									if(bp_rr[i][cur2->x] && bp_rr[i][lp]) conf =1;
+									if(path_back_rr[i][cur2->x] && path_back_rr[i][lp]) conf =1;
 								}
 							}
 						}
@@ -1053,7 +1053,7 @@ int statReroutingAlgo()
 						for (int j = 0; j < NODE_NUM; ++j)
 						{
 							if (link[i][j] > LINK_NUM) continue;
-							path_rr_prev[link[i][j]] = path_rr[link[i][j]][lp];
+							path_rr_prev[link[i][j]] = path_prim_rr[link[i][j]][lp];
 						}
 					}
 					deleteLPRerouting(lp, 1);// Remove LP from spec to avoid self-conflict
@@ -1070,7 +1070,7 @@ int statReroutingAlgo()
 						for (int j = 0; j < NODE_NUM; ++j)
 						{
 							if (link[i][j] > LINK_NUM) continue;
-							if (path_rr_prev[link[i][j]] != path_rr[link[i][j]][lp])
+							if (path_rr_prev[link[i][j]] != path_prim_rr[link[i][j]][lp])
 							{
 								isSame = false;
 							}
@@ -1103,7 +1103,7 @@ int statReroutingAlgo()
 						for (int j = 0; j < NODE_NUM; ++j)
 						{
 							if (link[i][j] > LINK_NUM) continue;
-							bp_rr_prev[link[i][j]] = bp_rr[link[i][j]][lp];
+							bp_rr_prev[link[i][j]] = path_back_rr[link[i][j]][lp];
 						}
 					}
 					// std::cout << "バックアップ, lp = " << lp << ", bp_ind[lp] = " << bp_ind[lp] << ", source[lp] = " << source[lp] << ", dest[lp] =" << dest[lp] << ", lp_size[lp] =" <<lp_size[lp]<<'\n';
@@ -1121,7 +1121,7 @@ int statReroutingAlgo()
 						for (int j = 0; j < NODE_NUM; ++j)
 						{
 							if (link[i][j] > LINK_NUM) continue;
-							if (bp_rr_prev[link[i][j]] != bp_rr[link[i][j]][lp])
+							if (bp_rr_prev[link[i][j]] != path_back_rr[link[i][j]][lp])
 							{
 								isSame = false;
 							}
@@ -1281,7 +1281,7 @@ int retuneDownRerouting_0()
 					for (int c = 0; c < NODE_NUM; ++c)
 					{
 						if (link[b][c] > LINK_NUM) continue;
-						path_rr_prev[link[b][c]] = path_rr[link[b][c]][i];
+						path_rr_prev[link[b][c]] = path_prim_rr[link[b][c]][i];
 					}
 				}
 				deleteLPRerouting(i, 1);// Remove LP from spec to avoid self-conflict
@@ -1298,7 +1298,7 @@ int retuneDownRerouting_0()
 					for (int c = 0; c < NODE_NUM; ++c)
 					{
 						if (link[b][c] > LINK_NUM) continue;
-						if (path_rr_prev[link[b][c]] != path_rr[link[b][c]][i])
+						if (path_rr_prev[link[b][c]] != path_prim_rr[link[b][c]][i])
 						{
 							isSame = false;
 						}
@@ -1331,7 +1331,7 @@ int retuneDownRerouting_0()
 					for (int c = 0; c < NODE_NUM; ++c)
 					{
 						if (link[b][c] > LINK_NUM) continue;
-						bp_rr_prev[link[b][c]] = bp_rr[link[b][c]][i];
+						bp_rr_prev[link[b][c]] = path_back_rr[link[b][c]][i];
 					}
 				}
 				deleteLPRerouting(i, 2);            // Remove LP from spec to avoid self-conflict
@@ -1347,7 +1347,7 @@ int retuneDownRerouting_0()
 					for (int c = 0; c < NODE_NUM; ++c)
 					{
 						if (link[b][c] > LINK_NUM) continue;
-						if (bp_rr_prev[link[b][c]] != bp_rr[link[b][c]][i])
+						if (bp_rr_prev[link[b][c]] != path_back_rr[link[b][c]][i])
 						{
 							isSame = false;
 						}
@@ -1631,7 +1631,7 @@ int removeLP1_1(int lp, int algoCall) //切断するパスのlpindexをもらう
 		if(a){										// a xor a =0, therefore if a lp is active
 			for(i=0; i<b; i++){//占有する帯域スロットの回数繰り返す									// an xor with its path will remove it
 				for(j=0;j<LINK_NUM;j++){//全てのリンクについて
-					spec[index+i][j] = path_rr[j][lp] ^ spec[index+i][j];
+					spec[index+i][j] = path_prim_rr[j][lp] ^ spec[index+i][j];
 					//全てのリンクの占有する帯域スロット番号について
 					//プライマリパスが通っているところはビット反転させる
 				}
@@ -1641,7 +1641,7 @@ int removeLP1_1(int lp, int algoCall) //切断するパスのlpindexをもらう
 			if(index < INF){
 				for(i=0; i<b; i++){									// an xor with its path will remove it
 					for(j=0;j<LINK_NUM;j++){
-						spec[index+i][j] = bp_rr[j][lp] ^ spec[index+i][j];
+						spec[index+i][j] = path_back_rr[j][lp] ^ spec[index+i][j];
 						//全てのリンクの占有する帯域スロット番号について
 						//バックアップパスが通っているところはビット反転させる
 					}
@@ -1774,8 +1774,8 @@ int asignBpRerouting(int lp, int index)
 	bp_ind[lp] = index;
 	for(j=0;j<b;j++){
 		for(p=0;p<LINK_NUM;p++){
-			if(spec[index+j][p] == 1 && bp_rr[p][lp] ==1) throw "バックアップパス割り当てエラー";
-			spec[index+j][p] = spec[index+j][p] || bp_rr[p][lp];
+			if(spec[index+j][p] == 1 && path_back_rr[p][lp] ==1) throw "バックアップパス割り当てエラー";
+			spec[index+j][p] = spec[index+j][p] || path_back_rr[p][lp];
 		}
 	}
 
@@ -1812,8 +1812,8 @@ int initialize(void)
 	{
 		for (int j = 0; j < REQ_NUM; j++)
 		{
-			path_rr[i][j] 	= 0;
-			bp_rr[i][j] 	= 0;
+			path_prim_rr[i][j] 	= 0;
+			path_back_rr[i][j] 	= 0;
 		}
 	}
 
@@ -1907,8 +1907,8 @@ int genDemands(int load)
 			for (int k = 0; k < NODE_NUM; k++)
 			{
 				if (link[j][k] < LINK_NUM){
-					path_rr[link[j][k]][i] = path_prim[source[i]][dest[i]][link[j][k]];
-					bp_rr[link[j][k]][i] = path_back[source[i]][dest[i]][link[j][k]];
+					path_prim_rr[link[j][k]][i] = path_prim[source[i]][dest[i]][link[j][k]];
+					path_back_rr[link[j][k]][i] = path_back[source[i]][dest[i]][link[j][k]];
 				}
 			}
 		}
@@ -2052,8 +2052,8 @@ int asignRerouting(int lp, int index)
 	spec_ind[lp] = index;
 	for(j=0;j<b;j++){						//Asigning
 		for(p=0;p<LINK_NUM;p++){
-			if(spec[index+j][p] == 1 && path_rr[p][lp] ==1) throw "プライマリパス割り当てエラー";
-			spec[index+j][p] = spec[index+j][p] || path_rr[p][lp];
+			if(spec[index+j][p] == 1 && path_prim_rr[p][lp] ==1) throw "プライマリパス割り当てエラー";
+			spec[index+j][p] = spec[index+j][p] || path_prim_rr[p][lp];
 		}
 	}
 
@@ -2198,7 +2198,7 @@ int getPrimRoot(int s, int lp)
 			if(link[i][j]>LINK_NUM) continue;
 			unconnectedFlag = 0;
 			for(k=0; k<lp_size[lp]; k++){
-				if(spec[s+k][link[i][j]] == 1 || bp_rr[link[i][j]][lp]){//使われているまたはバックアップパスが使っている
+				if(spec[s+k][link[i][j]] == 1 || path_back_rr[link[i][j]][lp]){//使われているまたはバックアップパスが使っている
 					unconnectedFlag = 1;
 				}
 			}
@@ -2268,13 +2268,13 @@ int getPrimRoot(int s, int lp)
 		for (j = 0; j < NODE_NUM; j++) {//initialize
 			for (k = 0; k < NODE_NUM; k++) {
 				if(link[j][k]>LINK_NUM)continue;
-				path_rr[link[j][k]][lp] = 0;
+				path_prim_rr[link[j][k]][lp] = 0;
 			}
 		}
 		// bool isSame = true;
 		while (b < NODE_NUM && a != b) {
-			path_rr[link[b][a]][lp] = 1;
-			// std::cout << "path_rr[" << link[b][a] << "][" << lp << "] = " << path_rr[link[b][a]][lp] << '\n';
+			path_prim_rr[link[b][a]][lp] = 1;
+			// std::cout << "path_prim_rr[" << link[b][a] << "][" << lp << "] = " << path_prim_rr[link[b][a]][lp] << '\n';
 			a = b;
 			b = Nodes[a].from;
 		}
@@ -2303,8 +2303,8 @@ int getBackRoot(int s, int lp)
 			if(link[i][j]>LINK_NUM) continue;
 			unconnectedFlag = 0;
 			for(k=0; k<lp_size[lp]; k++){
-				if(spec[s+k][link[i][j]] == 1 || path_rr[link[i][j]][lp]){//使われているまたはプライマリパスが使っている
-					// cout << "path_rr[" << link[i][j] << "][" << lp<< "] = " << path_rr[link[i][j]][lp] << endl;
+				if(spec[s+k][link[i][j]] == 1 || path_prim_rr[link[i][j]][lp]){//使われているまたはプライマリパスが使っている
+					// cout << "path_prim_rr[" << link[i][j] << "][" << lp<< "] = " << path_prim_rr[link[i][j]][lp] << endl;
 					unconnectedFlag = 1;
 				}
 			}
@@ -2380,12 +2380,12 @@ int getBackRoot(int s, int lp)
 		for (j = 0; j < NODE_NUM; j++) {//initialize
 			for (k = 0; k < NODE_NUM; k++) {
 				if(link[j][k]>LINK_NUM)continue;
-				bp_rr[link[j][k]][lp] = 0;
+				path_back_rr[link[j][k]][lp] = 0;
 			}
 		}
 		while (b < NODE_NUM && a != b) {
-			bp_rr[link[b][a]][lp] = 1;
-			// std::cout << "bp_rr[" << link[b][a] << "][" << lp << "] = " << bp_rr[link[b][a]][lp] << '\n';
+			path_back_rr[link[b][a]][lp] = 1;
+			// std::cout << "path_back_rr[" << link[b][a] << "][" << lp << "] = " << path_back_rr[link[b][a]][lp] << '\n';
 			a = b;
 			b = Nodes[a].from;
 		}
@@ -2446,8 +2446,8 @@ void deleteLPRerouting(int lp, int p)	// p=0 delete both, 1 del prim and 2 del b
 		//	if(lp==181) cout << "index= " << index << endl;
 			for(i=0; i<b; i++){//占有帯域スロット
 				for(j=0;j<LINK_NUM;j++){//全てのリンクに関して
-					if(spec[index+i][j] == 0 && path_rr[j][lp] == 1) throw "プライマリパス消去エラー";
-					spec[index+i][j] = path_rr[j][lp] ^	spec[index+i][j];//pathが1ならspecは1
+					if(spec[index+i][j] == 0 && path_prim_rr[j][lp] == 1) throw "プライマリパス消去エラー";
+					spec[index+i][j] = path_prim_rr[j][lp] ^	spec[index+i][j];//pathが1ならspecは1
 				}
 			}
 		}
@@ -2458,8 +2458,8 @@ void deleteLPRerouting(int lp, int p)	// p=0 delete both, 1 del prim and 2 del b
 		//	if(lp==181) cout << "Big index= " << index << endl;
 			for(i=0; i<b; i++){									// an xor with its path will remove it
 				for(j=0;j<LINK_NUM;j++){
-					if(spec[index+i][j] == 0 && bp_rr[j][lp] == 1) throw "バックアップパス消去エラー";
-					spec[index+i][j] = bp_rr[j][lp] ^ spec[index+i][j];//pathが1ならspecは1
+					if(spec[index+i][j] == 0 && path_back_rr[j][lp] == 1) throw "バックアップパス消去エラー";
+					spec[index+i][j] = path_back_rr[j][lp] ^ spec[index+i][j];//pathが1ならspecは1
 				}
 			}
 		}
