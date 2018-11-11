@@ -1849,13 +1849,12 @@ int initialize(void)
 
 int reInitialize(void)
 {
-	int i,j;
 	blocked=0;
 	togOp =0;
 	realOp = 0;
 	rerouteOp = 0;
 
-	for(i=0;i<REQ_NUM;i++){
+	for(int i=0;i<REQ_NUM;i++){
 		spec_ind[i]=0; isactive[i]=0;
 		lpState[i]=1; bpState[i]=0;
 	}
@@ -1868,8 +1867,8 @@ int reInitialize(void)
 		deleteQueue.pop();
 	}
 
-	for(i=0;i<CAPASITY;i++){
-		for(j=0;j<LINK_NUM;j++)  spec[i][j]= 0;
+	for(int i=0;i<CAPASITY;i++){
+		for(int j=0;j<LINK_NUM;j++)  spec[i][j]= 0;
 	}
 
 	activeList = NULL;
