@@ -64,7 +64,7 @@ bool spec[CAPASITY][LINK_NUM], path[NODE_NUM][NODE_NUM][LINK_NUM];
 bool linked_path[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
 bool linked_bp[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
 bool linked_crosspath[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
-int low_ind, high_ind;
+int low_ind;
 int blocked;
 int isactive[REQ_NUM];
 int t_req[REQ_NUM], t_hold[REQ_NUM], t_exp[REQ_NUM];
@@ -1856,7 +1856,7 @@ int reInitialize(void)
 {
 	int i,j;
 
-	low_ind = CAPASITY-1; high_ind=0;
+	low_ind = CAPASITY-1;
 	blocked=0;
 	retOp = 0;
 	eol_count = 0;
@@ -2067,7 +2067,7 @@ int checkFirstFitRerouting(int lp)
 int printSpec()
 {
 	int i,j;
-	cout << "1:high_ind " << high_ind << ", low_ind " << low_ind << endl;
+	cout << "1:low_ind " << low_ind << endl;
 	cout << " Spectrum :=" << endl;
 	cout << "  l :";
 	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
