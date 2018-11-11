@@ -249,7 +249,6 @@ int readInput(int argc, char* argv[0], int load)
 			}
 		}
 	}
-	genDemands(load);
 	return 0;
 }
 
