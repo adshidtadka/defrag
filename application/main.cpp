@@ -68,12 +68,6 @@ int main(int argc, char* argv[])
 					initializeEvent(); //initialize startEvent endEvent defragEvent
 
 						for(int i=0; i<REQ_NUM; i++){
-							t_req[i]= double (t_req[i]);
-							t_exp[i]= double (t_exp[i]);
-							if(t_req[i] == t_exp[i]){
-								t_exp[i]++; //到着時刻と切断時刻が同じであれば1ずらす
-								// t_exp_event[i] += DBL_MIN;	
-							}
 							endEvent[i].time = t_exp_event[i];	//event driven
 							endEvent[i].type = 1;
 							endEvent[i].lpNum = i;

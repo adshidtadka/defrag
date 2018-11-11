@@ -67,7 +67,6 @@ bool linked_bp[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
 bool linked_crosspath[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
 int blocked;
 int isactive[REQ_NUM];
-int t_req[REQ_NUM], t_hold[REQ_NUM], t_exp[REQ_NUM];
 double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
 int hops[NODE_NUM][NODE_NUM], bhops[NODE_NUM][NODE_NUM];
 int link[NODE_NUM][NODE_NUM];
@@ -1870,59 +1869,37 @@ int initializeEvent(void)						// Set everything to zero save routings and deman
 
 int genDemands(int load)
 {
-	double mu = 1/double(HOLDING_TIME);
+	double expired_num = 1/double(HOLDING_TIME);
 	double inter_arr = double(HOLDING_TIME)/load;
 
 	srand (seed2);
 
 	default_random_engine generator (seed1);
 	exponential_distribution<double> next_arr(1/inter_arr);
-	exponential_distribution<double> hold_time_gen(mu);
+	exponential_distribution<double> hold_time_gen(expired_num);
 	uniform_int_distribution<int> traff_dist(1, REQ_SIZE_MAX);
 
-	ofstream ofs_result_txt;
-    ofs_result_txt.open("./../result/input_demands1.txt");
-	if(!ofs_result_txt){
-		cout<< "Cannot open input_demands1 file"<<endl;
+	ofstream ofs_input;
+    ofs_input.open("./../result/input.txt");
+	if(!ofs_input){
+		cout << "[error] cannot open input file"<< endl;
 		return 1;
 	}
 
-	ofstream ofs2;
-    ofs2.open("./../result/input_demands2.txt");
-	if(!ofs2){
-		cout<< "Cannot open input_demands2 file"<<endl;
-		return 1;
-	}
+	ofs_input << "expired number per 1 sec and inter arrival time:=" << expired_num <<", "<<  inter_arr << endl;
+	ofs_input << "lp number, source, destination, size, arrival time, holding time:=" << endl;
 
-	ofs_result_txt << "mu and inter:=" << mu <<", "<<  inter_arr<< endl;
-	ofs_result_txt << "LP number, s, d, size, Arrival time, holding time:=" << endl;
-	ofs2 << "mu and inter:=" << mu <<", "<<  inter_arr << endl;
-	ofs2 << "LP number, s, d, size, Arrival time, holding time:=" << endl;
-
-	int max_hold = 0;
-	t_req[0]= 0;
 	t_req_event[0] = 0;
-
 	for (int i = 0; i < REQ_NUM; ++i)
 	{
-		double hold_time = hold_time_gen(generator);
-		t_hold[i] = int(hold_time)+1;
-		t_hold_event[i] = hold_time;
-		if(max_hold < t_hold[i]){
-			max_hold = t_hold[i];//継続時間の最大値を超えていれば最大値とする
-		}
-		double arr_int_event = next_arr(generator);
-		int arr_int = int(arr_int_event)+1; //ポアソン分布で到着間隔を得る
-		lp_size[i] = traff_dist(generator); //等確率で占有帯域スロット数を得る
-		source[i] = rand() %NODE_NUM;//発ノードをランダムで得る
-		dest[i] = rand() %NODE_NUM;//着ノードをランダムに得る
-			while(source[i] == dest[i]) dest[i] = rand() %NODE_NUM;//発ノードと着ノードが同じにならないようにする
-		t_exp[i] = t_req[i] + t_hold[i]; //継続時間と到着時刻を合わせて切断時刻を計算
-		t_exp_event[i] = t_req_event[i] + t_hold_event[i]; //event driven
-		ofs_result_txt << i  << ": "<< source[i]  <<" " << dest[i]  <<" " << lp_size[i]  <<" " << t_req[i] <<" " << t_hold[i] << endl;
-		ofs2 << i  << ": "<< source[i]  <<" " << dest[i]  <<" " << lp_size[i]  <<" " << t_req_event[i] <<" " << t_hold_event[i] << endl;
-		t_req[i+1]= t_req[i] + arr_int; //到着時刻と到着間隔を合わせて次の到着時刻を計算
-		t_req_event[i+1] = t_req_event[i] + arr_int_event; //event driven
+		lp_size[i] = traff_dist(generator);
+		source[i] = rand() % NODE_NUM;
+		dest[i] = rand() % NODE_NUM;
+		while (source[i] == dest[i]) dest[i] = rand() % NODE_NUM;
+		t_hold_event[i] = hold_time_gen(generator);
+		t_exp_event[i] = t_req_event[i] + t_hold_event[i];
+		t_req_event[i+1] = t_req_event[i] + next_arr(generator);
+		ofs_input << i  << ": "<< source[i]  <<" " << dest[i]  <<" " << lp_size[i]  <<" " << t_req_event[i] <<" " << t_hold_event[i] << endl;
 		for (int j = 0; j< NODE_NUM; j++)
 		{
 			for (int k = 0; k < NODE_NUM; k++)
@@ -1935,10 +1912,8 @@ int genDemands(int load)
 		}
 	}
 
-	ofs_result_txt << ":;"<< endl << endl;
-	ofs_result_txt.close();
-	ofs2 << ":;"<< endl << endl;
-	ofs2.close();
+	ofs_input << ":;"<< endl << endl;
+	ofs_input.close();
 	return 0;
 }
 
