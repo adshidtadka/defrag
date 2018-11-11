@@ -1845,7 +1845,6 @@ int initialize(void)
 		}
 	}
 
-	reInitialize();
 	return 0;
 }
 

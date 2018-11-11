@@ -41,6 +41,7 @@ int main(int argc, char* argv[])
 		ofs_result_txt 	<< endl << "load= "<< load << endl;
 		cout 			<< endl << "load= "<< load << endl;
 		initialize();
+		reInitialize();
 		if (readInput(argc, &argv[0], load) == 1){
 		    cout << "[error] cannot read input" << endl;
 		    return 1;
