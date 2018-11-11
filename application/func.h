@@ -74,7 +74,7 @@ int link[NODE_NUM][NODE_NUM];
 int last_lp;
 int midlp = REQ_NUM;
 unsigned seed1 = 123;
-unsigned seed2 =  125;
+unsigned seed2 = 125;
 struct lpNode{
 	int x;
 	int y;
@@ -1870,11 +1870,6 @@ int initializeEvent(void)						// Set everything to zero save routings and deman
 
 int genDemands(int load)
 {
-	int i,j,k;
-	int arr_int;
-	double arr_int_event;
-	double temp1;
-
 	double mu = 1/double(HOLDING_TIME);
 	double inter_arr = double(HOLDING_TIME)/load;
 
@@ -1882,7 +1877,7 @@ int genDemands(int load)
 
 	default_random_engine generator (seed1);
 	exponential_distribution<double> next_arr(1/inter_arr);
-	exponential_distribution<double> hold_time(mu);
+	exponential_distribution<double> hold_time_gen(mu);
 	uniform_int_distribution<int> traff_dist(1, REQ_SIZE_MAX);
 
 	ofstream ofs_result_txt;
@@ -1908,15 +1903,16 @@ int genDemands(int load)
 	t_req[0]= 0;
 	t_req_event[0] = 0;
 
-	for (int i=0; i<REQ_NUM; ++i){ //リクエストの数だけ
-		temp1 = hold_time(generator); //指数関数分布で継続時間を乱数として得る
-		t_hold[i] = int(temp1)+1;		//100をかけて1を足したものが継続時間となる
-		t_hold_event[i] = temp1;
+	for (int i = 0; i < REQ_NUM; ++i)
+	{
+		double hold_time = hold_time_gen(generator);
+		t_hold[i] = int(hold_time)+1;
+		t_hold_event[i] = hold_time;
 		if(max_hold < t_hold[i]){
 			max_hold = t_hold[i];//継続時間の最大値を超えていれば最大値とする
 		}
-		arr_int_event = next_arr(generator);
-		arr_int = int(arr_int_event)+1; //ポアソン分布で到着間隔を得る
+		double arr_int_event = next_arr(generator);
+		int arr_int = int(arr_int_event)+1; //ポアソン分布で到着間隔を得る
 		lp_size[i] = traff_dist(generator); //等確率で占有帯域スロット数を得る
 		source[i] = rand() %NODE_NUM;//発ノードをランダムで得る
 		dest[i] = rand() %NODE_NUM;//着ノードをランダムに得る
@@ -1927,10 +1923,11 @@ int genDemands(int load)
 		ofs2 << i  << ": "<< source[i]  <<" " << dest[i]  <<" " << lp_size[i]  <<" " << t_req_event[i] <<" " << t_hold_event[i] << endl;
 		t_req[i+1]= t_req[i] + arr_int; //到着時刻と到着間隔を合わせて次の到着時刻を計算
 		t_req_event[i+1] = t_req_event[i] + arr_int_event; //event driven
-		//lp番号ごとのルートを持つ変数も定める
-		for(j=0;j<NODE_NUM;j++){
-			for(k=0;k<NODE_NUM;k++){
-				if(link[j][k] < LINK_NUM){
+		for (int j = 0; j< NODE_NUM; j++)
+		{
+			for (int k = 0; k < NODE_NUM; k++)
+			{
+				if (link[j][k] < LINK_NUM){
 					path_rr[link[j][k]][i] = path[source[i]][dest[i]][link[j][k]];
 					bp_rr[link[j][k]][i] = bp[source[i]][dest[i]][link[j][k]];
 				}

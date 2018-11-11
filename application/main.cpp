@@ -51,17 +51,16 @@ int main(int argc, char* argv[])
 		int realOpItConv[10] = {}, realOpItProp[10] = {};
 		int rerouteOpItProp[10] = {};
 		double stdItNoneArr[10][ITERATION] = {{}}, stdItConvArr[10][ITERATION] = {{}}, stdItPropArr[10][ITERATION] = {{}}, stdItConvIlpArr[10][ITERATION] = {{}}, stdItPropIlpArr[10][ITERATION] = {{}};
-		for(int it = 0; it<ITERATION; it++){ //ランダムサンプルの数_5回				
-				ofs_result_txt << endl << " Iteration= "<< it << endl;//何回めなのかを表示
-				cout << endl << " Iteration= "<< it << endl;//何回めなのかを表示
-				if(it==0) seed1 =  1448601515;  //time(NULL); 1444196111 1419542268 1424246601
-				//最初は種を設定する
+		for(int it = 0; it < ITERATION; it++){
+				ofs_result_txt 	<< endl << "Iteration= "<< it << endl;
+				cout 			<< endl << "Iteration= "<< it << endl;
+				if(it==0) seed1 =  1448601515;
 				seed1 = (it+1) * seed1;
 				seed2 = (it+2) * seed1;
-				temp_max = DEFRAG_TOTAL_TIME_MAX;//新しいパスが来ないときのデフラグ時間
+				temp_max = DEFRAG_TOTAL_TIME_MAX;
 
-				reInitialize();//経路とパス以外をゼロにする
-				genDemands(load);//10万のパス情報を取り直す
+				reInitialize();
+				genDemands(load);
 
 				for(k=1; k<=1; k++){
 					reInitialize();//経路とパスの情報をゼロにする
