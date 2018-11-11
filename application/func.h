@@ -64,7 +64,6 @@ bool spec[CAPASITY][LINK_NUM], path[NODE_NUM][NODE_NUM][LINK_NUM];
 bool linked_path[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
 bool linked_bp[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
 bool linked_crosspath[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
-int low_ind;
 int blocked;
 int isactive[REQ_NUM];
 int t_req[REQ_NUM], t_hold[REQ_NUM], t_exp[REQ_NUM];
@@ -101,8 +100,6 @@ struct Node {
 bool path_rr[LINK_NUM][REQ_NUM], bp_rr[LINK_NUM][REQ_NUM];
 int part[NODE_NUM][NODE_NUM];
 int algoCall;
-int retOp;
-int eol_count;
 int t_temp =0;
 int last_ret= 0;
 int temp_max = DEFRAG_TOTAL_TIME_MAX;
@@ -1855,11 +1852,7 @@ int initialize(void)
 int reInitialize(void)
 {
 	int i,j;
-
-	low_ind = CAPASITY-1;
 	blocked=0;
-	retOp = 0;
-	eol_count = 0;
 	togOp =0;
 	realOp = 0;
 	rerouteOp = 0;
@@ -2067,7 +2060,7 @@ int checkFirstFitRerouting(int lp)
 int printSpec()
 {
 	int i,j;
-	cout << "1:low_ind " << low_ind << endl;
+	cout << "1:low index " << CAPASITY - 1 << endl;
 	cout << " Spectrum :=" << endl;
 	cout << "  l :";
 	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
