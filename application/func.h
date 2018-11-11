@@ -81,7 +81,6 @@ struct lpNode{
 	lpNode *next;
 };
 lpNode *activeList = NULL;
-lpNode *midFitList = NULL;
 lpNode *backupList = NULL;
 lpNode *mixtList = NULL;
 lpNode *realList = NULL;
@@ -1861,7 +1860,7 @@ int reInitialize(void)
 		lpState[i]=1; bpState[i]=0;
 	}
 
-	//make priority empty
+	// make priority empty
 	while(!eventQueue.empty()){
 		eventQueue.pop();
 	}
@@ -1874,7 +1873,6 @@ int reInitialize(void)
 	}
 
 	activeList = NULL;
-	midFitList = NULL;
 	backupList = NULL;
 	mixtList = NULL;
 
