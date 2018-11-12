@@ -1850,17 +1850,16 @@ int reInitialize(void)
 	return 0;
 }
 
-int initializeEvent(void)						// Set everything to zero save routings and demands
+int initializeEvent(void)
 {
-	int i,j;
-
-	for(i=0;i<REQ_NUM;i++){
-		endEvent[i].time  = 0;
-		endEvent[i].type  = 0;
-		endEvent[i].lpNum = 0;
-		startEvent[i].time  = 0;
-		startEvent[i].type  = 0;
-		startEvent[i].lpNum = 0;
+	for (int i = 0; i < REQ_NUM; i++)
+	{
+		endEvent[i].time = t_exp_event[i];
+		endEvent[i].type = 1;
+		endEvent[i].lpNum = i;
+		startEvent[i].time = t_req_event[i];
+		startEvent[i].type = 0;
+		startEvent[i].lpNum = i;
 	}
 
 	defragEvent.clear();

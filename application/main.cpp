@@ -31,14 +31,14 @@ int main(int argc, char* argv[])
 	ofs_result_txt 	<< "Simulation for NODE_NUM= "<< NODE_NUM <<", LINK_NUM = " << LINK_NUM << ", CAPASITY= "<< CAPASITY << ", REQ_NUM= "<< REQ_NUM <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", DEFRAG_TOTAL_TIME_MAX = "<< DEFRAG_TOTAL_TIME_MAX << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
 	cout 			<< "Simulation for NODE_NUM= "<< NODE_NUM <<", LINK_NUM = " << LINK_NUM << ", CAPASITY= "<< CAPASITY << ", REQ_NUM= "<< REQ_NUM <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", DEFRAG_TOTAL_TIME_MAX = "<< DEFRAG_TOTAL_TIME_MAX << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
 
-	for(int l=0; l < LOAD_REPEAT_NUM; l++)
+	int load = LOAD_START;
+	for(int l = 0; l < LOAD_REPEAT_NUM; l++)
 	{
 		int blkdItNone = 0, blkdItConv = 0, blkdItProp = 0, blkdItConvIlp = 0, blkdItPropIlp = 0;
 		int togOpItConv = 0, togOpItProp = 0;
 		int realOpItConv = 0, realOpItProp = 0;
 		int rerouteOpItProp = 0;
 		double stdItNoneArr[ITERATION] = {}, stdItConvArr[ITERATION] = {}, stdItPropArr[ITERATION] = {}, stdItConvIlpArr[ITERATION] = {}, stdItPropIlpArr[ITERATION] = {};
-		int load = LOAD_START;
 		if(l != 0){
 			load = load + LOAD_GAIN;
 		}
@@ -62,20 +62,8 @@ int main(int argc, char* argv[])
 
 			reInitialize();
 			initializeEvent();
-			for(int i=0; i<REQ_NUM; i++)
-			{
-				endEvent[i].time = t_exp_event[i];
-				endEvent[i].type = 1;
-				endEvent[i].lpNum = i;
-				startEvent[i].time = t_req_event[i];
-				startEvent[i].type = 0;
-				startEvent[i].lpNum = i;
-			}
-						
-			cout << "endEvent[" << REQ_NUM-1 << "].time = " << endEvent[REQ_NUM-1].time << ", DEFRAG_INTERVAL = " << DEFRAG_INTERVAL << endl;
 
 			defragCount = round(endEvent[REQ_NUM-1].time/DEFRAG_INTERVAL);
-			cout << "defragCount = " << defragCount << endl;
 			defragEvent.clear();
 			defragEvent.resize(defragCount);
 			for (int c = 0; c < defragCount ; c++)
