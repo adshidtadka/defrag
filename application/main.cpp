@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
 									return 1;
 								}
 							}
-							int s= source[nowEvent.lpNum], d= dest[nowEvent.lpNum], sort_val1 = 0, sort_val2 = 0;
+							int sort_val1 = 0, sort_val2 = 0;
 							if(b) addToList(nowEvent.lpNum, sort_val1, sort_val2);
 							if (nowEvent.lpNum == REQ_NUM-1)
 							{
