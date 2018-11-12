@@ -3,9 +3,7 @@
 
 int main(int argc, char* argv[])
 {
-	int k;
 	int a, b;
-	int blockedff=0, blockedffh=0;
 
 	int lp;
 
@@ -33,7 +31,13 @@ int main(int argc, char* argv[])
 	ofs_result_txt 	<< "Simulation for NODE_NUM= "<< NODE_NUM <<", LINK_NUM = " << LINK_NUM << ", CAPASITY= "<< CAPASITY << ", REQ_NUM= "<< REQ_NUM <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", DEFRAG_TOTAL_TIME_MAX = "<< DEFRAG_TOTAL_TIME_MAX << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
 	cout 			<< "Simulation for NODE_NUM= "<< NODE_NUM <<", LINK_NUM = " << LINK_NUM << ", CAPASITY= "<< CAPASITY << ", REQ_NUM= "<< REQ_NUM <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", DEFRAG_TOTAL_TIME_MAX = "<< DEFRAG_TOTAL_TIME_MAX << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
 
-	for(int l=0; l < LOAD_REPEAT_NUM; l++){
+	for(int l=0; l < LOAD_REPEAT_NUM; l++)
+	{
+		int blkdItNone = 0, blkdItConv = 0, blkdItProp = 0, blkdItConvIlp = 0, blkdItPropIlp = 0;
+		int togOpItConv = 0, togOpItProp = 0;
+		int realOpItConv = 0, realOpItProp = 0;
+		int rerouteOpItProp = 0;
+		double stdItNoneArr[ITERATION] = {}, stdItConvArr[ITERATION] = {}, stdItPropArr[ITERATION] = {}, stdItConvIlpArr[ITERATION] = {}, stdItPropIlpArr[ITERATION] = {};
 		int load = LOAD_START;
 		if(l != 0){
 			load = load + LOAD_GAIN;
@@ -46,11 +50,7 @@ int main(int argc, char* argv[])
 		    cout << "[error] cannot read input" << endl;
 		    return 1;
 		}
-		int blkdItNone[10] = {}, blkdItConv[10] = {}, blkdItProp[10] = {}, blkdItConvIlp[10] = {}, blkdItPropIlp[10] = {};
-		int togOpItConv[10] = {}, togOpItProp[10] = {};
-		int realOpItConv[10] = {}, realOpItProp[10] = {};
-		int rerouteOpItProp[10] = {};
-		double stdItNoneArr[10][ITERATION] = {{}}, stdItConvArr[10][ITERATION] = {{}}, stdItPropArr[10][ITERATION] = {{}}, stdItConvIlpArr[10][ITERATION] = {{}}, stdItPropIlpArr[10][ITERATION] = {{}};
+		
 		for (int it = 0; it < ITERATION; it++)
 		{
 			ofs_result_txt 	<< endl << "Iteration= "<< it << endl;
@@ -58,277 +58,251 @@ int main(int argc, char* argv[])
 			seed1 = (it+1) * seed1;
 			seed2 = (it+2) * seed1;
 
-			reInitialize();
 			genDemands(load);
 
-			for(k=1; k<=1; k++)
+			reInitialize();
+			initializeEvent();
+			for(int i=0; i<REQ_NUM; i++)
 			{
-				reInitialize();
-				initializeEvent();
-				for(int i=0; i<REQ_NUM; i++)
-				{
-					endEvent[i].time = t_exp_event[i];
-					endEvent[i].type = 1;
-					endEvent[i].lpNum = i;
-					startEvent[i].time = t_req_event[i];
-					startEvent[i].type = 0;
-					startEvent[i].lpNum = i;
-				}
+				endEvent[i].time = t_exp_event[i];
+				endEvent[i].type = 1;
+				endEvent[i].lpNum = i;
+				startEvent[i].time = t_req_event[i];
+				startEvent[i].type = 0;
+				startEvent[i].lpNum = i;
+			}
 						
-				cout << "endEvent[" << REQ_NUM-1 << "].time = " << endEvent[REQ_NUM-1].time << ", DEFRAG_INTERVAL = " << DEFRAG_INTERVAL << endl;
+			cout << "endEvent[" << REQ_NUM-1 << "].time = " << endEvent[REQ_NUM-1].time << ", DEFRAG_INTERVAL = " << DEFRAG_INTERVAL << endl;
 
-				defragCount = round(endEvent[REQ_NUM-1].time/DEFRAG_INTERVAL);
-				cout << "defragCount = " << defragCount << endl;
-				defragEvent.clear();
-				defragEvent.resize(defragCount);
-				for (int c = 0; c < defragCount ; c++)
+			defragCount = round(endEvent[REQ_NUM-1].time/DEFRAG_INTERVAL);
+			cout << "defragCount = " << defragCount << endl;
+			defragEvent.clear();
+			defragEvent.resize(defragCount);
+			for (int c = 0; c < defragCount ; c++)
+			{
+				defragEvent[c].time = c * DEFRAG_INTERVAL;
+				defragEvent[c].type = 2;
+			}
+
+			for(int j=0; j<=2; j++)
+			{
+				algoCall = j;
+				for (int i = 0; i < REQ_NUM; i++)
 				{
-					defragEvent[c].time = c * DEFRAG_INTERVAL;
-					defragEvent[c].type = 2;
+					eventQueue.push(endEvent[i]);
+					// cout << "endEvent[" << i << "].time= " << endEvent[i].time << endl;
+					eventQueue.push(startEvent[i]);
+					// cout << "startEvent[" << i << "].time= " << startEvent[i].time << endl;
 				}
-
-				for(int j=0; j<=2; j++)
+				for (int c = 0; c < defragCount; c++){
+					// cout << "defragEvent[" << c << "].time= " << defragEvent[c].time << endl;
+					eventQueue.push(defragEvent[c]);
+				}
+				t = 0; lp=0;                  		// for time
+				clock_t start, end; //time stump
+				start = clock();
+				
+				while(!eventQueue.empty())
 				{
-					algoCall = j;
-					for (int i = 0; i < REQ_NUM; i++)
+					b = 0;
+					while(!deleteQueue.empty())
 					{
-						eventQueue.push(endEvent[i]);
-						// cout << "endEvent[" << i << "].time= " << endEvent[i].time << endl;
-						eventQueue.push(startEvent[i]);
-						// cout << "startEvent[" << i << "].time= " << startEvent[i].time << endl;
+					    nowEvent = deleteQueue.top();
+					    deleteQueue.pop();
+					    try {
+					    	removeLP1_1(nowEvent.lpNum, algoCall);
+					    }
+					    catch(const char* err) {
+					    	cout << "ERR:パス切断中における" << err << endl;
+					    	return 1;
+					    }
+						delFromList(1, nowEvent.lpNum);			
+						delFromList(2, nowEvent.lpNum);			
 					}
-					for (int c = 0; c < defragCount; c++){
-						// cout << "defragEvent[" << c << "].time= " << defragEvent[c].time << endl;
-						eventQueue.push(defragEvent[c]);
-					}
-					t = 0; lp=0;                  		// for time
-					clock_t start, end; //time stump
-					start = clock();
-					
-					while(!eventQueue.empty()){//Start!!		// For running period 信号の数やステップ数が上限を超えない限り反復
-						b = 0;
-						while(!deleteQueue.empty())
-						{
-						    nowEvent = deleteQueue.top();
-						    deleteQueue.pop();
-						    try {
-						    	removeLP1_1(nowEvent.lpNum, algoCall);
-						    }
-						    catch(const char* err) {
-						    	cout << "ERR:パス切断中における" << err << endl;
-						    	return 1;
-						    }
-							delFromList(1, nowEvent.lpNum);			
-							delFromList(2, nowEvent.lpNum);			
-						}
-							
-						// next event
-						nowEvent = eventQueue.top();
-	 					eventQueue.pop();
+						
+					// next event
+					nowEvent = eventQueue.top();
+	 				eventQueue.pop();
+	 				t = nowEvent.time;
+	 				if(nowEvent.type == 1){
 	 					t = nowEvent.time;
-
-	 					if(nowEvent.type == 1){
-	 						t = nowEvent.time;
-	 						try {
-						    	removeLP1_1(nowEvent.lpNum, algoCall);
-						    }
-						    catch(const char* err) {
-						    	cout << "ERR:パス切断中における" << err << endl;
-						    	return 1;
-						    }
-							delFromList(1, nowEvent.lpNum);							// Removing from linked list(active list)
-							delFromList(2, nowEvent.lpNum);							// Removing from linked list(mixtlist)
-	 					}
-
-	 					if(nowEvent.type == 0)
+	 					try {
+					    	removeLP1_1(nowEvent.lpNum, algoCall);
+					    }
+					    catch(const char* err) {
+					    	cout << "ERR:パス切断中における" << err << endl;
+					    	return 1;
+					    }
+						delFromList(1, nowEvent.lpNum);							// Removing from linked list(active list)
+						delFromList(2, nowEvent.lpNum);							// Removing from linked list(mixtlist)
+	 				}
+	 				if(nowEvent.type == 0)
+	 				{
+	 					if(lp_size[nowEvent.lpNum])
 	 					{
-	 						if(lp_size[nowEvent.lpNum])
-	 						{
-	 							last_lp = nowEvent.lpNum;
-	 							try {
-									b = firstFit1_1(nowEvent.lpNum, algoCall);
+	 						last_lp = nowEvent.lpNum;
+	 						try {
+								b = firstFit1_1(nowEvent.lpNum, algoCall);
+							}
+							catch(const char* err){
+								cout << "ERR:パス割り当て中における" << err << endl;
+								return 1;
+							}
+							if(!b)
+							{
+								try {
+									retuneBp(load);
 								}
 								catch(const char* err){
-									cout << "ERR:パス割り当て中における" << err << endl;
+									cout << "ERR:ブロッキング中における" << err << endl;
 									return 1;
 								}
-								if(!b)
-								{
-									try {
-										retuneBp(load);
-									}
-									catch(const char* err){
-										cout << "ERR:ブロッキング中における" << err << endl;
-										return 1;
-									}
-								}
-								int s= source[nowEvent.lpNum], d= dest[nowEvent.lpNum], sort_val1 = 0, sort_val2 = 0;
-								if(b) addToList(nowEvent.lpNum, sort_val1, sort_val2);
-								if (nowEvent.lpNum == REQ_NUM-1)
-								{
-									while(!eventQueue.empty())
-									{
-										eventQueue.pop();
-									}
-								}
-	 						}
-	 					}
-						
-						if(nowEvent.type == 2){
-							try{
-								retuneBp(load);
 							}
-							catch(const char* err)
+							int s= source[nowEvent.lpNum], d= dest[nowEvent.lpNum], sort_val1 = 0, sort_val2 = 0;
+							if(b) addToList(nowEvent.lpNum, sort_val1, sort_val2);
+							if (nowEvent.lpNum == REQ_NUM-1)
 							{
-								cout << "ERR:デフラグ中における" << err << endl;
-								return 1;
-							}							
-						}
-					}
+								while(!eventQueue.empty())
+								{
+									eventQueue.pop();
+								}
+							}
+	 					}
+	 				}
 					
-					end = clock();
-   					cout << "Simulation time = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
-   					ofs_result_txt << "Simulation time = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
-					if(j==0){							// Reinitializing for next loop
-						blockedff = blocked;
-						blkdItNone[k] += blocked;
-						stdItNoneArr[k][it] = blocked;
-						cout << "Blocked request: First-fit w/o defragment                " << blockedff << endl;
-						ofs_result_txt << "Blocked request: First-fit w/o defragment                " << blockedff << endl << endl;
-						// printSpec();
-						// writeOutput();
-						// statDefrag();
-						// printSpec();
-						reInitialize();
+					if(nowEvent.type == 2){
+						try{
+							retuneBp(load);
+						}
+						catch(const char* err)
+						{
+							cout << "ERR:デフラグ中における" << err << endl;
+							return 1;
+						}						
 					}
-					if(j==1){
-						blockedff = blocked;
-						blkdItConv[k] += blocked;
-						stdItConvArr[k][it] = blocked;
-						togOpItConv[k]  += togOp;
-						realOpItConv[k] += realOp;
-						cout << "Blocked request: First-fit w/ stat defragment            " << blockedff << endl;
-						ofs_result_txt << "Blocked request: First-fit w/ stat defragment            " << blockedff << endl << endl;
-						cout << "Number of switching operations:                          " << togOp << endl;
-						ofs_result_txt << "Number of switching operations:                          " << togOp << endl;
-						cout << "Number of reallocating operations:                       " << realOp << endl;
-						ofs_result_txt << "Number of reallocating operations:                       " << realOp << endl << endl;
-						// printSpec();
-						// statDefrag();
-						// printSpec();
-						reInitialize();
-					}
-					if(j==2){
-						blockedff = blocked;
-						blkdItProp[k] += blocked;
-						stdItPropArr[k][it] = blocked;
-						togOpItProp[k]  += togOp;
-						realOpItProp[k] += realOp;
-						rerouteOpItProp[k] += rerouteOp;
-						cout << "Blocked request: First-fit w/ stat rerouting defragment  " << blockedff << endl;
-						ofs_result_txt << "Blocked request: First-fit w/ stat rerouting defragment  " << blockedff << endl << endl;
-						cout << "Number of switching operations:                          " << togOp << endl;
-						ofs_result_txt << "Number of switching operations:                          " << togOp << endl;
-						cout << "Number of reallocating operations:                       " << realOp << endl;
-						ofs_result_txt << "Number of reallocating operations:                       " << realOp << endl << endl;
-						cout << "Number of rerouting operations:                          " << rerouteOp << endl;
-                           ofs_result_txt << "Number of rerouting operations:                          " << rerouteOp << endl << endl;
-						// printSpec();
-						// statDefrag();
-						// printSpec();
-						reInitialize();
-					}
-					if(j==3){
-						blockedff = blocked;
-						blkdItConvIlp[k] += blocked;
-						stdItConvIlpArr[k][it] = blocked;
-						cout << "Blocked request: First-fit w/ stat ilp defragment        " << blockedff << endl;
-						ofs_result_txt << "Blocked request: First-fit w/ stat ilp defragment        " << blockedff << endl << endl;
-						cout << "Number of switching operations:                          " << togOp << endl;
-						ofs_result_txt << "Number of switching operations:                          " << togOp << endl;
-						cout << "Number of reallocating operations:                       " << realOp << endl;
-						ofs_result_txt << "Number of reallocating operations:                       " << realOp << endl << endl;
-						// printSpec();
-						// statDefrag();
-						// printSpec();
-						reInitialize();
-					}
-					if(j==4){
-						blockedff = blocked;
-						blkdItPropIlp[k] += blocked;
-						stdItPropIlpArr[k][it] = blocked;
-						cout << "Blocked request: First-fit w/ stat ilp reroute defragment" << blockedff << endl;
-						ofs_result_txt << "Blocked request: First-fit w/ stat ilp reroute defragment" << blockedff << endl << endl;
-						cout << "Number of switching operations:                          " << togOp << endl;
-						ofs_result_txt << "Number of switching operations:                          " << togOp << endl;
-						cout << "Number of reallocating operations:                       " << realOp << endl;
-						ofs_result_txt << "Number of reallocating operations:                       " << realOp << endl << endl;
-						// printSpec();
-						// statDefrag();
-						// printSpec();
-						reInitialize();
-					}
+				}
+				
+				end = clock();
+   				cout << "Simulation time = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
+   				ofs_result_txt << "Simulation time = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
+
+				if(j==0){
+					cout 			<< "Blocked request: First-fit w/o defragment                " << blocked << endl;
+					ofs_result_txt 	<< "Blocked request: First-fit w/o defragment                " << blocked << endl << endl;
+					blkdItNone 			+= blocked;
+					stdItNoneArr[it] 	= blocked;
+					reInitialize();
+				}
+				if(j==1){
+					cout 			<< "Blocked request: First-fit w/ stat defragment            " << blocked << endl;
+					ofs_result_txt 	<< "Blocked request: First-fit w/ stat defragment            " << blocked << endl << endl;
+					cout 			<< "Number of switching operations:                          " << togOp << endl;
+					ofs_result_txt	<< "Number of switching operations:                          " << togOp << endl;
+					cout 			<< "Number of reallocating operations:                       " << realOp << endl;
+					ofs_result_txt 	<< "Number of reallocating operations:                       " << realOp << endl << endl;
+					blkdItConv 			+= blocked;
+					stdItConvArr[it] 	= blocked;
+					togOpItConv  		+= togOp;
+					realOpItConv 		+= realOp;
+					reInitialize();
+				}
+				if(j==2){
+					cout 			<< "Blocked request: First-fit w/ stat rerouting defragment  " << blocked << endl;
+					ofs_result_txt 	<< "Blocked request: First-fit w/ stat rerouting defragment  " << blocked << endl << endl;
+					cout 			<< "Number of switching operations:                          " << togOp << endl;
+					ofs_result_txt 	<< "Number of switching operations:                          " << togOp << endl;
+					cout 			<< "Number of reallocating operations:                       " << realOp << endl;
+					ofs_result_txt 	<< "Number of reallocating operations:                       " << realOp << endl << endl;
+					cout 			<< "Number of rerouting operations:                          " << rerouteOp << endl;
+					ofs_result_txt 	<< "Number of rerouting operations:                          " << rerouteOp << endl << endl;
+					blkdItProp 			+= blocked;
+					stdItPropArr[it] 	= blocked;
+					togOpItProp  		+= togOp;
+					realOpItProp 		+= realOp;
+					rerouteOpItProp 	+= rerouteOp;
+					reInitialize();
+				}
+				if(j==3){
+					cout 			<< "Blocked request: First-fit w/ stat ilp defragment        " << blocked << endl;
+					ofs_result_txt 	<< "Blocked request: First-fit w/ stat ilp defragment        " << blocked << endl << endl;
+					cout 			<< "Number of switching operations:                          " << togOp << endl;
+					ofs_result_txt 	<< "Number of switching operations:                          " << togOp << endl;
+					cout 			<< "Number of reallocating operations:                       " << realOp << endl;
+					ofs_result_txt 	<< "Number of reallocating operations:                       " << realOp << endl << endl;
+					blkdItConvIlp 		+= blocked;
+					stdItConvIlpArr[it] = blocked;
+					reInitialize();
+				}
+				if(j==4){
+					cout 			<< "Blocked request: First-fit w/ stat ilp reroute defragment" << blocked << endl;
+					ofs_result_txt 	<< "Blocked request: First-fit w/ stat ilp reroute defragment" << blocked << endl << endl;
+					cout 			<< "Number of switching operations:                          " << togOp << endl;
+					ofs_result_txt 	<< "Number of switching operations:                          " << togOp << endl;
+					cout 			<< "Number of reallocating operations:                       " << realOp << endl;
+					ofs_result_txt 	<< "Number of reallocating operations:                       " << realOp << endl << endl;
+					blkdItPropIlp += blocked;
+					stdItPropIlpArr[it] = blocked;
+					reInitialize();
 				}
 			}
 		}
-		for(k=1; k<=1; k++){
-			ofs_result_csv << load << ",";
-			operation_num_csv << load << ",";
-			//信頼区間の計算
-			double stdItNone, stdItConv, stdItProp, stdItConvIlp, stdItPropIlp;
-			double stdItNoneDiff, stdItConvDiff, stdItPropDiff, stdItConvIlpDiff, stdItPropIlpDiff;
-			stdItNone = standard(stdItNoneArr[k], ITERATION);
-			stdItConv = standard(stdItConvArr[k], ITERATION);
-			stdItProp = standard(stdItPropArr[k], ITERATION);
-			stdItConvIlp = standard(stdItConvIlpArr[k], ITERATION);
-			stdItPropIlp = standard(stdItPropIlpArr[k], ITERATION);
-			stdItNoneDiff = blkdItNone[k]*0.05 - stdItNone*1.96;
-			stdItConvDiff = blkdItConv[k]*0.05 - stdItConv*1.96;
-			stdItPropDiff = blkdItProp[k]*0.05 - stdItProp*1.96;
-			stdItConvIlpDiff = blkdItConvIlp[k]*0.05 - stdItConvIlp*1.96;
-			stdItPropIlpDiff = blkdItPropIlp[k]*0.05 - stdItPropIlp*1.96;
+		ofs_result_csv << load << ",";
+		operation_num_csv << load << ",";
 
-			cout << "Av blocked request blkdItNone:         " << blkdItNone[k]/ITERATION << endl;
-			ofs_result_txt << "Av blocked request blkdItNone:         " << blkdItNone[k]/ITERATION << endl;
-			ofs_result_csv << blkdItNone[k]/ITERATION << ",";
-			cout << "Confidence interval blkdItNone:        " << stdItNone << endl;
-			ofs_result_txt << "Confidence interval blkdItNone:        " << stdItNone << endl;
-			cout << "Av blocked request blkdItConv:         " << blkdItConv[k]/ITERATION << endl;
-			ofs_result_txt << "Av blocked request blkdItConv:         " << blkdItConv[k]/ITERATION << endl;
-			ofs_result_csv << blkdItConv[k]/ITERATION << ",";
-			cout << "Confidence interval blkdItConv:        " << stdItConv << endl;
-			ofs_result_txt << "Confidence interval blkdItConv:        " << stdItConv << endl;
-			cout << "Av blocked request blkdItProp:         " << blkdItProp[k]/ITERATION << endl;
-			ofs_result_txt << "Av blocked request blkdItProp:         " << blkdItProp[k]/ITERATION << endl;
-			ofs_result_csv << blkdItProp[k]/ITERATION << ",";
-			cout << "Confidence interval blkdItProp:        " << stdItProp << endl;
-			ofs_result_txt << "Confidence interval blkdItProp:        " << stdItProp << endl;
-			cout << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp[k]/ITERATION << endl;
-			ofs_result_txt << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp[k]/ITERATION << endl;
-			ofs_result_csv << blkdItConvIlp[k]/ITERATION << ",";
-			cout << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
-			ofs_result_txt << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
-			cout << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp[k]/ITERATION << endl;
-			ofs_result_txt << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp[k]/ITERATION << endl;
-			ofs_result_csv << blkdItPropIlp[k]/ITERATION << endl;
-			cout << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
-			ofs_result_txt << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
-			cout << "Av toggle operations togOpItConv:      " << togOpItConv[k]/ITERATION << endl;
-			ofs_result_txt << "Av toggle operations togOpItConv:      " << togOpItConv[k]/ITERATION << endl;
-			operation_num_csv << togOpItConv[k]/ITERATION << ",";
-			cout << "Av move operations realOpItConv:       " << realOpItConv[k]/ITERATION << endl;
-			ofs_result_txt << "Av move operations realOpItConv:       " << realOpItConv[k]/ITERATION << endl;
-			operation_num_csv << realOpItConv[k]/ITERATION << ",";
-			cout << "Av toggle operations togOpItProp:      " << togOpItProp[k]/ITERATION << endl;
-			ofs_result_txt << "Av toggle operations togOpItProp:      " << togOpItProp[k]/ITERATION << endl;
-			operation_num_csv << togOpItProp[k]/ITERATION << ",";
-			cout << "Av move operations realOpItProp:       " << realOpItProp[k]/ITERATION << endl;
-			ofs_result_txt << "Av move operations realOpItProp:       " << realOpItProp[k]/ITERATION << endl;
-            operation_num_csv << realOpItProp[k]/ITERATION << ",";
-            cout << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp[k]/ITERATION << endl << endl;
-            ofs_result_txt << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp[k]/ITERATION << endl << endl;
-            operation_num_csv << rerouteOpItProp[k]/ITERATION << endl;
-        }
+
+		double stdItNone, stdItConv, stdItProp, stdItConvIlp, stdItPropIlp;
+		double stdItNoneDiff, stdItConvDiff, stdItPropDiff, stdItConvIlpDiff, stdItPropIlpDiff;
+		stdItNone = standard(stdItNoneArr, ITERATION);
+		stdItConv = standard(stdItConvArr, ITERATION);
+		stdItProp = standard(stdItPropArr, ITERATION);
+		stdItConvIlp = standard(stdItConvIlpArr, ITERATION);
+		stdItPropIlp = standard(stdItPropIlpArr, ITERATION);
+		stdItNoneDiff = blkdItNone*0.05 - stdItNone*1.96;
+		stdItConvDiff = blkdItConv*0.05 - stdItConv*1.96;
+		stdItPropDiff = blkdItProp*0.05 - stdItProp*1.96;
+		stdItConvIlpDiff = blkdItConvIlp*0.05 - stdItConvIlp*1.96;
+		stdItPropIlpDiff = blkdItPropIlp*0.05 - stdItPropIlp*1.96;
+
+		cout << "Av blocked request blkdItNone:         " << blkdItNone/ITERATION << endl;
+		ofs_result_txt << "Av blocked request blkdItNone:         " << blkdItNone/ITERATION << endl;
+		ofs_result_csv << blkdItNone/ITERATION << ",";
+		cout << "Confidence interval blkdItNone:        " << stdItNone << endl;
+		ofs_result_txt << "Confidence interval blkdItNone:        " << stdItNone << endl;
+		cout << "Av blocked request blkdItConv:         " << blkdItConv/ITERATION << endl;
+		ofs_result_txt << "Av blocked request blkdItConv:         " << blkdItConv/ITERATION << endl;
+		ofs_result_csv << blkdItConv/ITERATION << ",";
+		cout << "Confidence interval blkdItConv:        " << stdItConv << endl;
+		ofs_result_txt << "Confidence interval blkdItConv:        " << stdItConv << endl;
+		cout << "Av blocked request blkdItProp:         " << blkdItProp/ITERATION << endl;
+		ofs_result_txt << "Av blocked request blkdItProp:         " << blkdItProp/ITERATION << endl;
+		ofs_result_csv << blkdItProp/ITERATION << ",";
+		cout << "Confidence interval blkdItProp:        " << stdItProp << endl;
+		ofs_result_txt << "Confidence interval blkdItProp:        " << stdItProp << endl;
+		cout << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp/ITERATION << endl;
+		ofs_result_txt << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp/ITERATION << endl;
+		ofs_result_csv << blkdItConvIlp/ITERATION << ",";
+		cout << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
+		ofs_result_txt << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
+		cout << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp/ITERATION << endl;
+		ofs_result_txt << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp/ITERATION << endl;
+		ofs_result_csv << blkdItPropIlp/ITERATION << endl;
+		cout << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
+		ofs_result_txt << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
+		cout << "Av toggle operations togOpItConv:      " << togOpItConv/ITERATION << endl;
+		ofs_result_txt << "Av toggle operations togOpItConv:      " << togOpItConv/ITERATION << endl;
+		operation_num_csv << togOpItConv/ITERATION << ",";
+		cout << "Av move operations realOpItConv:       " << realOpItConv/ITERATION << endl;
+		ofs_result_txt << "Av move operations realOpItConv:       " << realOpItConv/ITERATION << endl;
+		operation_num_csv << realOpItConv/ITERATION << ",";
+		cout << "Av toggle operations togOpItProp:      " << togOpItProp/ITERATION << endl;
+		ofs_result_txt << "Av toggle operations togOpItProp:      " << togOpItProp/ITERATION << endl;
+		operation_num_csv << togOpItProp/ITERATION << ",";
+		cout << "Av move operations realOpItProp:       " << realOpItProp/ITERATION << endl;
+		ofs_result_txt << "Av move operations realOpItProp:       " << realOpItProp/ITERATION << endl;
+		operation_num_csv << realOpItProp/ITERATION << ",";
+		cout << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp/ITERATION << endl << endl;
+		ofs_result_txt << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp/ITERATION << endl << endl;
+		operation_num_csv << rerouteOpItProp/ITERATION << endl;
 	}
 	ofs_result_txt.close();
 
