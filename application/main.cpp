@@ -3,8 +3,6 @@
 
 int main(int argc, char* argv[])
 {
-	int a, b;
-
 	ofstream ofs_result_txt;
 	ofs_result_txt.open("./../result/result.txt");
 	if(!ofs_result_txt){
@@ -79,7 +77,7 @@ int main(int argc, char* argv[])
 				
 				while(!eventQueue.empty())
 				{
-					b = 0;
+					int b = 0;
 					while(!deleteQueue.empty())
 					{
 					    nowEvent = deleteQueue.top();
