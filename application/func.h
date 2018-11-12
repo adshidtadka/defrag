@@ -20,7 +20,6 @@ int initializeEvent(void);
 int readInput(int, char**, int);
 int checkFirstPrim(int);
 int checkFirstPrimRerouting(int);
-int retuneDownNonRerouting_0();
 int retuneDownRerouting();
 int asign(int, int);
 int asignRerouting(int,int);
@@ -996,70 +995,6 @@ double finTime()
 		eventQueue.pop();
 	}
 	return eventQueue.top().time_slot_now;
-}
-
-int retuneDownNonRerouting_0()
-{
-	int s, d;
-	int index1;
-	int i,j,p;
-	int k=0;
-	int a;
-
-	double ret_time = 0 ;
-	int mov_time = 0 ;
-
-	index1 = 1;
-
-	while(index1 < CAPASITY-1 && k++ < INF){			//Sweep the spectrum
-		lpNode *cur = activeList; 
-		mov_time = 0 ;
-		while ( cur != NULL ) {						// Checking all active LPs
-			i = cur->x;
-			cur = cur->next;
-			if(isactive[i] == 1 && spec_ind[i] == index1){
-				deleteLP(i, 1);
-				a = checkExactPrim(i);
-				if(a==CAPASITY || a > spec_ind[i]) a = checkFirstPrim(i);
-				//もしスロット番号が小さくならないようであれば
-				//if(a > spec_ind[lp]) a = spec_ind[lp];
-				if(a != spec_ind[i]){//スロット番号が小さくなっていれば(INFならブロッキング)
-					realOp++;//帯域移動操作の総数
-					if(lpState[i]){		// Actual primary
-						bpState[i] = lpState[i];
-						lpState[i] = !bpState[i];
-						togOp++;
-					}
-					mov_time++;
-				}
-				asign(i, a);
-			}
-
-			if(isactive[i] == 1 && bp_ind[i] == index1){
-				deleteLP(i, 2);            // Remove LP from spec to avoid self-conflict
-				//バックアップパスのみ消去
-				a = checkFirstBack(i);				// Return spec_ind[lp] at worst
-				if(a != bp_ind[i]){//スロット番号が小さくなっていれば(INFならブロッキング)
-					realOp++;
-					if(bpState[i]){		// Actual primary
-						bpState[i] = lpState[i];
-						lpState[i] = !bpState[i];
-						togOp++;
-					}
-					mov_time++;
-				}
-					asignBp(i, a);
-			}
-		}
-		//increment defrag time_slot_now
-		ret_time += double(mov_time)*DEFRAG_TIME;
-		nextEvent = eventQueue.top(); 	// next event
-		if(nextEvent.type == 0 && (time_slot_now+ret_time >= nextEvent.time_slot_now || ret_time >= DEFRAG_TOTAL_TIME_MAX)){
-			return 0;	
-		}
-		index1++;
-	}
-	return 0;
 }
 
 int retuneDownRerouting()

@@ -1,6 +1,6 @@
 #define INF 					999999999
 #define ITERATION 				3
-#define REQ_NUM 				300
+#define REQ_NUM 				200
 #define CAPASITY 				400
 #define LOAD_START 				800
 #define LOAD_GAIN 				10
