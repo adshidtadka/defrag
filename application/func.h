@@ -103,7 +103,6 @@ int part[NODE_NUM][NODE_NUM];
 int algoCall;
 int t_temp =0;
 int last_ret= 0;
-int temp_max = DEFRAG_TOTAL_TIME_MAX;
 double t;
 int bp_ind[REQ_NUM];
 int togOp;
@@ -912,7 +911,7 @@ int statAlgo()
 			
 			if(realcheck != realOp){//帯域移動操作数が変わっていれば
 				ret_time += DEFRAG_TIME;					//increment defrag time
-				if((t+ret_time >= fin_time || ret_time >= temp_max) || eventQueue.empty()){
+				if((t+ret_time >= fin_time || ret_time >= DEFRAG_TOTAL_TIME_MAX) || eventQueue.empty()){
 					// t += ret_time;cout << "t = " << t << ", ret_time = " << ret_time << ", fin_time = " << fin_time << endl;	
 					return 0;	
 				}
@@ -1153,7 +1152,7 @@ int statReroutingAlgo()
 			}
 			if(realcheck != realOp){//帯域移動操作数が変わっていれば
 				ret_time += DEFRAG_TIME;					//increment defrag time
-				if((t+ret_time >= fin_time || ret_time >= temp_max) || eventQueue.empty()){
+				if((t+ret_time >= fin_time || ret_time >= DEFRAG_TOTAL_TIME_MAX) || eventQueue.empty()){
 					// t += ret_time;
 					return 0;	
 				}
@@ -1241,7 +1240,7 @@ int retuneDownNonRerouting_0()
 		//increment defrag time
 		ret_time += double(mov_time)*DEFRAG_TIME;
 		nextEvent = eventQueue.top(); 	// next event
-		if(nextEvent.type == 0 && (t+ret_time >= nextEvent.time || ret_time >= temp_max)){
+		if(nextEvent.type == 0 && (t+ret_time >= nextEvent.time || ret_time >= DEFRAG_TOTAL_TIME_MAX)){
 			// t += ret_time;
 			return 0;	
 		}
@@ -1372,7 +1371,7 @@ int retuneDownRerouting_0()
 		//increment defrag time
 		ret_time += double(mov_time)*DEFRAG_TIME;
 		nextEvent = eventQueue.top(); 	// next event
-		if(nextEvent.type == 0 && (t+ret_time >= nextEvent.time || ret_time >= temp_max)){
+		if(nextEvent.type == 0 && (t+ret_time >= nextEvent.time || ret_time >= DEFRAG_TOTAL_TIME_MAX)){
 			t += ret_time;
 			return 0;	
 		}
