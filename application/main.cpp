@@ -68,8 +68,7 @@ int main(int argc, char* argv[])
 					eventQueue.push(defragEvent[c]);
 				}
 
-				time_slot_now = 0; 
-				int lp = 0;
+				time_slot_now = 0;
 				clock_t start, end;
 				start = clock();
 				
