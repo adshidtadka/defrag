@@ -1447,45 +1447,30 @@ void addToList2(int listId, int index, int st){
 
 void delFromList(int a, int n)
 {
-  lpNode *currP, *prevP; //2つのポインタ宣言
-
-  lpNode **list;//ポインタのポインタ
-  if(a == 1) list = &activeList; //activeListのアドレスをlistに代入
-	if(a == 2) list = &mixtList;	//
+	lpNode *currP, *prevP;
+	lpNode **list;
+ 	
+ 	if(a == 1) list = &activeList;
+	if(a == 2) list = &mixtList;
 	if(a == 3) list = &realList;
-	//どのリストを変更するかをaでもらう
 
-  /* For 1st node, indicate there is no previous. */
   prevP = NULL;
-
-  /*
-   * Visit each node, maintaining a pointer to
-   * the previous node we just visited.
-   */
   for (currP = *list; currP != NULL; prevP = currP, currP = currP->next) {
-	//listがなくなるまで
-    if (currP->x == n) {  /* Found it. lp番号が一致 */
+    if (currP->x == n) {
       if (prevP == NULL) {
-        /* Fix beginning pointer. */
         *list = currP->next;
       } else {
-        /*
-         * Fix previous node's next to
-         * skip over the removed node.
-         */
         prevP->next = currP->next;
       }
 
-      /* Deallocate the node. */
       free(currP);
 
-      /* Done searching. */
       break;
     }
   }
 
    for (currP = *list; currP != NULL; prevP = currP, currP = currP->next) {
-    if (currP->x == n) {  /* Found it. */
+    if (currP->x == n) {
       if (prevP == NULL) {
         *list = currP->next;
       } else {
@@ -1604,6 +1589,7 @@ int removeLP1_1(int lp, int algoCall) //切断するパスのlpindexをもらう
 		return 0;
 
 	}else{
+		// fixme: use path_prim_rr and path_back_rr
 		if(a){										// a xor a =0, therefore if a lp is active
 			for(i=0; i<b; i++){//占有する帯域スロットの回数繰り返す									// an xor with its path will remove it
 				for(j=0;j<LINK_NUM;j++){//全てのリンクについて
