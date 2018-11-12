@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 					    nowEvent = deleteQueue.top();
 					    deleteQueue.pop();
 					    try {
-					    	removeLP1_1(nowEvent.lpNum, algoCall);
+					    	removeLP1_1(nowEvent.lpNum);
 					    }
 					    catch(const char* err) {
 					    	cout << "ERR:パス切断中における" << err << endl;
@@ -96,14 +96,14 @@ int main(int argc, char* argv[])
 	 				if(nowEvent.type == 1){
 	 					time_slot_now = nowEvent.time_slot_now;
 	 					try {
-					    	removeLP1_1(nowEvent.lpNum, algoCall);
+					    	removeLP1_1(nowEvent.lpNum);
 					    }
 					    catch(const char* err) {
 					    	cout << "ERR:パス切断中における" << err << endl;
 					    	return 1;
 					    }
-						delFromList(1, nowEvent.lpNum);							// Removing from linked list(active list)
-						delFromList(2, nowEvent.lpNum);							// Removing from linked list(mixtlist)
+						delFromList(1, nowEvent.lpNum);
+						delFromList(2, nowEvent.lpNum);
 	 				}
 	 				if(nowEvent.type == 0)
 	 				{
@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
 	 					{
 	 						last_lp = nowEvent.lpNum;
 	 						try {
-								b = firstFit1_1(nowEvent.lpNum, algoCall);
+								b = firstFit1_1(nowEvent.lpNum);
 							}
 							catch(const char* err){
 								cout << "ERR:パス割り当て中における" << err << endl;

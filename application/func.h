@@ -18,10 +18,10 @@ int initialize(void);
 int reInitialize(void);
 int initializeEvent(void);
 int readInput(int, char**, int);
-int checkFirstFit(int);
-int checkFirstFitRerouting(int);
+int checkFirstPrim(int);
+int checkFirstPrimRerouting(int);
 int retuneDownNonRerouting_0();
-int retuneDownRerouting_0();
+int retuneDownRerouting();
 int asign(int, int);
 int asignRerouting(int,int);
 int asignBp(int, int);
@@ -30,25 +30,27 @@ int printSpec(void);
 int genDemands(int);
 void delFromList(int, int);
 void addToList(int, int, int);
-int checkExactFit(int);
-int checkExactBp(int);
-int checkExactFitRerouting(int);
-int checkExactBpRerouting(int);
-int getPrimRoot(int, int);
-int getBackRoot(int, int);
+int checkExactPrim(int);
+int checkExactBack(int);
+int checkExactPrimRerouting(int);
+int checkExactBackRerouting(int);
+int isPrimRoute(int, int);
+int isBackRoute(int, int);
+int searchPrimRoute(int, int);
+int searchBackRoute(int, int);
 void deleteLP(int, int);
 void deleteLPRerouting(int, int);
-int removeLP1_1(int, int);
-int firstFit1_1(int, int);
-int checkFirstBp(int);
-int checkFirstBpRerouting(int);
+int removeLP1_1(int);
+int firstFit1_1(int);
+int checkFirstBack(int);
+int checkFirstBackRerouting(int);
 int retuneBp(int);
 int readResultPy();
 int readResultReroutingPy();
 void statDefragPy(int);
 void statDefragReroutingPy(int);
 int statAlgo(void);
-int statReroutingAlgo(void);
+int statAlgoRerouting(void);
 int writeOutput(int);
 int writeOutputPy(int);
 int writeOutputReroutingPy(int);
@@ -569,16 +571,14 @@ int retuneBp(int load)
 	}
 
 	if(algoCall==1){
-		// fixme: use statReroutingAlgo
-		statAlgo();
-		// fixme: use retuneDownRerouting_0
-		retuneDownNonRerouting_0();
+		statAlgoRerouting();
+		retuneDownRerouting();
 		return 0;
 	}
 
 	if(algoCall==2){
-		statReroutingAlgo();
-		retuneDownRerouting_0();
+		statAlgoRerouting();
+		retuneDownRerouting();
 		return 0;
 	}
 
@@ -760,134 +760,7 @@ int readResultReroutingPy()
 	return 0;
 }
 
-int statAlgo()
-{
-	int a, b, lp, lp2;
-	double ret_time = 0;
-	int realMov = 1;
-	int s1, d1, s2, d2;
-	int st;
-
-	lpNode *cur;
-	lpNode *cur1;
-	lpNode *cur2;
-
-	tempList = NULL;
-	cur = mixtList;
-	while ( cur != NULL ) {
-		addToList2(2, cur->x, cur->z);
-		cur= cur->next;
-	}
-	cur = tempList;
-
-	double fin_time;
-	fin_time = finTime();
-	if (fin_time < 0)
-	{
-		return 0;
-	}
-
-	while(realMov){
-		realMov = 0;
-		tempList = NULL;
-		cur = mixtList;
-		while ( cur != NULL ) {
-			addToList2(2, cur->x, cur->z);
-			cur= cur->next;
-		}
-		cur = tempList;
-		realList = NULL;
-		cur1 = NULL;
-		while ( cur != NULL ) {
-			realList = NULL;
-			cur1 = cur;
-			cur = cur->next;
-
-			while ( cur1 != NULL ) {
-				lp = cur1->x;
-				st = cur1->z;
-				cur1 = cur1->next;
-				cur2 = realList;
-				if(cur2 == NULL){
-					addToList2(1, lp, st);
-					if(cur && cur->x == lp && cur->z == st) cur = cur->next;
-					delFromList2(4, lp, st);
-				}else{
-					int conf = 0;
-					while(cur2 != NULL){
-						s2 = source[cur2->x];
-						d2= dest[cur2->x];
-						cur2 = cur2->next;
-						s1 = source[lp];
-						d1= dest[lp];
-						if(linked_path[s1][d1][s2][d2] || linked_bp[s1][d1][s2][d2] || linked_crosspath[s1][d1][s2][d2]){
-							conf =1;
-							break;
-						}
-					}
-					if(conf==0){
-						addToList2(1, lp, st);
-						if(cur && cur->x == lp && cur->z == st) cur = cur->next;
-						delFromList2(4, lp, st);
-					}
-				}
-			}
-			cur2 = realList;
-			int realcheck = realOp;
-			while ( cur2 != NULL ){
-				lp = cur2->x;
-				b = cur2->z;
-				cur2 = cur2->next;
-				if(b){
-					deleteLP(lp, 1);
-					a = checkExactFit(lp);
-					if(a==CAPASITY || a > spec_ind[lp]) a = checkFirstFit(lp);
-					if(a != spec_ind[lp]){
-						realOp++;
-						realMov++;
-						if(lpState[lp]){
-							bpState[lp] = lpState[lp];
-							lpState[lp] = !bpState[lp];
-							togOp++;
-						}
-					}
-					asign(lp, a);
-				}
-				if(!b){
-					deleteLP(lp, 2);
-					a = checkExactBp(lp);
-					if(a==CAPASITY || a > spec_ind[lp]) a = checkFirstBp(lp);
-					if(a != bp_ind[lp]){
-						realOp++;
-						realMov++;
-						if(bpState[lp]){
-							bpState[lp] = lpState[lp];
-							lpState[lp] = !bpState[lp];
-							togOp++;
-						}
-					}
-					asignBp(lp, a);
-				}
-			}
-			cur2 = realList;
-			while ( cur2 != NULL ){
-				lp = cur2->x;
-				cur2 = cur2->next;
-				delFromList(3, lp);
-			}			
-			
-			if(realcheck != realOp){
-				ret_time += DEFRAG_TIME;
-				if((time_slot_now+ret_time >= fin_time || ret_time >= DEFRAG_TOTAL_TIME_MAX) || eventQueue.empty()){
-					return 0;	
-				}
-			}
-		}
-	}
-	return 0;
-}
-
-int statReroutingAlgo()
+int statAlgoRerouting()
 {
 	int a, b, lp, lp2;
 	double ret_time = 0;
@@ -902,65 +775,45 @@ int statReroutingAlgo()
 
 	tempList = NULL;
 	cur = mixtList;
-	while ( cur != NULL ) {//mixtListの内容をtempListの末尾に追加
-		addToList2(2, cur->x, cur->z);//1ならrealList, 2ならtempList
-	//	cout << "cur x, z= " << cur->x << ", " << cur->z << endl;
+	while ( cur != NULL ) {
+		addToList2(2, cur->x, cur->z);
 		cur= cur->next;
 	}
 	cur = tempList;
-
-	//デフラグ終了時刻を出す
 	double fin_time;
 	fin_time = finTime();
-	if (fin_time < 0) // queue is empty
+	if (fin_time < 0)
 	{
 		return 0;
 	}
-
-	while(realMov){//最初はrealMov=1 パスの割り当てがあれば
+	while(realMov){
 		realMov = 0;
 		tempList = NULL;
 		cur = mixtList;
-		while ( cur != NULL ) { //mixtListの内容をtempListの末尾に追加
-			addToList2(2, cur->x, cur->z);//1ならrealList, 2ならtempList
-	//		cout << "cur x, z= " << cur->x << ", " << cur->z << endl;
+		while ( cur != NULL ) {
+			addToList2(2, cur->x, cur->z);
 			cur= cur->next;
 		}
 		cur = tempList;
 		realList = NULL;
 		cur1 = NULL;
-	//	cout << "cur = tempList " << endl<< endl;
-		while ( cur != NULL ){	// Checking all active LPs　tempListがなくなるまで
+		while ( cur != NULL ){
 			realList = NULL;
-			cur1 = cur;//cur1は現在のtempList
-			cur = cur->next;//curが次のtempListを指す
-			//	cout << "cur1 = cur " << endl<< endl;
-
-			while ( cur1 != NULL ) { //tempListがなくなるまで
-			//		cout << "cur1 = cur 2" << endl<< endl;
-				lp = cur1->x;//現在のtempListの中身
-				st = cur1->z;//現在のtempListの中身
-				cur1 = cur1->next;//cur1が次のtempListを指す
-
+			cur1 = cur;
+			cur = cur->next;
+			while ( cur1 != NULL ) {
+				lp = cur1->x;
+				st = cur1->z;
+				cur1 = cur1->next;
 				cur2 = realList;
-			//		cout << "cur2 = realList , cur1->x, cur1->z " << lp <<", " << st << endl;
-			//	if(cur2) cout << "cur2 = realList 16, cur2->x " << realList->x << endl;
-
-				if(cur2 == NULL){//realListがなければ
-					// cout << "cur2 = realList 101 , reallist->x " << realList->x << endl<< endl;
-					addToList2(1, lp, st);//realListの末尾に現在のtempListの中身を追加
+				if(cur2 == NULL){
+					addToList2(1, lp, st);
 					if(cur && cur->x == lp && cur->z == st) cur = cur->next;
-					//tempListに次の構造体が存在していて内容が1つ前と一致していたならば, 次の次の構造体へ
-					delFromList2(4, lp, st);//追加したlpをtempListから削除
-					// cout << "cur2 = realList 102, reallist->x " << realList->x << endl;
-				}else{//realListがあれば
-					//	cout << "cur2 = realList 102, reallist->x " << realList->x << endl;
-					//	cout << "cur2 = realList 11 " << endl<< endl;
+					delFromList2(4, lp, st);
+				}else{
 					int conf = 0;
-					while(cur2 != NULL){//realListがなくなるまで、tempListのリンクとかぶっていないか確認
-					//	cout << "cur2 = realList 12, reallist->x " << realList->x << endl;
-
-						if(lpState[cur2->x]){//プライマリ
+					while(cur2 != NULL){
+						if(lpState[cur2->x]){
 							if(lpState[lp]){
 								for(i=0;i<LINK_NUM;i++){
 									if(path_prim_rr[i][cur2->x] && path_prim_rr[i][lp]) conf =1;
@@ -971,7 +824,7 @@ int statReroutingAlgo()
 								}
 
 							}
-						}else{//バックアップ
+						}else{
 							if(lpState[lp]){
 								for(i=0;i<LINK_NUM;i++){
 									if(path_back_rr[i][cur2->x] && path_prim_rr[i][lp]) conf =1;
@@ -982,30 +835,24 @@ int statReroutingAlgo()
 								}
 							}
 						}
-						if(conf) break;//かぶっているとしてチェック終了
-						cur2 = cur2->next;//次のrealListへ
-					}//realListがなくなるまで
-				//	cout << "cur2 = realList 14 " << realList->x << endl<< endl;
-					if(conf==0){//もしrealListがtempListのリンクとかぶっていなれば
-						addToList2(1, lp, st);//realListの末尾に現在のtempListの中身を追加
-						if(cur && cur->x == lp && cur->z == st) cur = cur->next;
-						//tempListに次の構造体が存在していて内容が1つ前と一致していたならば, 次の次の構造体へ
-						delFromList2(4, lp, st);//追加したlpをtempListから削除
-						//1:active 2:mixtList 3:realList 4:tempList
+						if(conf) break;
+						cur2 = cur2->next;
 					}
-					//	cout << "cur2 = realList 14 " << endl<< endl;
-				}//realListがあれば
-			}//tempListがなくなるまで
-
-			// cout << "cur2 = realList 2" << endl<< endl;
+					if(conf==0){
+						addToList2(1, lp, st);
+						if(cur && cur->x == lp && cur->z == st) cur = cur->next;
+						delFromList2(4, lp, st);
+					}
+				}
+			}
 			cur2 = realList;
-			int realcheck = realOp;//帯域移動操作の総数が変わっているかあとで確認
-			while ( cur2 != NULL ){//realListがなくなるまで
+			int realcheck = realOp;
+			while ( cur2 != NULL ){
 				lp = cur2->x;
 				b =  lpState[lp];
 				cur2 = cur2->next;
-				if(b){//プライマリパスならば
-					int path_rr_prev[LINK_NUM]; //to compare the previous root and new route
+				if(b){
+					int path_rr_prev[LINK_NUM];
 					for (int i = 0; i < LINK_NUM; ++i)
 					{
 						path_rr_prev[i] = 0;
@@ -1018,15 +865,23 @@ int statReroutingAlgo()
 							path_rr_prev[link[i][j]] = path_prim_rr[link[i][j]][lp];
 						}
 					}
-					deleteLPRerouting(lp, 1);// Remove LP from spec to avoid self-conflict
-					//プライマリパスのみ消去
-					a = checkExactFitRerouting(lp);
-					// std::cout << " after checkExactFitRerouting a = " << a << '\n';
-					if(a==CAPASITY || a > spec_ind[lp]){
-						a = checkFirstFitRerouting(lp);
-						// std::cout << " after checkFirstFitRerouting a = " << a << '\n';
+					deleteLPRerouting(lp, 1);
+					if (algoCall == 2 || algoCall == 4)
+					{
+						a = checkExactPrimRerouting(lp);
+					} else {
+						a = checkExactPrim(lp);
 					}
-					bool isSame = true; //check the rerouted or not rerouted
+					if (a == CAPASITY || a > spec_ind[lp])
+					{
+						if (algoCall == 2 || algoCall == 4)
+						{
+							a = checkFirstPrimRerouting(lp);
+						} else {
+							a = checkFirstPrim(lp);
+						}
+					}
+					bool isSame = true;
 					for (int i = 0; i < NODE_NUM; ++i)
 					{
 						for (int j = 0; j < NODE_NUM; ++j)
@@ -1042,10 +897,10 @@ int statReroutingAlgo()
 					{
 						rerouteOp++;
 					}
-					if(a != spec_ind[lp]){//スロット番号が小さくなっていれば(INFならブロッキング)
-						realOp++;//帯域移動操作の総数
+					if(a != spec_ind[lp]){
+						realOp++;
 						realMov++;
-						if(lpState[lp]){		// Actual primary
+						if(lpState[lp]){
 							bpState[lp] = lpState[lp];
 							lpState[lp] = !bpState[lp];
 							togOp++;
@@ -1053,9 +908,8 @@ int statReroutingAlgo()
 					}
 					asignRerouting(lp, a);
 				}
-			//	cout << "cur2 = realList 3" << endl<< endl;
-				if(!b){//バックアップパスならば
-					int bp_rr_prev[LINK_NUM]; //to compare the previous root and new route
+				if(!b){
+					int bp_rr_prev[LINK_NUM];
 					for (int i = 0; i < LINK_NUM; ++i)
 					{
 						bp_rr_prev[i] = 0;
@@ -1068,16 +922,23 @@ int statReroutingAlgo()
 							bp_rr_prev[link[i][j]] = path_back_rr[link[i][j]][lp];
 						}
 					}
-					// std::cout << "バックアップ, lp = " << lp << ", bp_ind[lp] = " << bp_ind[lp] << ", source[lp] = " << source[lp] << ", dest[lp] =" << dest[lp] << ", lp_size[lp] =" <<lp_size[lp]<<'\n';
-					deleteLPRerouting(lp, 2);            // Remove LP from spec to avoid self-conflict
-					//バックアップパスのみ消去
-					a = checkExactBpRerouting(lp);
-					// std::cout << " after checkExactFitRerouting a = " << a << '\n';
-					if(a==CAPASITY || a > bp_ind[lp]){
-						a = checkFirstBpRerouting(lp);
-						// std::cout << " after checkFirstFitRerouting a = " << a << '\n';
+					deleteLPRerouting(lp, 2);
+					if (algoCall == 2 || algoCall == 4)
+					{
+						a = checkExactBackRerouting(lp);
+					} else {
+						a = checkExactBack(lp);
 					}
-					bool isSame = true; //check the rerouted or not rerouted
+					if (a == CAPASITY || a > bp_ind[lp])
+					{
+						if (algoCall == 2 || algoCall == 4)
+						{
+							a = checkFirstBackRerouting(lp);
+						} else {
+							a = checkFirstBack(lp);
+						}
+					}
+					bool isSame = true;
 					for (int i = 0; i < NODE_NUM; ++i)
 					{
 						for (int j = 0; j < NODE_NUM; ++j)
@@ -1093,11 +954,10 @@ int statReroutingAlgo()
 					{
 						rerouteOp++;
 					}
-					// std::cout << "after checkFirstBpRerouting a = " << a << '\n';
-					if(a != bp_ind[lp]){//スロット番号が小さくなっていれば(INFならブロッキング)
+					if(a != bp_ind[lp]){
 						realOp++;
 						realMov++;
-						if(bpState[lp]){		// Actual primary
+						if(bpState[lp]){
 							bpState[lp] = lpState[lp];
 							lpState[lp] = !bpState[lp];
 							togOp++;
@@ -1105,28 +965,26 @@ int statReroutingAlgo()
 					}
 					asignBpRerouting(lp, a);
 				}
-			}//realListがなくなる
-			cur2 = realList;//realListの先頭に戻す
-			//	cout << "cur2 = realList 3" << endl<< endl;
-			while ( cur2 != NULL ){//realListがなくなるまで
+			}
+			cur2 = realList;
+			while ( cur2 != NULL ){
 				lp = cur2->x;
 				cur2 = cur2->next;
-				delFromList(3, lp);//1:active 2:mixtList 3:realList 4:tempList
+				delFromList(3, lp);
 			}
-			if(realcheck != realOp){//帯域移動操作数が変わっていれば
-				ret_time += DEFRAG_TIME;					//increment defrag time_slot_now
+			if(realcheck != realOp){
+				ret_time += DEFRAG_TIME;
 				if((time_slot_now+ret_time >= fin_time || ret_time >= DEFRAG_TOTAL_TIME_MAX) || eventQueue.empty()){
 					return 0;	
 				}
 			}
-
-		}//tempListがなくなるまで
-	}//realMovが0以外なら続くのwhile文 帯域移動がなければデフラグ終了
+		}
+	}
 	return 0;
 }
 
-double finTime(){
-
+double finTime()
+{
 	while(eventQueue.top().type != 0){
 		if (eventQueue.empty())
 		{
@@ -1138,7 +996,6 @@ double finTime(){
 		}
 		eventQueue.pop();
 	}
-
 	return eventQueue.top().time_slot_now;
 }
 
@@ -1162,11 +1019,9 @@ int retuneDownNonRerouting_0()
 			i = cur->x;
 			cur = cur->next;
 			if(isactive[i] == 1 && spec_ind[i] == index1){
-				deleteLP(i, 1);// Remove LP from spec to avoid self-conflict
-				//プライマリパスのみ消去
-				//a = checkFirstFit(lp);				// Return spec_ind[lp] at worst
-				a = checkExactFit(i);
-				if(a==CAPASITY || a > spec_ind[i]) a = checkFirstFit(i);
+				deleteLP(i, 1);
+				a = checkExactPrim(i);
+				if(a==CAPASITY || a > spec_ind[i]) a = checkFirstPrim(i);
 				//もしスロット番号が小さくならないようであれば
 				//if(a > spec_ind[lp]) a = spec_ind[lp];
 				if(a != spec_ind[i]){//スロット番号が小さくなっていれば(INFならブロッキング)
@@ -1184,7 +1039,7 @@ int retuneDownNonRerouting_0()
 			if(isactive[i] == 1 && bp_ind[i] == index1){
 				deleteLP(i, 2);            // Remove LP from spec to avoid self-conflict
 				//バックアップパスのみ消去
-				a = checkFirstBp(i);				// Return spec_ind[lp] at worst
+				a = checkFirstBack(i);				// Return spec_ind[lp] at worst
 				if(a != bp_ind[i]){//スロット番号が小さくなっていれば(INFならブロッキング)
 					realOp++;
 					if(bpState[i]){		// Actual primary
@@ -1208,7 +1063,7 @@ int retuneDownNonRerouting_0()
 	return 0;
 }
 
-int retuneDownRerouting_0()
+int retuneDownRerouting()
 {
 	int s, d;
 	int index1;
@@ -1243,11 +1098,11 @@ int retuneDownRerouting_0()
 				}
 				deleteLPRerouting(i, 1);// Remove LP from spec to avoid self-conflict
 				//プライマリパスのみ消去
-				a = checkExactFitRerouting(i);
-				// std::cout << " after checkExactFitRerouting a = " << a << '\n';
+				a = checkExactPrimRerouting(i);
+				// std::cout << " after checkExactPrimRerouting a = " << a << '\n';
 				if(a==CAPASITY || a > spec_ind[i]){
-					a = checkFirstFitRerouting(i);
-					// std::cout << " after checkFirstFitRerouting a = " << a << '\n';
+					a = checkFirstPrimRerouting(i);
+					// std::cout << " after checkFirstPrimRerouting a = " << a << '\n';
 				}
 				bool isSame = true; //check the rerouted or not rerouted
 				for (int b = 0; b < NODE_NUM; ++b)
@@ -1293,10 +1148,10 @@ int retuneDownRerouting_0()
 				}
 				deleteLPRerouting(i, 2);            // Remove LP from spec to avoid self-conflict
 				//バックアップパスのみ消去
-				a = checkExactBpRerouting(i);
-				// std::cout << " after checkExactFitRerouting a = " << a << '\n';
+				a = checkExactBackRerouting(i);
+				// std::cout << " after checkExactPrimRerouting a = " << a << '\n';
 				if(a==CAPASITY || a > bp_ind[i]){
-					a = checkFirstBpRerouting(i);
+					a = checkFirstBackRerouting(i);
 				}
 				bool isSame = true; //check the rerouted or not rerouted
 				for (int b = 0; b < NODE_NUM; ++b)
@@ -1511,143 +1366,92 @@ void delFromList2(int a, int n, int st)
   return;
 }
 
-int firstFit1_1(int lp, int algoCall)
+int firstFit1_1(int lp)
 {
 	int a, b;
-	if(algoCall == 2 || algoCall == 4){
-		a = checkFirstFitRerouting(lp);					// For primary
-
-		if(a == INF){
-			blocked++;
-			return 0;
-		}
-
-		b = checkFirstBpRerouting(lp);					// For Backup
-		if(b == INF){
-			blocked++;
-			return 0;
-		}
-		//ブロッキングが起こらなかったらパスを割り当てる
-		asignRerouting(lp, a);
-		asignBpRerouting(lp, b);
-		isactive[lp] = 1;
-
-		return 1;
-	}else{
-		// fixme: use checkFirstFitRerouting
-		a = checkFirstFit(lp);
-		if(a == INF){
-			blocked++;
-			return 0;
-		}
-
-		// fixme: use checkFirstBpRerouting
-		b = checkFirstBp(lp);
-		if(b == INF){
-			blocked++;
-			return 0;
-		}
-		//fixme: use asignRerouting and asignBpRerouting
-		asign(lp, a);
-		asignBp(lp, b);
-		isactive[lp] = 1;
-
-		return 1;
+	a = checkFirstPrimRerouting(lp);
+	if(a == INF){
+		blocked++;
+		return 0;
 	}
+	b = checkFirstBackRerouting(lp);
+	if(b == INF){
+		blocked++;
+		return 0;
+	}
+	asignRerouting(lp, a);
+	asignBpRerouting(lp, b);
+	isactive[lp] = 1;
+	return 1;
 }
 
-int removeLP1_1(int lp, int algoCall) //切断するパスのlpindexをもらう
+int removeLP1_1(int lp)
 {
 	int s = source[lp], d= dest[lp];
-	int index = spec_ind[lp],  b= lp_size[lp];//占有する帯域スロット数
+	int index = spec_ind[lp],  b= lp_size[lp];
 	int i,j;
 	int a = isactive[lp];
 
-//	cout << "loop0, a=" << a << endl;
-	if(algoCall == 2 || algoCall == 4){
-		if(a){										// a xor a =0, therefore if a lp is active
-			for(i=0; i<b; i++){//占有する帯域スロットの回数繰り返す									// an xor with its path will remove it
-				for(j=0;j<LINK_NUM;j++){//全てのリンクについて
-					spec[index+i][j] = path_prim_rr[j][lp] ^ spec[index+i][j];
-					//全てのリンクの占有する帯域スロット番号について
-					//プライマリパスが通っているところはビット反転させる
+	if(a){
+		for(i=0; i<b; i++){
+			for(j=0;j<LINK_NUM;j++){
+				if (path_prim_rr[j][lp] == 1 && spec[index+i][j] == 0)
+				{
+					cout << "path_prim_rr[" << j << "][" << lp << "] = " << path_prim_rr[j][lp] << ", spec[" << index+i << "][" << j << "] = " << spec[index+i][j] << endl;
+					throw "[error] cannot delete primary path";
 				}
+				spec[index+i][j] = path_prim_rr[j][lp] ^ spec[index+i][j];
 			}
-
-			index = bp_ind[lp];
-			if(index < INF){
-				for(i=0; i<b; i++){									// an xor with its path will remove it
-					for(j=0;j<LINK_NUM;j++){
-						spec[index+i][j] = path_back_rr[j][lp] ^ spec[index+i][j];
-						//全てのリンクの占有する帯域スロット番号について
-						//バックアップパスが通っているところはビット反転させる
-					}
-				}
-			}
-			isactive[lp] = 0;//非アクティブにする
 		}
-		return 0;
-
-	}else{
-		// fixme: use path_prim_rr and path_back_rr
-		if(a){										// a xor a =0, therefore if a lp is active
-			for(i=0; i<b; i++){//占有する帯域スロットの回数繰り返す									// an xor with its path will remove it
-				for(j=0;j<LINK_NUM;j++){//全てのリンクについて
-					spec[index+i][j] = path_prim[s][d][j] ^ spec[index+i][j];
-					//全てのリンクの占有する帯域スロット番号について
-					//プライマリパスが通っているところはビット反転させる
-				}
-			}
-
-			index = bp_ind[lp];
-			if(index < INF){
-				for(i=0; i<b; i++){									// an xor with its path will remove it
-					for(j=0;j<LINK_NUM;j++){
-						spec[index+i][j] = path_back[s][d][j] ^ spec[index+i][j];
-						//全てのリンクの占有する帯域スロット番号について
-						//バックアップパスが通っているところはビット反転させる
+		index = bp_ind[lp];
+		if(index < INF){
+			for(i=0; i<b; i++){
+				for(j=0;j<LINK_NUM;j++){
+					if (path_back_rr[j][lp] == 1 && spec[index+i][j] == 0)
+					{
+						cout << "path_back_rr[" << j << "][" << lp << "] = " << path_back_rr[j][lp] << ", spec[" << index+i << "][" << j << "] = " << spec[index+i][j] << endl;
+						throw "[error] cannot delete backup path";
 					}
+					spec[index+i][j] = path_back_rr[j][lp] ^ spec[index+i][j];
 				}
 			}
-			isactive[lp] = 0;//非アクティブにする
 		}
-		return 0;
+		isactive[lp] = 0;
 	}
+	return 0;
 }
 
-int checkFirstBp(int lp)
+int checkFirstBack(int lp)
 {
-	int a=0, b=0, index=0;
-	int i,j,p;
 	bool asigned = 0, nofit = 0;
-	int s,d;
+	int b= lp_size[lp];
+	int index = 0;
 
-	s = source[lp];
-	d= dest[lp];
-	b= lp_size[lp];
-	index = 0;
-
-	while(index <= (CAPASITY-b) && !asigned)   		  //Checking all spectrum range
+	while(index <= (CAPASITY-b) && !asigned)
 	{
-		if(!b) break;
-
-		for(i=0;i<LINK_NUM;i++){							//Check path availibility
-			if(spec[index][i] && path_back[s][d][i]){
+		if (!b) break;
+		int i;
+		for (i = 0; i < LINK_NUM; i++)
+		{
+			if (spec[index][i] && path_back_rr[i][lp])
+			{
 				index++;
 				break;
-			}else{
+			} else {
 				nofit = 0;
-				for(j=0;j<b;j++){							//Checking if it fit (size)
-					if(spec[index+j][i] && path_back[s][d][i]){
+				for (int j = 0; j < b; j++)
+				{
+					if (spec[index+j][i] && path_back_rr[i][lp])
+					{
 						index += j;
 						nofit = 1;
 						break;
 					}
 				}
 			}
-			if(nofit) break;
+			if (nofit) break;
 		}
-		if(i==LINK_NUM && !nofit){
+		if (i == LINK_NUM && !nofit){
 			asigned= 1;
 			return index;
 		}
@@ -1657,7 +1461,7 @@ int checkFirstBp(int lp)
 	return 0;
 }
 
-int checkFirstBpRerouting(int lp)
+int checkFirstBackRerouting(int lp)
 {
 	int a=0, b=0, index=0;
 	int i,j,p;
@@ -1673,7 +1477,7 @@ int checkFirstBpRerouting(int lp)
 	while(index <= (CAPASITY-b) && !asigned)   		  //Checking all spectrum range
 	{
 		if(!b) break;
-		isGetRoot = getBackRoot(index, lp);
+		isGetRoot = searchBackRoute(index, lp);
 		if(isGetRoot){
 			asigned= 1;
 			return index;
@@ -1864,82 +1668,63 @@ int genDemands(int load)
 	return 0;
 }
 
-int checkFirstFit(int lp)
+int checkFirstPrim(int lp)
 {
-	int a=0, b=0, index=0;
-	int i,j,p;
 	bool asigned = 0, nofit = 0;
-	int s,d;
+	int b = lp_size[lp];
+	int index = 0;
 
-	s = source[lp];
-	d= dest[lp];
-	b= lp_size[lp];
-	index = 0;
-
-	while(index <= (CAPASITY-b) && !asigned) //Checking all spectrum range 全ての帯域スロットを調べる
+	while (index <= (CAPASITY-b) && !asigned)
 	{
-		if(!b) break;//bが0ならブレイク
-
-	//	cout << "LP checking index: " << lp << ", "<< index << endl;
-
-		for(i=0;i<LINK_NUM;i++){		//Check path availibility
-			if(spec[index][i] && path_prim[s][d][i]){ //リンクが使われていたならば
+		if (!b) break;
+		int i;
+		for (i = 0; i < LINK_NUM; i++)
+		{
+			if (spec[index][i] && path_prim_rr[i][lp]){
 				index++;
 				break;
-			}else{//リンクが空いていたならば
+			} else {
 				nofit = 0;
-				for(j=0;j<b;j++){	//Checking if it fit (size)
-					if(spec[index+j][i] && path_prim[s][d][i]){ //リンクが使われていたならば
-						index += j;//無駄にさがさない
+				for(int j = 0; j < b; j++)
+				{
+					if(spec[index+j][i] && path_prim_rr[i][lp]){
+						index += j;
 						nofit = 1;
 						break;
 					}
 				}
 			}
-			if(nofit) break;
+			if (nofit) break;
 		}
-		if(i==LINK_NUM && !nofit){//もし全てのリンクを調べ終え、リンクが使われていなければ
-			asigned= 1;//割り当て確定
-		//	cout << "LP index " << lp << " will be first-asigned to index " << index << endl;
-		//	cout << "LP index is allocated #" << isactive[lp] << endl;
+		if (i == LINK_NUM && !nofit){
+			asigned= 1;
 			return index;
 		}
 	}
-	if(!asigned)//もし割り当てされていなければ
-		return INF;//ブロッキングが起こったということ
+	if(!asigned)
+		return INF;
 	return 0;
 }
 
-int checkFirstFitRerouting(int lp)
+int checkFirstPrimRerouting(int lp)
 {
-	int a=0, b=0, index=0;
-	int i,j,p;
-	bool asigned = 0, nofit = 0;
-	int s,d;
+	bool asigned = 0;
 	bool isGetRoot = 0;
+	int b= lp_size[lp];
+	int index=0;
 
-	s = source[lp];
-	d= dest[lp];
-	b= lp_size[lp];
-	index = 0;
-
-	while(index <= (CAPASITY-b) && !asigned) //Checking all spectrum range 全ての帯域スロットを調べる
+	while(index <= (CAPASITY-b) && !asigned)
 	{
-		if(!b) break;//bが0ならブレイク
-		//	cout << "LP checking index: " << lp << ", "<< index << endl;
-		isGetRoot = getPrimRoot(index, lp);
-		//	cout << "LP checked index: " << lp << ", "<< index << endl;
-		if(isGetRoot){//もし全てのリンクを調べ終え、リンクが使われていなければ
-			asigned= 1;//割り当て確定
-		//	cout << "LP index " << lp << " will be first-asigned to index " << index << endl;
-		//	cout << "LP index is allocated #" << isactive[lp] << endl;
+		if (!b) break;
+		isGetRoot = searchPrimRoute(index, lp);
+		if(isGetRoot){
+			asigned= 1;
 			return index;
-		}else{
+		} else {
 			index++;
 		}
 	}
-	if(!asigned)//もし割り当てされていなければ
-		return INF;//ブロッキングが起こったということ
+	if(!asigned) return INF;
 	return 0;
 }
 
@@ -2005,79 +1790,60 @@ int asignRerouting(int lp, int index)
 	return 0;
 }
 
-int checkExactFit(int lp)
+int checkExactPrim(int lp)
 {
-	int i,j,p;
-	int s = source[lp], d= dest[lp], b= lp_size[lp];
-	int lp1, index1, s1, d1;
+	int b= lp_size[lp];
+	int nonalign = 0, consecSB =0;
 
-	double specFrag =0;
-	double totalfrag=0, avefrag=0;
-	int totalhops=0;
-
-	int maxSB = 0, avSB = 0;
-	int nonalign = 0, consecSB =0, maxcons=0;
-
-	for(i=0;i<CAPASITY;i++){		// Checking spectrum for available aligned SB
-		nonalign =0 ;
-		for(j=0;j<LINK_NUM;j++){//全てのリンクについて
-			if(path_prim[s][d][j]){		// Path s-d using link j
-				if(spec[i][j])  nonalign =1;	// SB i not aligned through the path of s-d
+	for(int i=0;i<CAPASITY;i++){
+		nonalign = 0;
+		for(int j=0;j<LINK_NUM;j++){
+			if(path_prim_rr[j][lp]){
+				if(spec[i][j]) nonalign =1;
 			}
-		}//もしあるリンクが使用されていたならばnonalign =1となる
-		if(nonalign==0) consecSB++;//Increasing consecutive aligned SB
-		if(nonalign){			// End of consecutive aligned SB exactfitしていたら
-			if(consecSB == b)//もし必要な帯域スロット数と同じならば
-				return i-b;
+		}
+		if(nonalign==0) consecSB++;
+		if(nonalign){
+			if(consecSB == b) return i-b;
 			consecSB = 0;
 		}
-		if(i==CAPASITY-1){//もし最高帯域スロットに達したならば
-			if(consecSB == b)//もし必要な帯域スロットと同じならば
-				return i-b+1;
+		if(i==CAPASITY-1){
+			if(consecSB == b) return i-b+1;
 			consecSB = 0;
 		}
 	}
-
 	return CAPASITY;
 }
 
-int checkExactBp(int lp)
+int checkExactBack(int lp)
 {
-	int i,j,p;
-	int s = source[lp], d= dest[lp], b= lp_size[lp];
-	int lp1, index1, s1, d1;
+	int b = lp_size[lp];
+	int nonalign = 0, consecSB =0;
 
-	double specFrag =0;
-	double totalfrag=0, avefrag=0;
-	int totalhops=0;
-
-	int maxSB = 0, avSB = 0;
-	int nonalign = 0, consecSB =0, maxcons=0;
-
-	for(i=0;i<CAPASITY;i++){		// Checking spectrum for available aligned SB
-		nonalign =0 ;
-		for(j=0;j<LINK_NUM;j++){//全てのリンクについて
-			if(path_back[s][d][j]){		// Path s-d using link j
-				if(spec[i][j])  nonalign =1;	// SB i not aligned through the path of s-d
+	for(int i = 0; i < CAPASITY; i++)
+	{
+		nonalign = 0;
+		for(int j = 0; j < LINK_NUM; j++)
+		{
+			if (path_back_rr[j][lp]){
+				if(spec[i][j]) nonalign =1;
 			}
-		}//もしあるリンクが使用されていたならばnonalign =1となる
-		if(nonalign==0) consecSB++;//Increasing consecutive aligned SB
-		if(nonalign){			// End of consecutive aligned SB exactfitしていたら
-			if(consecSB == b)//もし必要な帯域スロット数と同じならば
-				return i-b;
+		}
+		if(nonalign==0) consecSB++;
+		if(nonalign)
+		{
+			if(consecSB == b) return i-b;
 			consecSB = 0;
 		}
-		if(i==CAPASITY-1){//もし最高帯域スロットに達したならば
-			if(consecSB == b)//もし必要な帯域スロットと同じならば
-				return i-b+1;
+		if(i==CAPASITY-1){
+			if(consecSB == b) return i-b+1;
 			consecSB = 0;
 		}
 	}
-
 	return CAPASITY;
 }
 
-int checkExactFitRerouting(int lp)
+int checkExactPrimRerouting(int lp)
 {
 	int i,j,p;
 	int s = source[lp], d= dest[lp], b= lp_size[lp];
@@ -2086,10 +1852,10 @@ int checkExactFitRerouting(int lp)
 
 	for(i=0;i<CAPASITY-b;i++){
 		isGetRoot = 0;
-		isGetRoot = getPrimRoot(i, lp);
+		isGetRoot = searchPrimRoute(i, lp);
 		if(isGetRoot){
 			isGetRoot = 0;
-			isGetRoot = getPrimRoot(i+1, lp);
+			isGetRoot = searchPrimRoute(i+1, lp);
 			if(!isGetRoot){
 				// cout << "return i = " << i << endl;
 				return i;
@@ -2101,7 +1867,7 @@ int checkExactFitRerouting(int lp)
 	return CAPASITY;
 }
 
-int checkExactBpRerouting(int lp)
+int checkExactBackRerouting(int lp)
 {
 	int i,j,p;
 	int s = source[lp], d= dest[lp], b= lp_size[lp];
@@ -2110,10 +1876,10 @@ int checkExactBpRerouting(int lp)
 
 	for(i=0;i<CAPASITY-b;i++){
 		isGetRoot = 0;
-		isGetRoot = getBackRoot(i, lp);
+		isGetRoot = searchBackRoute(i, lp);
 		if(isGetRoot){
 			isGetRoot = 0;
-			isGetRoot = getBackRoot(i+1, lp);
+			isGetRoot = searchBackRoute(i+1, lp);
 			if(!isGetRoot){
 				// cout << "return i = " << i << endl;
 				return i;
@@ -2125,7 +1891,7 @@ int checkExactBpRerouting(int lp)
 	return CAPASITY;
 }
 
-int getPrimRoot(int s, int lp)
+int searchPrimRoute(int s, int lp)
 {
 	int i, j, k;
 	bool unconnectedFlag;
@@ -2230,7 +1996,7 @@ int getPrimRoot(int s, int lp)
 
 }
 
-int getBackRoot(int s, int lp)
+int searchBackRoute(int s, int lp)
 {
 	int i, j, k;
 	bool unconnectedFlag;
@@ -2377,39 +2143,35 @@ void deleteLP(int lp, int p)	// p=0 delete both, 1 del prim and 2 del backup
 	}
 }
 
-void deleteLPRerouting(int lp, int p)	// p=0 delete both, 1 del prim and 2 del backup
+void deleteLPRerouting(int lp, int p)
 {
 	int s = source[lp], d= dest[lp];
 	int index = spec_ind[lp],  b= lp_size[lp];
 	int i,j;
 	int a = isactive[lp];
 
-//	cout << "loop1, index=" << index << endl;
 
-	if(a){						// a xor a =0, therefore if a lp is active an xor with its path will remove it
+	if(a){
 		if(p==0 || p==1){
-		//	if(lp==181) cout << "index= " << index << endl;
-			for(i=0; i<b; i++){//占有帯域スロット
-				for(j=0;j<LINK_NUM;j++){//全てのリンクに関して
+			for(i=0; i<b; i++){
+				for(j=0;j<LINK_NUM;j++){
 					if(spec[index+i][j] == 0 && path_prim_rr[j][lp] == 1) throw "プライマリパス消去エラー";
-					spec[index+i][j] = path_prim_rr[j][lp] ^	spec[index+i][j];//pathが1ならspecは1
+					spec[index+i][j] = path_prim_rr[j][lp] ^	spec[index+i][j];
 				}
 			}
 		}
 
 		if(p==0 || p==2){
 			index = bp_ind[lp];
-			if(index == INF) return;//ブロッキングしている
-		//	if(lp==181) cout << "Big index= " << index << endl;
-			for(i=0; i<b; i++){									// an xor with its path will remove it
+			if(index == INF) return;
+			for(i=0; i<b; i++){
 				for(j=0;j<LINK_NUM;j++){
 					if(spec[index+i][j] == 0 && path_back_rr[j][lp] == 1) throw "バックアップパス消去エラー";
-					spec[index+i][j] = path_back_rr[j][lp] ^ spec[index+i][j];//pathが1ならspecは1
+					spec[index+i][j] = path_back_rr[j][lp] ^ spec[index+i][j];
 				}
 			}
 		}
 	}
-
 }
 
 
