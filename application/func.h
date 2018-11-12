@@ -49,7 +49,6 @@ int readResultPy();
 int readResultReroutingPy();
 void statDefragPy(int);
 void statDefragReroutingPy(int);
-int statAlgo(void);
 int statAlgoRerouting(void);
 int writeOutput(int);
 int writeOutputPy(int);
@@ -1096,15 +1095,22 @@ int retuneDownRerouting()
 						path_rr_prev[link[b][c]] = path_prim_rr[link[b][c]][i];
 					}
 				}
-				deleteLPRerouting(i, 1);// Remove LP from spec to avoid self-conflict
-				//プライマリパスのみ消去
-				a = checkExactPrimRerouting(i);
-				// std::cout << " after checkExactPrimRerouting a = " << a << '\n';
-				if(a==CAPASITY || a > spec_ind[i]){
-					a = checkFirstPrimRerouting(i);
-					// std::cout << " after checkFirstPrimRerouting a = " << a << '\n';
+				deleteLPRerouting(i, 1);
+				if (algoCall == 2 || algoCall == 4)
+				{
+					a = checkExactPrimRerouting(i);
+				} else {
+					a = checkExactPrim(i);
 				}
-				bool isSame = true; //check the rerouted or not rerouted
+				if(a==CAPASITY || a > spec_ind[i]){
+					if (algoCall == 2 || algoCall == 4)
+					{
+						a = checkFirstPrimRerouting(i);
+					} else {
+						a = checkFirstPrim(i);
+					}
+				}
+				bool isSame = true;
 				for (int b = 0; b < NODE_NUM; ++b)
 				{
 					for (int c = 0; c < NODE_NUM; ++c)
@@ -1120,9 +1126,9 @@ int retuneDownRerouting()
 				{
 					rerouteOp++;
 				}
-				if(a != spec_ind[i]){//スロット番号が小さくなっていれば(INFならブロッキング)
-					realOp++;//帯域移動操作の総数
-					if(lpState[i]){		// Actual primary
+				if(a != spec_ind[i]){
+					realOp++;
+					if(lpState[i]){
 						bpState[i] = lpState[i];
 						lpState[i] = !bpState[i];
 						togOp++;
@@ -1146,14 +1152,22 @@ int retuneDownRerouting()
 						bp_rr_prev[link[b][c]] = path_back_rr[link[b][c]][i];
 					}
 				}
-				deleteLPRerouting(i, 2);            // Remove LP from spec to avoid self-conflict
-				//バックアップパスのみ消去
-				a = checkExactBackRerouting(i);
-				// std::cout << " after checkExactPrimRerouting a = " << a << '\n';
-				if(a==CAPASITY || a > bp_ind[i]){
-					a = checkFirstBackRerouting(i);
+				deleteLPRerouting(i, 2);
+				if (algoCall == 2 || algoCall == 4)
+				{
+					a = checkExactBackRerouting(i);
+				} else {
+					a = checkExactBack(i);
 				}
-				bool isSame = true; //check the rerouted or not rerouted
+				if(a==CAPASITY || a > bp_ind[i]){
+					if (algoCall == 2 || algoCall == 4)
+					{
+						a = checkFirstBackRerouting(i);
+					} else {
+						a = checkFirstBack(i);
+					}
+				}
+				bool isSame = true;
 				for (int b = 0; b < NODE_NUM; ++b)
 				{
 					for (int c = 0; c < NODE_NUM; ++c)
@@ -1169,7 +1183,7 @@ int retuneDownRerouting()
 				{
 					rerouteOp++;
 				}
-				if(a != bp_ind[i]){//スロット番号が小さくなっていれば(INFならブロッキング)
+				if(a != bp_ind[i]){
 					realOp++;
 					if(bpState[i]){		// Actual primary
 						bpState[i] = lpState[i];
@@ -1181,9 +1195,8 @@ int retuneDownRerouting()
 				asignBpRerouting(i, a);
 			}
 		}
-		//increment defrag time_slot_now
 		ret_time += double(mov_time)*DEFRAG_TIME;
-		nextEvent = eventQueue.top(); 	// next event
+		nextEvent = eventQueue.top();
 		if(nextEvent.type == 0 && (time_slot_now+ret_time >= nextEvent.time_slot_now || ret_time >= DEFRAG_TOTAL_TIME_MAX)){
 			time_slot_now += ret_time;
 			return 0;	
