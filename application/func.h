@@ -103,7 +103,7 @@ int part[NODE_NUM][NODE_NUM];
 int algoCall;
 int t_temp =0;
 int last_ret= 0;
-double t;
+double time_slot_now;
 int bp_ind[REQ_NUM];
 int togOp;
 int realOp;
@@ -113,11 +113,11 @@ bool bpState[REQ_NUM];
 int last_blocked = 0;
 struct Event
 {
-	double time;
+	double time_slot_now;
 	int lpNum;
 	int type;	
 	bool operator> (const Event &event) const {
-   	return (time > event.time);
+   	return (time_slot_now > event.time_slot_now);
 	}
 };
 priority_queue<Event, vector<Event>, greater<Event> > eventQueue;
@@ -910,16 +910,14 @@ int statAlgo()
 			}			
 			
 			if(realcheck != realOp){//帯域移動操作数が変わっていれば
-				ret_time += DEFRAG_TIME;					//increment defrag time
-				if((t+ret_time >= fin_time || ret_time >= DEFRAG_TOTAL_TIME_MAX) || eventQueue.empty()){
-					// t += ret_time;cout << "t = " << t << ", ret_time = " << ret_time << ", fin_time = " << fin_time << endl;	
+				ret_time += DEFRAG_TIME;					//increment defrag time_slot_now
+				if((time_slot_now+ret_time >= fin_time || ret_time >= DEFRAG_TOTAL_TIME_MAX) || eventQueue.empty()){
 					return 0;	
 				}
 				//新しいパスがきているか, 100000ステップを超えたならばデフラグ終了
 			}
 		}//tempListがなくなるまで
 	}//realMovが0以外なら続くのwhile文 帯域移動がなければデフラグ終了
-	// t += ret_time;
 	return 0;
 }
 
@@ -952,7 +950,6 @@ int statReroutingAlgo()
 	{
 		return 0;
 	}
-	// cout << "t = " << t << ", ret_time = " << ret_time << ", fin_time = " << fin_time << endl;
 
 	while(realMov){//最初はrealMov=1 パスの割り当てがあれば
 		realMov = 0;
@@ -1151,12 +1148,10 @@ int statReroutingAlgo()
 				delFromList(3, lp);//1:active 2:mixtList 3:realList 4:tempList
 			}
 			if(realcheck != realOp){//帯域移動操作数が変わっていれば
-				ret_time += DEFRAG_TIME;					//increment defrag time
-				if((t+ret_time >= fin_time || ret_time >= DEFRAG_TOTAL_TIME_MAX) || eventQueue.empty()){
-					// t += ret_time;
+				ret_time += DEFRAG_TIME;					//increment defrag time_slot_now
+				if((time_slot_now+ret_time >= fin_time || ret_time >= DEFRAG_TOTAL_TIME_MAX) || eventQueue.empty()){
 					return 0;	
 				}
-				//新しいパスがきているか, 100000ステップを超えたならばデフラグ終了
 			}
 
 		}//tempListがなくなるまで
@@ -1178,7 +1173,7 @@ double finTime(){
 		eventQueue.pop();
 	}
 
-	return eventQueue.top().time;
+	return eventQueue.top().time_slot_now;
 }
 
 int retuneDownNonRerouting_0()
@@ -1191,7 +1186,6 @@ int retuneDownNonRerouting_0()
 
 	double ret_time = 0 ;
 	int mov_time = 0 ;
-//	int ret_time = t ;
 
 	index1 = 1;
 
@@ -1237,11 +1231,10 @@ int retuneDownNonRerouting_0()
 					asignBp(i, a);
 			}
 		}
-		//increment defrag time
+		//increment defrag time_slot_now
 		ret_time += double(mov_time)*DEFRAG_TIME;
 		nextEvent = eventQueue.top(); 	// next event
-		if(nextEvent.type == 0 && (t+ret_time >= nextEvent.time || ret_time >= DEFRAG_TOTAL_TIME_MAX)){
-			// t += ret_time;
+		if(nextEvent.type == 0 && (time_slot_now+ret_time >= nextEvent.time_slot_now || ret_time >= DEFRAG_TOTAL_TIME_MAX)){
 			return 0;	
 		}
 		index1++;
@@ -1259,7 +1252,6 @@ int retuneDownRerouting_0()
 
 	int ret_time = 0 ;
 	int mov_time = 0 ;
-//	int ret_time = t ;
 
 	index1 = 1;
 
@@ -1368,11 +1360,11 @@ int retuneDownRerouting_0()
 				asignBpRerouting(i, a);
 			}
 		}
-		//increment defrag time
+		//increment defrag time_slot_now
 		ret_time += double(mov_time)*DEFRAG_TIME;
 		nextEvent = eventQueue.top(); 	// next event
-		if(nextEvent.type == 0 && (t+ret_time >= nextEvent.time || ret_time >= DEFRAG_TOTAL_TIME_MAX)){
-			t += ret_time;
+		if(nextEvent.type == 0 && (time_slot_now+ret_time >= nextEvent.time_slot_now || ret_time >= DEFRAG_TOTAL_TIME_MAX)){
+			time_slot_now += ret_time;
 			return 0;	
 		}
 		index1++;
@@ -1393,8 +1385,6 @@ void addToList(int index, int lpsort, int bpsort) {
 	newbpNode->x = index;
 	newlpNode->next = NULL;
 	newbpNode->next = NULL;
-
-//	cout <<"2: At t= " << t << " Allocating demand " << index <<endl;
 
 	lpNode **list;
 	lpNode **bplist;
@@ -1429,7 +1419,6 @@ void addToList(int index, int lpsort, int bpsort) {
 		newbpNode->next = cur->next;
 		cur->next = newbpNode;
 	}
-//	cout <<"3: At t= " << t << " Allocating demand " << index <<endl;
 
 	// Adding both primary and backup to the same list(listall)
 	newlpNode2->x = index;
@@ -1446,7 +1435,6 @@ void addToList(int index, int lpsort, int bpsort) {
 		*listall = newlpNode2;
 		newbpNode2->next = newlpNode2->next;
 		newlpNode2->next = newbpNode2;
-//	cout <<"4: At t= " << t << " Allocating demand " << index <<endl;
 	}
 	else{
 		lpNode *cur = *listall;				// The Cur points to the first lpNode
@@ -1473,8 +1461,6 @@ void addToList2(int listId, int index, int st){
 	newlpNode->x = index;							//lp index
 	newlpNode->z = st;
 	newlpNode->next = NULL;
-
-//	cout <<"2: At t= " << t << " Allocating demand " << index <<endl;
 
 	lpNode **list;//*listはポインタ, **listはポインタのポインタ
 
@@ -1854,15 +1840,23 @@ int initializeEvent(void)
 {
 	for (int i = 0; i < REQ_NUM; i++)
 	{
-		endEvent[i].time = t_exp_event[i];
+		endEvent[i].time_slot_now = t_exp_event[i];
 		endEvent[i].type = 1;
 		endEvent[i].lpNum = i;
-		startEvent[i].time = t_req_event[i];
+		startEvent[i].time_slot_now = t_req_event[i];
 		startEvent[i].type = 0;
 		startEvent[i].lpNum = i;
 	}
 
 	defragEvent.clear();
+
+	defragCount = round(endEvent[REQ_NUM-1].time_slot_now / DEFRAG_INTERVAL);
+	defragEvent.resize(defragCount);
+	for (int j = 0; j < defragCount ; j++)
+	{
+		defragEvent[j].time_slot_now = j * DEFRAG_INTERVAL;
+		defragEvent[j].type = 2;
+	}
 
 	return 0;
 }
@@ -1886,8 +1880,8 @@ int genDemands(int load)
 		return 1;
 	}
 
-	ofs_input << "expired number per 1 sec and inter arrival time:=" << expired_num <<", "<<  inter_arr << endl;
-	ofs_input << "lp number, source, destination, size, arrival time, holding time:=" << endl;
+	ofs_input << "expired number per 1 sec and inter arrival time_slot_now:=" << expired_num <<", "<<  inter_arr << endl;
+	ofs_input << "lp number, source, destination, size, arrival time_slot_now, holding time_slot_now:=" << endl;
 
 	t_req_event[0] = 0;
 	for (int i = 0; i < REQ_NUM; ++i)

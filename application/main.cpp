@@ -5,8 +5,6 @@ int main(int argc, char* argv[])
 {
 	int a, b;
 
-	int lp;
-
 	ofstream ofs_result_txt;
 	ofs_result_txt.open("./../result/result.txt");
 	if(!ofs_result_txt){
@@ -63,30 +61,20 @@ int main(int argc, char* argv[])
 			reInitialize();
 			initializeEvent();
 
-			defragCount = round(endEvent[REQ_NUM-1].time/DEFRAG_INTERVAL);
-			defragEvent.resize(defragCount);
-			for (int c = 0; c < defragCount ; c++)
-			{
-				defragEvent[c].time = c * DEFRAG_INTERVAL;
-				defragEvent[c].type = 2;
-			}
-
-			for(int j=0; j<=2; j++)
+			for(int j = 0; j <= 2; j++)
 			{
 				algoCall = j;
 				for (int i = 0; i < REQ_NUM; i++)
 				{
 					eventQueue.push(endEvent[i]);
-					// cout << "endEvent[" << i << "].time= " << endEvent[i].time << endl;
 					eventQueue.push(startEvent[i]);
-					// cout << "startEvent[" << i << "].time= " << startEvent[i].time << endl;
 				}
 				for (int c = 0; c < defragCount; c++){
-					// cout << "defragEvent[" << c << "].time= " << defragEvent[c].time << endl;
 					eventQueue.push(defragEvent[c]);
 				}
-				t = 0; lp=0;                  		// for time
-				clock_t start, end; //time stump
+				time_slot_now = 0; 
+				int lp = 0;
+				clock_t start, end;
 				start = clock();
 				
 				while(!eventQueue.empty())
@@ -110,9 +98,9 @@ int main(int argc, char* argv[])
 					// next event
 					nowEvent = eventQueue.top();
 	 				eventQueue.pop();
-	 				t = nowEvent.time;
+	 				time_slot_now = nowEvent.time_slot_now;
 	 				if(nowEvent.type == 1){
-	 					t = nowEvent.time;
+	 					time_slot_now = nowEvent.time_slot_now;
 	 					try {
 					    	removeLP1_1(nowEvent.lpNum, algoCall);
 					    }
@@ -170,8 +158,8 @@ int main(int argc, char* argv[])
 				}
 				
 				end = clock();
-   				cout << "Simulation time = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
-   				ofs_result_txt << "Simulation time = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
+   				cout << "Simulation time_slot_now = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
+   				ofs_result_txt << "Simulation time_slot_now = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
 
 				if(j==0){
 					cout 			<< "Blocked request: First-fit w/o defragment                " << blocked << endl;
@@ -302,7 +290,7 @@ int main(int argc, char* argv[])
 	}
 
 	cout << endl;
-	cout << "t: " << t << " Seed1: " << seed1 << ", Seed2: " << seed2 << endl<< endl;
+	cout << "time_slot_now: " << time_slot_now << " Seed1: " << seed1 << ", Seed2: " << seed2 << endl<< endl;
 
 	return 0;
 }
