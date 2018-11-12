@@ -563,10 +563,15 @@ int writeOutputReroutingPy(int load)
 
 int retuneBp(int load)
 {
-	if(!algoCall) return 0;
+	if(algoCall == 0)
+	{
+		 return 0;
+	}
 
 	if(algoCall==1){
+		// fixme: use statReroutingAlgo
 		statAlgo();
+		// fixme: use retuneDownRerouting_0
 		retuneDownNonRerouting_0();
 		return 0;
 	}
@@ -769,111 +774,78 @@ int statAlgo()
 
 	tempList = NULL;
 	cur = mixtList;
-	while ( cur != NULL ) {//mixtListの内容をtempListの末尾に追加
-		addToList2(2, cur->x, cur->z);//1ならrealList, 2ならtempList
-	//	cout << "cur x, z= " << cur->x << ", " << cur->z << endl;
+	while ( cur != NULL ) {
+		addToList2(2, cur->x, cur->z);
 		cur= cur->next;
 	}
 	cur = tempList;
 
-	//デフラグ終了時刻を出す
 	double fin_time;
 	fin_time = finTime();
-	if (fin_time < 0) // queue is empty
+	if (fin_time < 0)
 	{
 		return 0;
 	}
 
-	while(realMov){//最初はrealMov=1 パスの割り当てがあれば
+	while(realMov){
 		realMov = 0;
 		tempList = NULL;
 		cur = mixtList;
-		while ( cur != NULL ) { //mixtListの内容をtempListの末尾に追加
-			addToList2(2, cur->x, cur->z);//1ならrealList, 2ならtempList
-	//		cout << "cur x, z= " << cur->x << ", " << cur->z << endl;
+		while ( cur != NULL ) {
+			addToList2(2, cur->x, cur->z);
 			cur= cur->next;
 		}
 		cur = tempList;
 		realList = NULL;
 		cur1 = NULL;
-	//	cout << "cur = tempList " << endl<< endl;
-		while ( cur != NULL ) {	// Checking all active LPs　tempListがなくなるまで
+		while ( cur != NULL ) {
 			realList = NULL;
-			cur1 = cur;//cur1は現在のtempList
-			cur = cur->next;//curが次のtempListを指す
-		//	cout << "cur1 = cur " << endl<< endl;
+			cur1 = cur;
+			cur = cur->next;
 
-			while ( cur1 != NULL ) { //tempListがなくなるまで
-				//cout << "cur1 = cur 2" << endl<< endl;
-				lp = cur1->x;//現在のtempListの中身
-				st = cur1->z;//現在のtempListの中身
-				cur1 = cur1->next;//cur1が次のtempListを指す
-
+			while ( cur1 != NULL ) {
+				lp = cur1->x;
+				st = cur1->z;
+				cur1 = cur1->next;
 				cur2 = realList;
-				//cout << "cur2 = realList , cur1->x, cur1->z " << lp <<", " << st << endl;
-				//if(cur2) cout << "cur2 = realList 16, cur2->x " << realList->x << endl;
-
-				if(cur2 == NULL){//realListがなければ
-					//	cout << "cur2 = realList 101 , reallist->x " << realList->x << endl<< endl;
-					addToList2(1, lp, st);//realListの末尾に現在のtempListの中身を追加
+				if(cur2 == NULL){
+					addToList2(1, lp, st);
 					if(cur && cur->x == lp && cur->z == st) cur = cur->next;
-					//tempListに次の構造体が存在していて内容が1つ前と一致していたならば, 次の次の構造体へ
-					delFromList2(4, lp, st);//追加したlpをtempListから削除
-					//		cout << "cur2 = realList 102, reallist->x " << realList->x << endl;
-				}else{//realListがあれば
-					//	cout << "cur2 = realList 102, reallist->x " << realList->x << endl;
-					//	cout << "cur2 = realList 11 " << endl<< endl;
+					delFromList2(4, lp, st);
+				}else{
 					int conf = 0;
-					while(cur2 != NULL){//realListがtempListのリンクとかぶっていないか
-					//	cout << "cur2 = realList 12, reallist->x " << realList->x << endl;
-						s2 = source[cur2->x];//realListの発ノード
-						d2= dest[cur2->x];//realListの着ノード
-						cur2 = cur2->next;//次のrealListへ
-						//cout << "cur2 = realList 15, cur2->x " << realList->x << endl;
-						s1 = source[lp];//tempListの発ノード
-						d1= dest[lp];//tempListの着ノード
-						//cout << "cur2 = realList 13, cur2->x " << endl;
+					while(cur2 != NULL){
+						s2 = source[cur2->x];
+						d2= dest[cur2->x];
+						cur2 = cur2->next;
+						s1 = source[lp];
+						d1= dest[lp];
 						if(linked_path[s1][d1][s2][d2] || linked_bp[s1][d1][s2][d2] || linked_crosspath[s1][d1][s2][d2]){
-							//もし2組の発着ノードに関して同じリンクを使っているならば
 							conf =1;
-							//cout << " conf " << endl;
-							break;//かぶっているとしてチェック終了
+							break;
 						}
 					}
-					//cout << "cur2 = realList 14 " << realList->x << endl<< endl;
-					if(conf==0){//もしrealListがtempListのリンクとかぶっていなれば
-						addToList2(1, lp, st);//realListの末尾に現在のtempListの中身を追加
+					if(conf==0){
+						addToList2(1, lp, st);
 						if(cur && cur->x == lp && cur->z == st) cur = cur->next;
-						//tempListに次の構造体が存在していて内容が1つ前と一致していたならば, 次の次の構造体へ
-						delFromList2(4, lp, st);//追加したlpをtempListから削除
-						//1:active 2:mixtList 3:realList 4:tempList
+						delFromList2(4, lp, st);
 					}
-					//cout << "cur2 = realList 14 " << endl<< endl;
-				}//realListがあれば
-			}//tempListがなくなるまで
-
-			//cout << "cur2 = realList 2" << endl<< endl;
+				}
+			}
 			cur2 = realList;
-			int realcheck = realOp;//帯域移動操作の総数が変わっているかあとで確認
-			while ( cur2 != NULL ){//realListがなくなるまで
+			int realcheck = realOp;
+			while ( cur2 != NULL ){
 				lp = cur2->x;
 				b = cur2->z;
 				cur2 = cur2->next;
-				//cout << "cur2 = realList 1, lp= " << lp << endl<< endl;
-				if(b){//プライマリパスならば
-					//cout << "cur2 = realList 2, lp= " << lp << endl<< endl;
-					deleteLP(lp, 1);// Remove LP from spec to avoid self-conflict
-					//プライマリパスのみ消去
-					// printSpec();
-					//a = checkFirstFit(lp);				// Return spec_ind[lp] at worst
+				if(b){
+					deleteLP(lp, 1);
 					a = checkExactFit(lp);
 					if(a==CAPASITY || a > spec_ind[lp]) a = checkFirstFit(lp);
-					//もしスロット番号が小さくならないようであれば
-					//if(a > spec_ind[lp]) a = spec_ind[lp];
-					if(a != spec_ind[lp]){//スロット番号が小さくなっていれば(INFならブロッキング)
-						realOp++;//帯域移動操作の総数
+					if(a != spec_ind[lp]){
+						realOp++;
 						realMov++;
-						if(lpState[lp]){		// Actual primary
+						if(lpState[lp]){
 							bpState[lp] = lpState[lp];
 							lpState[lp] = !bpState[lp];
 							togOp++;
@@ -881,18 +853,14 @@ int statAlgo()
 					}
 					asign(lp, a);
 				}
-				//cout << "cur2 = realList 3" << endl<< endl;
-				if(!b){//バックアップパスならば
-					deleteLP(lp, 2);            // Remove LP from spec to avoid self-conflict
-					//バックアップパスのみ消去
-					//printSpec();
-					// a = checkFirstBp(lp);				// Return spec_ind[lp] at worst
+				if(!b){
+					deleteLP(lp, 2);
 					a = checkExactBp(lp);
 					if(a==CAPASITY || a > spec_ind[lp]) a = checkFirstBp(lp);
-					if(a != bp_ind[lp]){//スロット番号が小さくなっていれば(INFならブロッキング)
+					if(a != bp_ind[lp]){
 						realOp++;
 						realMov++;
-						if(bpState[lp]){		// Actual primary
+						if(bpState[lp]){
 							bpState[lp] = lpState[lp];
 							lpState[lp] = !bpState[lp];
 							togOp++;
@@ -900,24 +868,22 @@ int statAlgo()
 					}
 					asignBp(lp, a);
 				}
-			}//realListがなくなる
-			cur2 = realList;//realListの先頭に戻す
-			//cout << "cur2 = realList 3" << endl<< endl;
-			while ( cur2 != NULL ){//realListがなくなるまで
+			}
+			cur2 = realList;
+			while ( cur2 != NULL ){
 				lp = cur2->x;
 				cur2 = cur2->next;
-				delFromList(3, lp);//1:active 2:mixtList 3:realList 4:tempList
+				delFromList(3, lp);
 			}			
 			
-			if(realcheck != realOp){//帯域移動操作数が変わっていれば
-				ret_time += DEFRAG_TIME;					//increment defrag time_slot_now
+			if(realcheck != realOp){
+				ret_time += DEFRAG_TIME;
 				if((time_slot_now+ret_time >= fin_time || ret_time >= DEFRAG_TOTAL_TIME_MAX) || eventQueue.empty()){
 					return 0;	
 				}
-				//新しいパスがきているか, 100000ステップを超えたならばデフラグ終了
 			}
-		}//tempListがなくなるまで
-	}//realMovが0以外なら続くのwhile文 帯域移動がなければデフラグ終了
+		}
+	}
 	return 0;
 }
 
@@ -1583,19 +1549,20 @@ int firstFit1_1(int lp, int algoCall)
 
 		return 1;
 	}else{
-		a = checkFirstFit(lp);					// For primary
-
+		// fixme: use checkFirstFitRerouting
+		a = checkFirstFit(lp);
 		if(a == INF){
 			blocked++;
 			return 0;
 		}
 
-		b = checkFirstBp(lp);					// For Backup
+		// fixme: use checkFirstBpRerouting
+		b = checkFirstBp(lp);
 		if(b == INF){
 			blocked++;
 			return 0;
 		}
-		//ブロッキングが起こらなかったらパスを割り当てる
+		//fixme: use asignRerouting and asignBpRerouting
 		asign(lp, a);
 		asignBp(lp, b);
 		isactive[lp] = 1;
