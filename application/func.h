@@ -33,11 +33,8 @@ int checkExactPrim(int);
 int checkExactBack(int);
 int checkExactPrimRerouting(int);
 int checkExactBackRerouting(int);
-int isPrimRoute(int, int);
-int isBackRoute(int, int);
 int searchPrimRoute(int, int);
 int searchBackRoute(int, int);
-void deleteLP(int, int);
 void deleteLPRerouting(int, int);
 int removeLP1_1(int);
 int firstFit1_1(int);
@@ -673,13 +670,10 @@ int readResultPy()
 			cur = cur->next;
 
 			fin >> a >> b ;
-			// printSpec();
 			asign(lp, b);
-	//	if(a<6 || a> 54) cout << "LP " << lp << " at " << b << endl;
 			fin.ignore(INT_MAX,'\n');
 			fin >> a >> b ;
 			asignBp(lp, b);
-	//	if(a<6 || a> 54) cout << "LP " << lp << " at " << b << endl;
 			fin.ignore(INT_MAX,'\n');
 		}
 	fin.close();
@@ -2051,43 +2045,6 @@ int searchBackRoute(int s, int lp)
 		return 1;//割り当て確定
 	}else{
 		return 0;//割り当て不可
-	}
-
-}
-
-
-
-void deleteLP(int lp, int p)	// p=0 delete both, 1 del prim and 2 del backup
-{
-	int s = source[lp], d= dest[lp];
-	int index = spec_ind[lp],  b= lp_size[lp];
-	int i,j;
-	int a = isactive[lp];
-
-//	cout << "loop1, index=" << index << endl;
-
-	if(a){						// a xor a =0, therefore if a lp is active an xor with its path will remove it
-		if(p==0 || p==1){
-		//	if(lp==181) cout << "index= " << index << endl;
-			for(i=0; i<b; i++){//占有帯域スロット
-				for(j=0;j<LINK_NUM;j++){//全てのリンクに関して
-					if(spec[index+i][j] == 0 && path_prim[s][d][j] == 1) throw "プライマリパス消去エラー";
-					spec[index+i][j] = path_prim[s][d][j] ^	spec[index+i][j];//pathが1ならspecは1
-				}
-			}
-		}
-
-		if(p==0 || p==2){
-			index = bp_ind[lp];
-			if(index == INF) return;//ブロッキングしている
-		//	if(lp==181) cout << "Big index= " << index << endl;
-			for(i=0; i<b; i++){									// an xor with its path will remove it
-				for(j=0;j<LINK_NUM;j++){
-					if(spec[index+i][j] == 0 && path_back[s][d][j] == 1) throw "バックアップパス消去エラー";
-					spec[index+i][j] = path_back[s][d][j] ^ spec[index+i][j];//pathが1ならspecは1
-				}
-			}
-		}
 	}
 }
 

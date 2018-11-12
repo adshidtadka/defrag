@@ -38,8 +38,8 @@ int main(int argc, char* argv[])
 		if(l != 0){
 			load = load + LOAD_GAIN;
 		}
-		ofs_result_txt 	<< endl << "load= "<< load << endl;
-		cout 			<< endl << "load= "<< load << endl;
+		ofs_result_txt 	<< endl << "load = "<< load << endl;
+		cout 			<< endl << "load = "<< load << endl;
 		initialize();
 		if (readInput(argc, &argv[0], load) == 1){
 		    cout << "[error] cannot read input" << endl;
@@ -48,8 +48,8 @@ int main(int argc, char* argv[])
 		
 		for (int it = 0; it < ITERATION; it++)
 		{
-			ofs_result_txt 	<< endl << "Iteration= "<< it << endl;
-			cout 			<< endl << "Iteration= "<< it << endl;
+			ofs_result_txt 	<< endl << "Iteration = "<< it << endl;
+			cout 			<< endl << "Iteration = "<< it << endl;
 			seed1 = (it+1) * seed1;
 			seed2 = (it+2) * seed1;
 
@@ -152,23 +152,23 @@ int main(int argc, char* argv[])
 				}
 				
 				end = clock();
-   				cout << "Simulation time_slot_now = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
-   				ofs_result_txt << "Simulation time_slot_now = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
+   				cout 				<< "[algo"<< algoCall << "] it takes " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
+   				ofs_result_txt 		<< "[algo"<< algoCall << "] it takes " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
 
 				if(algoCall==0){
-					cout 			<< "Blocked request: First-fit w/o defragment                " << blocked << endl;
-					ofs_result_txt 	<< "Blocked request: First-fit w/o defragment                " << blocked << endl << endl;
+					cout 			<< "[algo0] blocked:		" << blocked << endl;
+					ofs_result_txt 	<< "[algo0] blocked:		" << blocked << endl << endl;
 					blkdItNone 			+= blocked;
 					stdItNoneArr[it] 	= blocked;
 					reInitialize();
 				}
 				if(algoCall==1){
-					cout 			<< "Blocked request: First-fit w/ stat defragment            " << blocked << endl;
-					ofs_result_txt 	<< "Blocked request: First-fit w/ stat defragment            " << blocked << endl << endl;
-					cout 			<< "Number of switching operations:                          " << togOp << endl;
-					ofs_result_txt	<< "Number of switching operations:                          " << togOp << endl;
-					cout 			<< "Number of reallocating operations:                       " << realOp << endl;
-					ofs_result_txt 	<< "Number of reallocating operations:                       " << realOp << endl << endl;
+					cout 			<< "[algo1] blocked:		" << blocked << endl;
+					ofs_result_txt 	<< "[algo1] blocked:		" << blocked << endl << endl;
+					cout 			<< "[algo1] toggle:		" << togOp << endl;
+					ofs_result_txt	<< "[algo1] toggle:		" << togOp << endl;
+					cout 			<< "[algo1] reallocate:	" << realOp << endl;
+					ofs_result_txt 	<< "[algo1] reallocate:	" << realOp << endl << endl;
 					blkdItConv 			+= blocked;
 					stdItConvArr[it] 	= blocked;
 					togOpItConv  		+= togOp;
@@ -176,14 +176,14 @@ int main(int argc, char* argv[])
 					reInitialize();
 				}
 				if(algoCall==2){
-					cout 			<< "Blocked request: First-fit w/ stat rerouting defragment  " << blocked << endl;
-					ofs_result_txt 	<< "Blocked request: First-fit w/ stat rerouting defragment  " << blocked << endl << endl;
-					cout 			<< "Number of switching operations:                          " << togOp << endl;
-					ofs_result_txt 	<< "Number of switching operations:                          " << togOp << endl;
-					cout 			<< "Number of reallocating operations:                       " << realOp << endl;
-					ofs_result_txt 	<< "Number of reallocating operations:                       " << realOp << endl << endl;
-					cout 			<< "Number of rerouting operations:                          " << rerouteOp << endl;
-					ofs_result_txt 	<< "Number of rerouting operations:                          " << rerouteOp << endl << endl;
+					cout 			<< "[algo2] blocked:		" << blocked << endl;
+					ofs_result_txt 	<< "[algo2] blocked:		" << blocked << endl << endl;
+					cout 			<< "[algo2] toggle:		" << togOp << endl;
+					ofs_result_txt 	<< "[algo2] toggle:		" << togOp << endl;
+					cout 			<< "[algo2] reallocate:	" << realOp << endl;
+					ofs_result_txt 	<< "[algo2] reallocate:	" << realOp << endl << endl;
+					cout 			<< "[algo2] reroute:	" << rerouteOp << endl;
+					ofs_result_txt 	<< "[algo2] reroute:	" << rerouteOp << endl << endl;
 					blkdItProp 			+= blocked;
 					stdItPropArr[it] 	= blocked;
 					togOpItProp  		+= togOp;
@@ -192,23 +192,23 @@ int main(int argc, char* argv[])
 					reInitialize();
 				}
 				if(algoCall==3){
-					cout 			<< "Blocked request: First-fit w/ stat ilp defragment        " << blocked << endl;
-					ofs_result_txt 	<< "Blocked request: First-fit w/ stat ilp defragment        " << blocked << endl << endl;
-					cout 			<< "Number of switching operations:                          " << togOp << endl;
-					ofs_result_txt 	<< "Number of switching operations:                          " << togOp << endl;
-					cout 			<< "Number of reallocating operations:                       " << realOp << endl;
-					ofs_result_txt 	<< "Number of reallocating operations:                       " << realOp << endl << endl;
+					cout 			<< "[algo3] blocked:		" << blocked << endl;
+					ofs_result_txt 	<< "[algo3] blocked:		" << blocked << endl << endl;
+					cout 			<< "[algo3] toggle:		" << togOp << endl;
+					ofs_result_txt 	<< "[algo3] toggle:		" << togOp << endl;
+					cout 			<< "[algo3] reallocate:	" << realOp << endl;
+					ofs_result_txt 	<< "[algo3] reallocate:	" << realOp << endl << endl;
 					blkdItConvIlp 		+= blocked;
 					stdItConvIlpArr[it] = blocked;
 					reInitialize();
 				}
 				if(algoCall==4){
-					cout 			<< "Blocked request: First-fit w/ stat ilp reroute defragment" << blocked << endl;
-					ofs_result_txt 	<< "Blocked request: First-fit w/ stat ilp reroute defragment" << blocked << endl << endl;
-					cout 			<< "Number of switching operations:                          " << togOp << endl;
-					ofs_result_txt 	<< "Number of switching operations:                          " << togOp << endl;
-					cout 			<< "Number of reallocating operations:                       " << realOp << endl;
-					ofs_result_txt 	<< "Number of reallocating operations:                       " << realOp << endl << endl;
+					cout 			<< "[algo4] blocked:		" << blocked << endl;
+					ofs_result_txt 	<< "[algo4] blocked:		" << blocked << endl << endl;
+					cout 			<< "[algo4] toggle:		" << togOp << endl;
+					ofs_result_txt 	<< "[algo4] toggle:		" << togOp << endl;
+					cout 			<< "[algo4] reallocate:	" << realOp << endl;
+					ofs_result_txt 	<< "[algo4] reallocate:	" << realOp << endl << endl;
 					blkdItPropIlp += blocked;
 					stdItPropIlpArr[it] = blocked;
 					reInitialize();
@@ -232,56 +232,50 @@ int main(int argc, char* argv[])
 		stdItConvIlpDiff = blkdItConvIlp*0.05 - stdItConvIlp*1.96;
 		stdItPropIlpDiff = blkdItPropIlp*0.05 - stdItPropIlp*1.96;
 
-		cout << "Av blocked request blkdItNone:         " << blkdItNone/ITERATION << endl;
-		ofs_result_txt << "Av blocked request blkdItNone:         " << blkdItNone/ITERATION << endl;
-		ofs_result_csv << blkdItNone/ITERATION << ",";
-		cout << "Confidence interval blkdItNone:        " << stdItNone << endl;
-		ofs_result_txt << "Confidence interval blkdItNone:        " << stdItNone << endl;
-		cout << "Av blocked request blkdItConv:         " << blkdItConv/ITERATION << endl;
-		ofs_result_txt << "Av blocked request blkdItConv:         " << blkdItConv/ITERATION << endl;
-		ofs_result_csv << blkdItConv/ITERATION << ",";
-		cout << "Confidence interval blkdItConv:        " << stdItConv << endl;
-		ofs_result_txt << "Confidence interval blkdItConv:        " << stdItConv << endl;
-		cout << "Av blocked request blkdItProp:         " << blkdItProp/ITERATION << endl;
-		ofs_result_txt << "Av blocked request blkdItProp:         " << blkdItProp/ITERATION << endl;
-		ofs_result_csv << blkdItProp/ITERATION << ",";
-		cout << "Confidence interval blkdItProp:        " << stdItProp << endl;
-		ofs_result_txt << "Confidence interval blkdItProp:        " << stdItProp << endl;
-		cout << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp/ITERATION << endl;
-		ofs_result_txt << "Av blocked request blkdItConvIlp:      " << blkdItConvIlp/ITERATION << endl;
-		ofs_result_csv << blkdItConvIlp/ITERATION << ",";
-		cout << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
-		ofs_result_txt << "Confidence interval blkdItConvIlp:     " << stdItConvIlp << endl;
-		cout << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp/ITERATION << endl;
-		ofs_result_txt << "Av blocked request blkdItPropIlp:      " << blkdItPropIlp/ITERATION << endl;
-		ofs_result_csv << blkdItPropIlp/ITERATION << endl;
-		cout << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
-		ofs_result_txt << "Confidence interval blkdItPropIlp:     " << stdItPropIlp << endl;
-		cout << "Av toggle operations togOpItConv:      " << togOpItConv/ITERATION << endl;
-		ofs_result_txt << "Av toggle operations togOpItConv:      " << togOpItConv/ITERATION << endl;
-		operation_num_csv << togOpItConv/ITERATION << ",";
-		cout << "Av move operations realOpItConv:       " << realOpItConv/ITERATION << endl;
-		ofs_result_txt << "Av move operations realOpItConv:       " << realOpItConv/ITERATION << endl;
-		operation_num_csv << realOpItConv/ITERATION << ",";
-		cout << "Av toggle operations togOpItProp:      " << togOpItProp/ITERATION << endl;
-		ofs_result_txt << "Av toggle operations togOpItProp:      " << togOpItProp/ITERATION << endl;
-		operation_num_csv << togOpItProp/ITERATION << ",";
-		cout << "Av move operations realOpItProp:       " << realOpItProp/ITERATION << endl;
-		ofs_result_txt << "Av move operations realOpItProp:       " << realOpItProp/ITERATION << endl;
-		operation_num_csv << realOpItProp/ITERATION << ",";
-		cout << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp/ITERATION << endl << endl;
-		ofs_result_txt << "Av reroute operations rerouteOpItProp: " << rerouteOpItProp/ITERATION << endl << endl;
-		operation_num_csv << rerouteOpItProp/ITERATION << endl;
+		cout				<< endl << "Average results" << endl;
+		ofs_result_txt		<< endl << "Average results" << endl;
+		cout 				<< "[algo0] blocked:		" << blkdItNone/ITERATION << endl;
+		ofs_result_txt 		<< "[algo0] blocked:		" << blkdItNone/ITERATION << endl;
+		ofs_result_csv 		<< blkdItNone/ITERATION << ",";
+		cout 				<< "[algo0] confidence:	" << stdItNone << endl << endl;
+		ofs_result_txt 		<< "[algo0] confidence:	" << stdItNone << endl << endl;
+		cout 				<< "[algo1] blocked:		" << blkdItConv/ITERATION << endl;
+		ofs_result_txt 		<< "[algo1] blocked:		" << blkdItConv/ITERATION << endl;
+		ofs_result_csv 		<< blkdItConv/ITERATION << ",";
+		cout 				<< "[algo1] confidence:	" << stdItConv << endl << endl;
+		ofs_result_txt 		<< "[algo1] confidence:	" << stdItConv << endl << endl;
+		cout 				<< "[algo2] blocked:		" << blkdItProp/ITERATION << endl;
+		ofs_result_txt 		<< "[algo2] blocked:		" << blkdItProp/ITERATION << endl;
+		ofs_result_csv 		<< blkdItProp/ITERATION << ",";
+		cout 				<< "[algo2] confidence:	" << stdItProp << endl << endl;
+		ofs_result_txt 		<< "[algo2] confidence:	" << stdItProp << endl << endl;
+		cout 				<< "[algo3] blocked:		" << blkdItConvIlp/ITERATION << endl;
+		ofs_result_txt 		<< "[algo3] blocked:		" << blkdItConvIlp/ITERATION << endl;
+		ofs_result_csv 		<< blkdItConvIlp/ITERATION << ",";
+		cout 				<< "[algo3] confidence:	" << stdItConvIlp << endl << endl;
+		ofs_result_txt 		<< "[algo3] confidence:	" << stdItConvIlp << endl << endl;
+		cout 				<< "[algo4] blocked:		" << blkdItPropIlp/ITERATION << endl;
+		ofs_result_txt 		<< "[algo4] blocked:		" << blkdItPropIlp/ITERATION << endl;
+		ofs_result_csv 		<< blkdItPropIlp/ITERATION << endl;
+		cout 				<< "[algo4] confidence:	" << stdItPropIlp << endl << endl;
+		ofs_result_txt 		<< "[algo4] confidence:	" << stdItPropIlp << endl << endl;
+		cout 				<< "[algo1] toggle:		" << togOpItConv/ITERATION << endl;
+		ofs_result_txt 		<< "[algo1] toggle:		" << togOpItConv/ITERATION << endl;
+		operation_num_csv 	<< togOpItConv/ITERATION << ",";
+		cout 				<< "[algo1] reallocate:	" << realOpItConv/ITERATION << endl << endl;
+		ofs_result_txt 		<< "[algo1] reallocate:	" << realOpItConv/ITERATION << endl << endl;
+		operation_num_csv 	<< realOpItConv/ITERATION << ",";
+		cout 				<< "[algo2] toggle:		" << togOpItProp/ITERATION << endl;
+		ofs_result_txt 		<< "[algo2] toggle:		" << togOpItProp/ITERATION << endl;
+		operation_num_csv 	<< togOpItProp/ITERATION << ",";
+		cout 				<< "[algo2] reallocate:	" << realOpItProp/ITERATION << endl;
+		ofs_result_txt 		<< "[algo2] reallocate:	" << realOpItProp/ITERATION << endl;
+		operation_num_csv 	<< realOpItProp/ITERATION << ",";
+		cout 				<< "[algo2] reroute:	" << rerouteOpItProp/ITERATION << endl << endl;
+		ofs_result_txt 		<< "[algo2] reroute:	" << rerouteOpItProp/ITERATION << endl << endl;
+		operation_num_csv 	<< rerouteOpItProp/ITERATION << endl;
 	}
 	ofs_result_txt.close();
-
-	lpNode *cur;
-	cur = realList;
-	while (cur != NULL) 
-	{
-		deleteLP(cur->x, 0);
-		cur = cur->next;
-	}
 
 	cout << endl;
 	cout << "time_slot_now: " << time_slot_now << " Seed1: " << seed1 << ", Seed2: " << seed2 << endl<< endl;
