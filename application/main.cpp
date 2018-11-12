@@ -64,7 +64,6 @@ int main(int argc, char* argv[])
 			initializeEvent();
 
 			defragCount = round(endEvent[REQ_NUM-1].time/DEFRAG_INTERVAL);
-			defragEvent.clear();
 			defragEvent.resize(defragCount);
 			for (int c = 0; c < defragCount ; c++)
 			{
