@@ -74,7 +74,7 @@ int hops[NODE_NUM][NODE_NUM], bhops[NODE_NUM][NODE_NUM];
 int link[NODE_NUM][NODE_NUM];
 int last_lp;
 int midlp = REQ_NUM;
-unsigned seed1 = 123;
+unsigned seed1 = 1448601515;
 unsigned seed2 = 125;
 struct lpNode{
 	int x;

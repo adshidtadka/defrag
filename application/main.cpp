@@ -55,7 +55,6 @@ int main(int argc, char* argv[])
 		{
 			ofs_result_txt 	<< endl << "Iteration= "<< it << endl;
 			cout 			<< endl << "Iteration= "<< it << endl;
-			if(it==0) seed1 =  1448601515;
 			seed1 = (it+1) * seed1;
 			seed2 = (it+2) * seed1;
 
