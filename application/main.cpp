@@ -59,9 +59,8 @@ int main(int argc, char* argv[])
 			reInitialize();
 			initializeEvent();
 
-			for(int j = 0; j <= 2; j++)
+			for(algoCall = 0; algoCall <= 2; algoCall++)
 			{
-				algoCall = j;
 				for (int i = 0; i < REQ_NUM; i++)
 				{
 					eventQueue.push(endEvent[i]);
@@ -70,6 +69,7 @@ int main(int argc, char* argv[])
 				for (int c = 0; c < defragCount; c++){
 					eventQueue.push(defragEvent[c]);
 				}
+
 				time_slot_now = 0; 
 				int lp = 0;
 				clock_t start, end;
@@ -93,7 +93,6 @@ int main(int argc, char* argv[])
 						delFromList(2, nowEvent.lpNum);			
 					}
 						
-					// next event
 					nowEvent = eventQueue.top();
 	 				eventQueue.pop();
 	 				time_slot_now = nowEvent.time_slot_now;
@@ -159,14 +158,14 @@ int main(int argc, char* argv[])
    				cout << "Simulation time_slot_now = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
    				ofs_result_txt << "Simulation time_slot_now = " << (double)(end - start) / CLOCKS_PER_SEC << " sec" <<endl;
 
-				if(j==0){
+				if(algoCall==0){
 					cout 			<< "Blocked request: First-fit w/o defragment                " << blocked << endl;
 					ofs_result_txt 	<< "Blocked request: First-fit w/o defragment                " << blocked << endl << endl;
 					blkdItNone 			+= blocked;
 					stdItNoneArr[it] 	= blocked;
 					reInitialize();
 				}
-				if(j==1){
+				if(algoCall==1){
 					cout 			<< "Blocked request: First-fit w/ stat defragment            " << blocked << endl;
 					ofs_result_txt 	<< "Blocked request: First-fit w/ stat defragment            " << blocked << endl << endl;
 					cout 			<< "Number of switching operations:                          " << togOp << endl;
@@ -179,7 +178,7 @@ int main(int argc, char* argv[])
 					realOpItConv 		+= realOp;
 					reInitialize();
 				}
-				if(j==2){
+				if(algoCall==2){
 					cout 			<< "Blocked request: First-fit w/ stat rerouting defragment  " << blocked << endl;
 					ofs_result_txt 	<< "Blocked request: First-fit w/ stat rerouting defragment  " << blocked << endl << endl;
 					cout 			<< "Number of switching operations:                          " << togOp << endl;
@@ -195,7 +194,7 @@ int main(int argc, char* argv[])
 					rerouteOpItProp 	+= rerouteOp;
 					reInitialize();
 				}
-				if(j==3){
+				if(algoCall==3){
 					cout 			<< "Blocked request: First-fit w/ stat ilp defragment        " << blocked << endl;
 					ofs_result_txt 	<< "Blocked request: First-fit w/ stat ilp defragment        " << blocked << endl << endl;
 					cout 			<< "Number of switching operations:                          " << togOp << endl;
@@ -206,7 +205,7 @@ int main(int argc, char* argv[])
 					stdItConvIlpArr[it] = blocked;
 					reInitialize();
 				}
-				if(j==4){
+				if(algoCall==4){
 					cout 			<< "Blocked request: First-fit w/ stat ilp reroute defragment" << blocked << endl;
 					ofs_result_txt 	<< "Blocked request: First-fit w/ stat ilp reroute defragment" << blocked << endl << endl;
 					cout 			<< "Number of switching operations:                          " << togOp << endl;
