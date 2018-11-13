@@ -11,6 +11,7 @@
 #include <time.h>
 #include <float.h>
 #include <sstream>
+#include <map>
 
 using namespace std;
 
@@ -52,25 +53,26 @@ double var(double, int);
 double standard(double, int);
 double finTime();
 
-int lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM];
-bool spec[CAPASITY][LINK_NUM];
-int blocked;
-int isactive[REQ_NUM];
-double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
-int link[NODE_NUM][NODE_NUM];
-unsigned seed1 = SEED_1;
-unsigned seed2 = SEED_2;
 bool path_prim_rr[LINK_NUM][REQ_NUM];
 bool path_back_rr[LINK_NUM][REQ_NUM];
+int link[NODE_NUM][NODE_NUM];
+bool spec[CAPASITY][LINK_NUM];
+
+int lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM];
+int isactive[REQ_NUM];
+double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
+int ind_prim[REQ_NUM], ind_back[REQ_NUM];
+bool lpState[REQ_NUM];
+bool bpState[REQ_NUM];
+unsigned seed1 = SEED_1;
+unsigned seed2 = SEED_2;
+int blocked;
 int algoCall;
 int defragCount;
 double time_slot_now;
-int ind_prim[REQ_NUM], ind_back[REQ_NUM];
 int togOp;
 int realOp;
 int rerouteOp;
-bool lpState[REQ_NUM];
-bool bpState[REQ_NUM];
 struct lpNode{
 	int x;
 	int y;
@@ -109,6 +111,21 @@ Event endEvent[REQ_NUM];
 Event nowEvent;
 Event nextEvent;
 vector<Event> defragEvent;
+
+// map<char, int> links;
+// map<char, int> nodes;
+// links["5node"] 	= 5;
+// nodes["5node"] 	= 12;
+// links["abi"] 	= 11;
+// nodes["abi"] 	= 28;
+// links["euro"] 	= 11;
+// nodes["euro"] 	= 52;
+// links["nsf"] 	= 14;
+// nodes["nsf"] 	= 44;
+// links["ind"] 	= 14;
+// nodes["ind"] 	= 46;
+// links["jap"] 	= 25;
+// nodes["jap"] 	= 84;
 
 int readInput(int argc, char* argv[0], int load)
 {
