@@ -20,7 +20,7 @@ int initializeEvent(void);
 int readInput(int, char**, int);
 int checkFirstPrim(int);
 int checkFirstPrimRerouting(int);
-int retuneDownRerouting();
+int retuneDown();
 int asign(int, int);
 int asignPrimRerouting(int,int);
 int asignBp(int, int);
@@ -40,14 +40,12 @@ int removeLP1_1(int);
 int firstFit1_1(int);
 int checkFirstBack(int);
 int checkFirstBackRerouting(int);
-int retuneBp(int);
-int readResultPy();
-int readResultReroutingPy();
-void statDefragPy(int);
-void statDefragReroutingPy(int);
-int statAlgoRerouting(void);
-int writeOutputPy(int);
-int writeOutputReroutingPy(int);
+int startDefrag(int);
+int readResultConv();
+int readResultProp();
+int startAlgo(void);
+int writeGivenParamConv(int);
+int writeGivenParamProp(int);
 void addToList2(int, int, int);
 void delFromList2(int, int, int);
 double sum(double, int);
@@ -210,7 +208,7 @@ int readInput(int argc, char* argv[0], int load)
 	return 0;
 }
 
-int writeOutputPy(int load)
+int writeGivenParamConv(int load)
 {
 	int i,j,ind=0;
 	int lp,n,f0,k;
@@ -294,7 +292,7 @@ int writeOutputPy(int load)
 	return 0;
 }
 
-int writeOutputReroutingPy(int load)
+int writeGivenParamProp(int load)
 {
 	int i,j,ind=0;
 	int lp,n,f0,k;
@@ -414,32 +412,33 @@ int writeOutputReroutingPy(int load)
 }
 
 
-int retuneBp(int load)
+int startDefrag(int load)
 {
 	if(algoCall == 0)
 	{
 		 return 0;
 	}
 
-	if(algoCall==1){
-		statAlgoRerouting();
-		retuneDownRerouting();
+	if(algoCall == 1 || algoCall == 2)
+	{
+		startAlgo();
+		retuneDown();
 		return 0;
 	}
 
-	if(algoCall==2){
-		statAlgoRerouting();
-		retuneDownRerouting();
+	if(algoCall == 3)
+	{
+		writeGivenParamConv(load);
+		system("python ssr_lno.py");
+		readResultConv();
 		return 0;
 	}
 
-	if(algoCall==3){
-		statDefragPy(load);
-		return 0;
-	}
-
-	if(algoCall==4){
-		statDefragReroutingPy(load);
+	if(algoCall == 4)
+	{
+		writeGivenParamProp(load);
+		system("python ssrr_lno.py");
+		readResultProp();
 		return 0;
 	}
 	return 0;
@@ -480,21 +479,7 @@ double standard(double data[], int n) {
     return sqrt(var(data, n));                  // 標準偏差=分散の平方根
 }
 
-void statDefragPy(int load)
-{
-	writeOutputPy(load);
-	system("python ssr_lno.py");
-	readResultPy();
-}
-
-void statDefragReroutingPy(int load)
-{
-	writeOutputReroutingPy(load);
-	system("python ssrr_lno.py");
-	readResultReroutingPy();
-}
-
-int readResultPy()
+int readResultConv()
 {
 	int i,j;
 	int a,b, lp;
@@ -537,7 +522,7 @@ int readResultPy()
 	return 0;
 }
 
-int readResultReroutingPy()
+int readResultProp()
 {
 	int i,j;
 	int a,b,c,d,lp;
@@ -608,7 +593,7 @@ int readResultReroutingPy()
 	return 0;
 }
 
-int statAlgoRerouting()
+int startAlgo()
 {
 	int a, b, lp, lp2;
 	double ret_time = 0;
@@ -847,7 +832,7 @@ double finTime()
 	return eventQueue.top().time;
 }
 
-int retuneDownRerouting()
+int retuneDown()
 {
 	int s, d;
 	int index1;

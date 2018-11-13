@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
 							if(!b)
 							{
 								try {
-									retuneBp(load);
+									startDefrag(load);
 								}
 								catch(const char* err){
 									cout << "ERR:ブロッキング中における" << err << endl;
@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
 					
 					if(nowEvent.type == 2){
 						try{
-							retuneBp(load);
+							startDefrag(load);
 						}
 						catch(const char* err)
 						{
