@@ -218,7 +218,6 @@ int main(int argc, char* argv[])
 		ofs_result_csv << load << ",";
 		operation_num_csv << load << ",";
 
-
 		double stdItNone, stdItConv, stdItProp, stdItConvIlp, stdItPropIlp;
 		double stdItNoneDiff, stdItConvDiff, stdItPropDiff, stdItConvIlpDiff, stdItPropIlpDiff;
 		stdItNone = standard(stdItNoneArr, ITERATION);

@@ -61,9 +61,6 @@ int lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM], spec_ind[REQ_NUM];
 bool spec[CAPASITY][LINK_NUM];
 bool path_prim[NODE_NUM][NODE_NUM][LINK_NUM];
 bool path_back[NODE_NUM][NODE_NUM][LINK_NUM];
-bool linked_path[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
-bool linked_bp[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
-bool linked_crosspath[NODE_NUM][NODE_NUM][NODE_NUM][NODE_NUM];
 int blocked;
 int isactive[REQ_NUM];
 double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
@@ -224,27 +221,6 @@ int readInput(int argc, char* argv[0], int load)
 	}
 	fin.close();
 
-	for (int i = 0; i < NODE_NUM; i++)
-	{
-		for (int j = 0; j < NODE_NUM; j++)
-		{
-			for (int k = 0; k < NODE_NUM; k++)
-			{
-				for (int l = 0; l < NODE_NUM; l++)
-				{
-					if (k == i && l == j){
-						linked_path[i][j][k][l] = 0;
-					} else {
-						for(int p = 0; p < LINK_NUM; p++){
-							if(path_prim[i][j][p] && path_prim[k][l][p]) linked_path[i][j][k][l] = 1;
-							if(path_back[i][j][p] && path_back[k][l][p]) linked_bp[i][j][k][l] = 1;
-							if(path_prim[i][j][p] && path_back[k][l][p]) linked_crosspath[i][j][k][l] = 1;
-						}
-					}
-				}
-			}
-		}
-	}
 	return 0;
 }
 
@@ -1480,15 +1456,6 @@ int initialize(void)
 			hops[i][j] = 0;
 			part[i][j] = 0;
 			link[i][j] = INF;
-			for (int k = 0; k < NODE_NUM; k++)
-			{
-				for (int l = 0; l < NODE_NUM; l++)
-				{
-					linked_path[i][j][k][l] 		= 0;
-					linked_bp[i][j][k][l] 			= 0;
-					linked_crosspath[i][j][k][l]	= 0;
-				}
-			}
 		}
 	}
 
