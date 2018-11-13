@@ -29,15 +29,15 @@ int checkExactPrimConv(int);
 int checkExactBackConv(int);
 int checkExactPrimProp(int);
 int checkExactBackProp(int);
+int checkFirstPrimConv(int);
+int checkFirstPrimProp(int);
+int checkFirstBackConv(int);
+int checkFirstBackProp(int);
 int searchRoutePrim(int, int);
 int searchRouteBack(int, int);
 void delLp(int, int);
 int removeLP1_1(int);
 int setupPath(int);
-int checkFirstPrimConv(int);
-int checkFirstPrimProp(int);
-int checkFirstBackConv(int);
-int checkFirstBackProp(int);
 int startDefrag(int);
 int readResultConv();
 int readResultProp();
@@ -82,10 +82,11 @@ struct Node {
    	return (cost > node.cost);
 	}
 };
-bool path_prim_rr[LINK_NUM][REQ_NUM], path_back_rr[LINK_NUM][REQ_NUM];
+bool path_prim_rr[LINK_NUM][REQ_NUM];
+bool path_back_rr[LINK_NUM][REQ_NUM];
 int algoCall;
 double time_slot_now;
-int spec_ind[REQ_NUM], bp_ind[REQ_NUM];
+int ind_prim[REQ_NUM], ind_back[REQ_NUM];
 int togOp;
 int realOp;
 int rerouteOp;
@@ -253,15 +254,15 @@ int writeGivenParamConv(int load)
 		k = lpState[lp];
 		if (k)
 		{
-			f0 = spec_ind[lp];
+			f0 = ind_prim[lp];
 			ofs2 << ind << " " <<"1 "<< n <<" "<< f0 << endl;
-			f0 = bp_ind[lp];
+			f0 = ind_back[lp];
 			ofs2 << ind << " " <<"0 "<< n <<" "<< f0 << endl;
 			ind++;
 		}else{
-			f0 = spec_ind[lp];
+			f0 = ind_prim[lp];
 			ofs2 << ind << " " <<"0 "<< n <<" "<< f0 << endl;
-			f0 = bp_ind[lp];
+			f0 = ind_back[lp];
 			ofs2 << ind << " " <<"1 "<< n <<" "<< f0 << endl;
 			ind++;
 		}
@@ -338,15 +339,15 @@ int writeGivenParamProp(int load)
 		k = lpState[lp];
 		if (k)
 		{
-			f0 = spec_ind[lp];
+			f0 = ind_prim[lp];
 			ofs2 << ind << " " <<"1 "<< n <<" "<< f0 << endl;
-			f0 = bp_ind[lp];
+			f0 = ind_back[lp];
 			ofs2 << ind << " " <<"0 "<< n <<" "<< f0 << endl;
 			ind++;
 		}else{
-			f0 = spec_ind[lp];
+			f0 = ind_prim[lp];
 			ofs2 << ind << " " <<"0 "<< n <<" "<< f0 << endl;
-			f0 = bp_ind[lp];
+			f0 = ind_back[lp];
 			ofs2 << ind << " " <<"1 "<< n <<" "<< f0 << endl;
 			ind++;
 		}
@@ -703,7 +704,7 @@ int startAlgo()
 					} else {
 						a = checkExactPrimConv(lp);
 					}
-					if (a == CAPASITY || a > spec_ind[lp])
+					if (a == CAPASITY || a > ind_prim[lp])
 					{
 						if (algoCall == 2 || algoCall == 4)
 						{
@@ -728,7 +729,7 @@ int startAlgo()
 					{
 						rerouteOp++;
 					}
-					if(a != spec_ind[lp]){
+					if(a != ind_prim[lp]){
 						realOp++;
 						realMov++;
 						if(lpState[lp]){
@@ -760,7 +761,7 @@ int startAlgo()
 					} else {
 						a = checkExactBackConv(lp);
 					}
-					if (a == CAPASITY || a > bp_ind[lp])
+					if (a == CAPASITY || a > ind_back[lp])
 					{
 						if (algoCall == 2 || algoCall == 4)
 						{
@@ -785,7 +786,7 @@ int startAlgo()
 					{
 						rerouteOp++;
 					}
-					if(a != bp_ind[lp]){
+					if(a != ind_back[lp]){
 						realOp++;
 						realMov++;
 						if(bpState[lp]){
@@ -849,7 +850,7 @@ int retuneDown()
 		while ( cur != NULL ) {						// Checking all active LPs
 			i = cur->x;
 			cur = cur->next;
-			if(isactive[i] == 1 && spec_ind[i] == index1){
+			if(isactive[i] == 1 && ind_prim[i] == index1){
 				int path_rr_prev[LINK_NUM]; //to compare the previous root and new route
 				for (int b = 0; b < LINK_NUM; ++b)
 				{
@@ -870,7 +871,7 @@ int retuneDown()
 				} else {
 					a = checkExactPrimConv(i);
 				}
-				if(a==CAPASITY || a > spec_ind[i]){
+				if(a==CAPASITY || a > ind_prim[i]){
 					if (algoCall == 2 || algoCall == 4)
 					{
 						a = checkFirstPrimProp(i);
@@ -894,7 +895,7 @@ int retuneDown()
 				{
 					rerouteOp++;
 				}
-				if(a != spec_ind[i]){
+				if(a != ind_prim[i]){
 					realOp++;
 					if(lpState[i]){
 						bpState[i] = lpState[i];
@@ -906,7 +907,7 @@ int retuneDown()
 				asignPrim(i, a);
 			}
 
-			if(isactive[i] == 1 && bp_ind[i] == index1){
+			if(isactive[i] == 1 && ind_back[i] == index1){
 				int bp_rr_prev[LINK_NUM]; //to compare the previous root and new route
 				for (int b = 0; b < LINK_NUM; ++b)
 				{
@@ -927,7 +928,7 @@ int retuneDown()
 				} else {
 					a = checkExactBackConv(i);
 				}
-				if(a==CAPASITY || a > bp_ind[i]){
+				if(a==CAPASITY || a > ind_back[i]){
 					if (algoCall == 2 || algoCall == 4)
 					{
 						a = checkFirstBackProp(i);
@@ -951,7 +952,7 @@ int retuneDown()
 				{
 					rerouteOp++;
 				}
-				if(a != bp_ind[i]){
+				if(a != ind_back[i]){
 					realOp++;
 					if(bpState[i]){		// Actual primary
 						bpState[i] = lpState[i];
@@ -1168,7 +1169,7 @@ int setupPath(int lp)
 
 int removeLP1_1(int lp)
 {
-	int index = spec_ind[lp],  b= lp_size[lp];
+	int index = ind_prim[lp],  b= lp_size[lp];
 	int i,j;
 	int a = isactive[lp];
 
@@ -1183,7 +1184,7 @@ int removeLP1_1(int lp)
 				spec[index+i][j] = path_prim_rr[j][lp] ^ spec[index+i][j];
 			}
 		}
-		index = bp_ind[lp];
+		index = ind_back[lp];
 		if(index < INF){
 			for(i=0; i<b; i++){
 				for(j=0;j<LINK_NUM;j++){
@@ -1272,7 +1273,7 @@ int asignBack(int lp, int index)
 	int i,j,p;
 	int b= lp_size[lp];
 
-	bp_ind[lp] = index;
+	ind_back[lp] = index;
 	for(j=0;j<b;j++){
 		for(p=0;p<LINK_NUM;p++){
 			if(spec[index+j][p] == 1 && path_back_rr[p][lp] ==1) throw "バックアップパス割り当てエラー";
@@ -1313,7 +1314,7 @@ int reInitialize(void)
 	rerouteOp = 0;
 
 	for(int i=0;i<REQ_NUM;i++){
-		spec_ind[i]=0; isactive[i]=0;
+		ind_prim[i]=0; isactive[i]=0;
 		lpState[i]=1; bpState[i]=0;
 	}
 
@@ -1490,7 +1491,7 @@ int asignPrim(int lp, int index)
 	int i,j,p;
 	int b= lp_size[lp];
 
-	spec_ind[lp] = index;
+	ind_prim[lp] = index;
 	for(j=0;j<b;j++){
 		for(p=0;p<LINK_NUM;p++){
 			if(spec[index+j][p] == 1 && path_prim_rr[p][lp] ==1) throw "プライマリパス割り当てエラー";
@@ -1790,7 +1791,7 @@ int searchRouteBack(int s, int lp)
 
 void delLp(int lp, int p)
 {
-	int index = spec_ind[lp],  b= lp_size[lp];
+	int index = ind_prim[lp],  b= lp_size[lp];
 	int i,j;
 	int a = isactive[lp];
 
@@ -1806,7 +1807,7 @@ void delLp(int lp, int p)
 		}
 
 		if(p==0 || p==2){
-			index = bp_ind[lp];
+			index = ind_back[lp];
 			if(index == INF) return;
 			for(i=0; i<b; i++){
 				for(j=0;j<LINK_NUM;j++){
