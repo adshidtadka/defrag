@@ -16,3 +16,5 @@
 // (NODE_NUM,LINK_NUM) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
 #define NODE_NUM 				11
 #define LINK_NUM 				28
+#define SEED_1					1448601515
+#define SEED_2					125

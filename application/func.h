@@ -58,8 +58,19 @@ int blocked;
 int isactive[REQ_NUM];
 double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
 int link[NODE_NUM][NODE_NUM];
-unsigned seed1 = 1448601515;
-unsigned seed2 = 125;
+unsigned seed1 = SEED_1;
+unsigned seed2 = SEED_2;
+bool path_prim_rr[LINK_NUM][REQ_NUM];
+bool path_back_rr[LINK_NUM][REQ_NUM];
+int algoCall;
+int defragCount;
+double time_slot_now;
+int ind_prim[REQ_NUM], ind_back[REQ_NUM];
+int togOp;
+int realOp;
+int rerouteOp;
+bool lpState[REQ_NUM];
+bool bpState[REQ_NUM];
 struct lpNode{
 	int x;
 	int y;
@@ -82,16 +93,6 @@ struct Node {
    	return (cost > node.cost);
 	}
 };
-bool path_prim_rr[LINK_NUM][REQ_NUM];
-bool path_back_rr[LINK_NUM][REQ_NUM];
-int algoCall;
-double time_slot_now;
-int ind_prim[REQ_NUM], ind_back[REQ_NUM];
-int togOp;
-int realOp;
-int rerouteOp;
-bool lpState[REQ_NUM];
-bool bpState[REQ_NUM];
 struct Event
 {
 	double time;
@@ -107,7 +108,6 @@ Event startEvent[REQ_NUM];
 Event endEvent[REQ_NUM];
 Event nowEvent;
 Event nextEvent;
-int defragCount;
 vector<Event> defragEvent;
 
 int readInput(int argc, char* argv[0], int load)
