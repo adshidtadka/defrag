@@ -58,12 +58,9 @@ double finTime();
 
 int lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM];
 bool spec[CAPASITY][LINK_NUM];
-bool path_prim[NODE_NUM][NODE_NUM][LINK_NUM];
-bool path_back[NODE_NUM][NODE_NUM][LINK_NUM];
 int blocked;
 int isactive[REQ_NUM];
 double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
-int hops[NODE_NUM][NODE_NUM], bhops[NODE_NUM][NODE_NUM];
 int link[NODE_NUM][NODE_NUM];
 unsigned seed1 = 1448601515;
 unsigned seed2 = 125;
@@ -172,8 +169,6 @@ int readInput(int argc, char* argv[0], int load)
 		fin >> i >> j >> a >> b;
 		fin.ignore(INT_MAX,'\n');
 		p = link[a][b];
-		path_prim[i][j][p] = 1;
-		++hops[i][j];
 	}
 	fin.close();
 
@@ -209,8 +204,6 @@ int readInput(int argc, char* argv[0], int load)
 		fin >> i >> j >> a >> b;
 		fin.ignore(INT_MAX,'\n');
 		p = link[a][b];
-		path_back[i][j][p] = 1;
-		++bhops[i][j];
 	}
 	fin.close();
 
@@ -308,8 +301,8 @@ int writeOutputReroutingPy(int load)
 
 	int m = 0;
 	lpNode *cur = activeList;
-	while ( cur != NULL ) {						// Checking all active LPs
-		m++;   //activeなリクエストの数を数える
+	while ( cur != NULL ) {
+		m++;
 		lp = cur->x;
 		cur = cur->next;
 	}
@@ -375,7 +368,6 @@ int writeOutputReroutingPy(int load)
 	ofs2 << ";" << endl << endl;
 
 	ofs2 << "r_p_i_j := " << endl;
-	// cout << "r_p_i_j := " << endl;
 	ind =0;
 	cur = activeList;
 	while ( cur != NULL ){
@@ -386,19 +378,17 @@ int writeOutputReroutingPy(int load)
 				if(link[i][j] < LINK_NUM){
 					if (path_prim_rr[link[i][j]][lp]){
 						ofs2 << ind << " " << i << " " << j << endl;
-						// cout << ind << " " << i << " " << j << endl;
 					}
 				}
 			}
 		}
 
-		ind++;//バックアップパスが連番になっている
+		ind++;
 		for ( i = 0; i < NODE_NUM; i++) {
 			for ( j = 0; j < NODE_NUM; j++ ){
 				if(link[i][j] < LINK_NUM){
 					if (path_back_rr[link[i][j]][lp]){
 						ofs2 << ind << " " << i << " " << j << endl;
-						// cout << ind << " " << i << " " << j << endl;
 					}
 				}
 			}
@@ -1316,12 +1306,6 @@ int initialize(void)
 	{
 		for (int j = 0; j < NODE_NUM; j++)
 		{
-			for (int p = 0; p < LINK_NUM; p++)
-			{
-				path_prim[i][j][p] = 0;
-				path_back[i][j][p] = 0;
-			}
-			hops[i][j] = 0;
 			link[i][j] = INF;
 		}
 	}
@@ -1350,7 +1334,6 @@ int reInitialize(void)
 		lpState[i]=1; bpState[i]=0;
 	}
 
-	// make priority empty
 	while(!eventQueue.empty()){
 		eventQueue.pop();
 	}
@@ -1427,16 +1410,6 @@ int genDemands(int load)
 		t_exp_event[i] = t_req_event[i] + t_hold_event[i];
 		t_req_event[i+1] = t_req_event[i] + next_arr(generator);
 		ofs_input << i  << ": "<< source[i]  <<" " << dest[i]  <<" " << lp_size[i]  <<" " << t_req_event[i] <<" " << t_hold_event[i] << endl;
-		for (int j = 0; j< NODE_NUM; j++)
-		{
-			for (int k = 0; k < NODE_NUM; k++)
-			{
-				if (link[j][k] < LINK_NUM){
-					path_prim_rr[link[j][k]][i] = path_prim[source[i]][dest[i]][link[j][k]];
-					path_back_rr[link[j][k]][i] = path_back[source[i]][dest[i]][link[j][k]];
-				}
-			}
-		}
 	}
 
 	ofs_input << ":;"<< endl << endl;
