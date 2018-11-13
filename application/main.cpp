@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
 	 					if(lp_size[nowEvent.lpNum])
 	 					{
 	 						try {
-								b = firstFit1_1(nowEvent.lpNum);
+								b = setupPath(nowEvent.lpNum);
 							}
 							catch(const char* err){
 								cout << "ERR:パス割り当て中における" << err << endl;

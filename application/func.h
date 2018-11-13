@@ -18,28 +18,26 @@ int initialize(void);
 int reInitialize(void);
 int initializeEvent(void);
 int readInput(int, char**, int);
-int checkFirstPrim(int);
-int checkFirstPrimRerouting(int);
-int retuneDown();
-int asign(int, int);
-int asignPrimRerouting(int,int);
-int asignBp(int, int);
-int asignBackRerouting(int, int);
+int retuneDown(void);
+int asignPrim(int,int);
+int asignBack(int, int);
 int printSpec(void);
 int genDemands(int);
 void delFromList(int, int);
 void addToList(int, int, int);
-int checkExactPrim(int);
-int checkExactBack(int);
-int checkExactPrimRerouting(int);
-int checkExactBackRerouting(int);
-int searchPrimRoute(int, int);
-int searchBackRoute(int, int);
-void deleteLPRerouting(int, int);
+int checkExactPrimConv(int);
+int checkExactBackConv(int);
+int checkExactPrimProp(int);
+int checkExactBackProp(int);
+int searchRoutePrim(int, int);
+int searchRouteBack(int, int);
+void delLp(int, int);
 int removeLP1_1(int);
-int firstFit1_1(int);
-int checkFirstBack(int);
-int checkFirstBackRerouting(int);
+int setupPath(int);
+int checkFirstPrimConv(int);
+int checkFirstPrimProp(int);
+int checkFirstBackConv(int);
+int checkFirstBackProp(int);
 int startDefrag(int);
 int readResultConv();
 int readResultProp();
@@ -511,10 +509,10 @@ int readResultConv()
 			cur = cur->next;
 
 			fin >> a >> b ;
-			asignPrimRerouting(lp, b);
+			asignPrim(lp, b);
 			fin.ignore(INT_MAX,'\n');
 			fin >> a >> b ;
-			asignBackRerouting(lp, b);
+			asignBack(lp, b);
 			fin.ignore(INT_MAX,'\n');
 		}
 	fin.close();
@@ -582,10 +580,10 @@ int readResultProp()
 
 			fin >> a >> b ;
 			// printSpec();
-			asignPrimRerouting(lp, b);
+			asignPrim(lp, b);
 			fin.ignore(INT_MAX,'\n');
 			fin >> a >> b ;
-			asignBackRerouting(lp, b);
+			asignBack(lp, b);
 			fin.ignore(INT_MAX,'\n');
 		}
 	fin.close();
@@ -698,20 +696,20 @@ int startAlgo()
 							path_rr_prev[link[i][j]] = path_prim_rr[link[i][j]][lp];
 						}
 					}
-					deleteLPRerouting(lp, 1);
+					delLp(lp, 1);
 					if (algoCall == 2 || algoCall == 4)
 					{
-						a = checkExactPrimRerouting(lp);
+						a = checkExactPrimProp(lp);
 					} else {
-						a = checkExactPrim(lp);
+						a = checkExactPrimConv(lp);
 					}
 					if (a == CAPASITY || a > spec_ind[lp])
 					{
 						if (algoCall == 2 || algoCall == 4)
 						{
-							a = checkFirstPrimRerouting(lp);
+							a = checkFirstPrimProp(lp);
 						} else {
-							a = checkFirstPrim(lp);
+							a = checkFirstPrimConv(lp);
 						}
 					}
 					bool isSame = true;
@@ -739,7 +737,7 @@ int startAlgo()
 							togOp++;
 						}
 					}
-					asignPrimRerouting(lp, a);
+					asignPrim(lp, a);
 				}
 				if(!b){
 					int bp_rr_prev[LINK_NUM];
@@ -755,20 +753,20 @@ int startAlgo()
 							bp_rr_prev[link[i][j]] = path_back_rr[link[i][j]][lp];
 						}
 					}
-					deleteLPRerouting(lp, 2);
+					delLp(lp, 2);
 					if (algoCall == 2 || algoCall == 4)
 					{
-						a = checkExactBackRerouting(lp);
+						a = checkExactBackProp(lp);
 					} else {
-						a = checkExactBack(lp);
+						a = checkExactBackConv(lp);
 					}
 					if (a == CAPASITY || a > bp_ind[lp])
 					{
 						if (algoCall == 2 || algoCall == 4)
 						{
-							a = checkFirstBackRerouting(lp);
+							a = checkFirstBackProp(lp);
 						} else {
-							a = checkFirstBack(lp);
+							a = checkFirstBackConv(lp);
 						}
 					}
 					bool isSame = true;
@@ -796,7 +794,7 @@ int startAlgo()
 							togOp++;
 						}
 					}
-					asignBackRerouting(lp, a);
+					asignBack(lp, a);
 				}
 			}
 			cur2 = realList;
@@ -865,19 +863,19 @@ int retuneDown()
 						path_rr_prev[link[b][c]] = path_prim_rr[link[b][c]][i];
 					}
 				}
-				deleteLPRerouting(i, 1);
+				delLp(i, 1);
 				if (algoCall == 2 || algoCall == 4)
 				{
-					a = checkExactPrimRerouting(i);
+					a = checkExactPrimProp(i);
 				} else {
-					a = checkExactPrim(i);
+					a = checkExactPrimConv(i);
 				}
 				if(a==CAPASITY || a > spec_ind[i]){
 					if (algoCall == 2 || algoCall == 4)
 					{
-						a = checkFirstPrimRerouting(i);
+						a = checkFirstPrimProp(i);
 					} else {
-						a = checkFirstPrim(i);
+						a = checkFirstPrimConv(i);
 					}
 				}
 				bool isSame = true;
@@ -905,7 +903,7 @@ int retuneDown()
 					}
 					mov_time++;
 				}
-				asignPrimRerouting(i, a);
+				asignPrim(i, a);
 			}
 
 			if(isactive[i] == 1 && bp_ind[i] == index1){
@@ -922,19 +920,19 @@ int retuneDown()
 						bp_rr_prev[link[b][c]] = path_back_rr[link[b][c]][i];
 					}
 				}
-				deleteLPRerouting(i, 2);
+				delLp(i, 2);
 				if (algoCall == 2 || algoCall == 4)
 				{
-					a = checkExactBackRerouting(i);
+					a = checkExactBackProp(i);
 				} else {
-					a = checkExactBack(i);
+					a = checkExactBackConv(i);
 				}
 				if(a==CAPASITY || a > bp_ind[i]){
 					if (algoCall == 2 || algoCall == 4)
 					{
-						a = checkFirstBackRerouting(i);
+						a = checkFirstBackProp(i);
 					} else {
-						a = checkFirstBack(i);
+						a = checkFirstBackConv(i);
 					}
 				}
 				bool isSame = true;
@@ -962,7 +960,7 @@ int retuneDown()
 					}
 					mov_time++;
 				}
-				asignBackRerouting(i, a);
+				asignBack(i, a);
 			}
 		}
 		ret_time += double(mov_time)*DEFRAG_TIME;
@@ -1149,21 +1147,21 @@ void delFromList2(int a, int n, int st)
   return;
 }
 
-int firstFit1_1(int lp)
+int setupPath(int lp)
 {
 	int a, b;
-	a = checkFirstPrimRerouting(lp);
+	a = checkFirstPrimProp(lp);
 	if(a == INF){
 		blocked++;
 		return 0;
 	}
-	b = checkFirstBackRerouting(lp);
+	b = checkFirstBackProp(lp);
 	if(b == INF){
 		blocked++;
 		return 0;
 	}
-	asignPrimRerouting(lp, a);
-	asignBackRerouting(lp, b);
+	asignPrim(lp, a);
+	asignBack(lp, b);
 	isactive[lp] = 1;
 	return 1;
 }
@@ -1203,7 +1201,7 @@ int removeLP1_1(int lp)
 	return 0;
 }
 
-int checkFirstBack(int lp)
+int checkFirstBackConv(int lp)
 {
 	bool asigned = 0, nofit = 0;
 	int b= lp_size[lp];
@@ -1243,7 +1241,7 @@ int checkFirstBack(int lp)
 	return 0;
 }
 
-int checkFirstBackRerouting(int lp)
+int checkFirstBackProp(int lp)
 {
 	int b=0, index=0;
 	int i,j,p;
@@ -1256,7 +1254,7 @@ int checkFirstBackRerouting(int lp)
 	while(index <= (CAPASITY-b) && !asigned)   		  //Checking all spectrum range
 	{
 		if(!b) break;
-		isGetRoot = searchBackRoute(index, lp);
+		isGetRoot = searchRouteBack(index, lp);
 		if(isGetRoot){
 			asigned= 1;
 			return index;
@@ -1269,7 +1267,7 @@ int checkFirstBackRerouting(int lp)
 	return 0;
 }
 
-int asignBackRerouting(int lp, int index)
+int asignBack(int lp, int index)
 {
 	int i,j,p;
 	int b= lp_size[lp];
@@ -1402,7 +1400,7 @@ int genDemands(int load)
 	return 0;
 }
 
-int checkFirstPrim(int lp)
+int checkFirstPrimConv(int lp)
 {
 	bool asigned = 0, nofit = 0;
 	int b = lp_size[lp];
@@ -1440,7 +1438,7 @@ int checkFirstPrim(int lp)
 	return 0;
 }
 
-int checkFirstPrimRerouting(int lp)
+int checkFirstPrimProp(int lp)
 {
 	bool asigned = 0;
 	bool isGetRoot = 0;
@@ -1450,7 +1448,7 @@ int checkFirstPrimRerouting(int lp)
 	while(index <= (CAPASITY-b) && !asigned)
 	{
 		if (!b) break;
-		isGetRoot = searchPrimRoute(index, lp);
+		isGetRoot = searchRoutePrim(index, lp);
 		if(isGetRoot){
 			asigned= 1;
 			return index;
@@ -1487,7 +1485,7 @@ int printSpec()
 	return 0;
 }
 
-int asignPrimRerouting(int lp, int index)
+int asignPrim(int lp, int index)
 {
 	int i,j,p;
 	int b= lp_size[lp];
@@ -1503,7 +1501,7 @@ int asignPrimRerouting(int lp, int index)
 	return 0;
 }
 
-int checkExactPrim(int lp)
+int checkExactPrimConv(int lp)
 {
 	int b= lp_size[lp];
 	int nonalign = 0, consecSB =0;
@@ -1528,7 +1526,7 @@ int checkExactPrim(int lp)
 	return CAPASITY;
 }
 
-int checkExactBack(int lp)
+int checkExactBackConv(int lp)
 {
 	int b = lp_size[lp];
 	int nonalign = 0, consecSB =0;
@@ -1556,7 +1554,7 @@ int checkExactBack(int lp)
 	return CAPASITY;
 }
 
-int checkExactPrimRerouting(int lp)
+int checkExactPrimProp(int lp)
 {
 	int i,j,p;
 	int b= lp_size[lp];
@@ -1565,10 +1563,10 @@ int checkExactPrimRerouting(int lp)
 
 	for(i=0;i<CAPASITY-b;i++){
 		isGetRoot = 0;
-		isGetRoot = searchPrimRoute(i, lp);
+		isGetRoot = searchRoutePrim(i, lp);
 		if(isGetRoot){
 			isGetRoot = 0;
-			isGetRoot = searchPrimRoute(i+1, lp);
+			isGetRoot = searchRoutePrim(i+1, lp);
 			if(!isGetRoot){
 				// cout << "return i = " << i << endl;
 				return i;
@@ -1580,7 +1578,7 @@ int checkExactPrimRerouting(int lp)
 	return CAPASITY;
 }
 
-int checkExactBackRerouting(int lp)
+int checkExactBackProp(int lp)
 {
 	int i,j,p;
 	int b= lp_size[lp];
@@ -1589,10 +1587,10 @@ int checkExactBackRerouting(int lp)
 
 	for(i=0;i<CAPASITY-b;i++){
 		isGetRoot = 0;
-		isGetRoot = searchBackRoute(i, lp);
+		isGetRoot = searchRouteBack(i, lp);
 		if(isGetRoot){
 			isGetRoot = 0;
-			isGetRoot = searchBackRoute(i+1, lp);
+			isGetRoot = searchRouteBack(i+1, lp);
 			if(!isGetRoot){
 				// cout << "return i = " << i << endl;
 				return i;
@@ -1604,7 +1602,7 @@ int checkExactBackRerouting(int lp)
 	return CAPASITY;
 }
 
-int searchPrimRoute(int s, int lp)
+int searchRoutePrim(int s, int lp)
 {
 	int i, j, k;
 	bool unconnectedFlag;
@@ -1695,7 +1693,7 @@ int searchPrimRoute(int s, int lp)
 	}
 }
 
-int searchBackRoute(int s, int lp)
+int searchRouteBack(int s, int lp)
 {
 	int i, j, k;
 	bool unconnectedFlag;
@@ -1790,7 +1788,7 @@ int searchBackRoute(int s, int lp)
 	}
 }
 
-void deleteLPRerouting(int lp, int p)
+void delLp(int lp, int p)
 {
 	int index = spec_ind[lp],  b= lp_size[lp];
 	int i,j;
