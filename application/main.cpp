@@ -92,9 +92,9 @@ int main(int argc, char* argv[])
 						
 					nowEvent = eventQueue.top();
 	 				eventQueue.pop();
-	 				time_slot_now = nowEvent.time_slot_now;
+	 				time_slot_now = nowEvent.time;
 	 				if(nowEvent.type == 1){
-	 					time_slot_now = nowEvent.time_slot_now;
+	 					time_slot_now = nowEvent.time;
 	 					try {
 					    	removeLP1_1(nowEvent.lpNum);
 					    }
@@ -109,7 +109,6 @@ int main(int argc, char* argv[])
 	 				{
 	 					if(lp_size[nowEvent.lpNum])
 	 					{
-	 						last_lp = nowEvent.lpNum;
 	 						try {
 								b = firstFit1_1(nowEvent.lpNum);
 							}

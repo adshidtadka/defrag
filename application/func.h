@@ -57,7 +57,7 @@ double var(double, int);
 double standard(double, int);
 double finTime();
 
-int lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM], spec_ind[REQ_NUM];
+int lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM];
 bool spec[CAPASITY][LINK_NUM];
 bool path_prim[NODE_NUM][NODE_NUM][LINK_NUM];
 bool path_back[NODE_NUM][NODE_NUM][LINK_NUM];
@@ -66,8 +66,6 @@ int isactive[REQ_NUM];
 double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
 int hops[NODE_NUM][NODE_NUM], bhops[NODE_NUM][NODE_NUM];
 int link[NODE_NUM][NODE_NUM];
-int last_lp;
-int midlp = REQ_NUM;
 unsigned seed1 = 1448601515;
 unsigned seed2 = 125;
 struct lpNode{
@@ -93,25 +91,21 @@ struct Node {
 	}
 };
 bool path_prim_rr[LINK_NUM][REQ_NUM], path_back_rr[LINK_NUM][REQ_NUM];
-int part[NODE_NUM][NODE_NUM];
 int algoCall;
-int t_temp =0;
-int last_ret= 0;
 double time_slot_now;
-int bp_ind[REQ_NUM];
+int spec_ind[REQ_NUM], bp_ind[REQ_NUM];
 int togOp;
 int realOp;
 int rerouteOp;
 bool lpState[REQ_NUM];
 bool bpState[REQ_NUM];
-int last_blocked = 0;
 struct Event
 {
-	double time_slot_now;
+	double time;
 	int lpNum;
 	int type;	
 	bool operator> (const Event &event) const {
-   	return (time_slot_now > event.time_slot_now);
+   	return (time > event.time);
 	}
 };
 priority_queue<Event, vector<Event>, greater<Event> > eventQueue;
@@ -964,7 +958,7 @@ double finTime()
 		}
 		eventQueue.pop();
 	}
-	return eventQueue.top().time_slot_now;
+	return eventQueue.top().time;
 }
 
 int retuneDownRerouting()
@@ -1102,7 +1096,7 @@ int retuneDownRerouting()
 		}
 		ret_time += double(mov_time)*DEFRAG_TIME;
 		nextEvent = eventQueue.top();
-		if(nextEvent.type == 0 && (time_slot_now+ret_time >= nextEvent.time_slot_now || ret_time >= DEFRAG_TOTAL_TIME_MAX)){
+		if(nextEvent.type == 0 && (time_slot_now+ret_time >= nextEvent.time || ret_time >= DEFRAG_TOTAL_TIME_MAX)){
 			time_slot_now += ret_time;
 			return 0;	
 		}
@@ -1454,7 +1448,6 @@ int initialize(void)
 				path_back[i][j][p] = 0;
 			}
 			hops[i][j] = 0;
-			part[i][j] = 0;
 			link[i][j] = INF;
 		}
 	}
@@ -1506,21 +1499,21 @@ int initializeEvent(void)
 {
 	for (int i = 0; i < REQ_NUM; i++)
 	{
-		endEvent[i].time_slot_now = t_exp_event[i];
+		endEvent[i].time = t_exp_event[i];
 		endEvent[i].type = 1;
 		endEvent[i].lpNum = i;
-		startEvent[i].time_slot_now = t_req_event[i];
+		startEvent[i].time = t_req_event[i];
 		startEvent[i].type = 0;
 		startEvent[i].lpNum = i;
 	}
 
 	defragEvent.clear();
 
-	defragCount = round(endEvent[REQ_NUM-1].time_slot_now / DEFRAG_INTERVAL);
+	defragCount = round(endEvent[REQ_NUM-1].time / DEFRAG_INTERVAL);
 	defragEvent.resize(defragCount);
 	for (int j = 0; j < defragCount ; j++)
 	{
-		defragEvent[j].time_slot_now = j * DEFRAG_INTERVAL;
+		defragEvent[j].time = j * DEFRAG_INTERVAL;
 		defragEvent[j].type = 2;
 	}
 
