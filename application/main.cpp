@@ -24,8 +24,26 @@ int main(int argc, char* argv[])
             return 1;
     }
 
-	ofs_result_txt 	<< "Simulation for NODE_NUM= "<< NODE_NUM <<", LINK_NUM = " << LINK_NUM << ", CAPASITY= "<< CAPASITY << ", REQ_NUM= "<< REQ_NUM <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", DEFRAG_TOTAL_TIME_MAX = "<< DEFRAG_TOTAL_TIME_MAX << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
-	cout 			<< "Simulation for NODE_NUM= "<< NODE_NUM <<", LINK_NUM = " << LINK_NUM << ", CAPASITY= "<< CAPASITY << ", REQ_NUM= "<< REQ_NUM <<", REQ_SIZE_MAX=" << REQ_SIZE_MAX <<", DEFRAG_INTERVAL = "<< DEFRAG_INTERVAL <<", DEFRAG_TOTAL_TIME_MAX = "<< DEFRAG_TOTAL_TIME_MAX << ", DEFRAG_TIME = " << DEFRAG_TIME << ", MAX_HOP_NUM = " << MAX_HOP_NUM << endl;
+	ofs_result_txt 	<< "--- Simulation start ----" << endl;
+	ofs_result_txt 	<< "NODE_NUM 		= " << NODE_NUM << endl;
+	ofs_result_txt	<< "LINK_NUM 		= " << LINK_NUM << endl;
+	ofs_result_txt	<< "CAPASITY 		= " << CAPASITY << endl;
+	ofs_result_txt	<< "REQ_NUM 		= " << REQ_NUM << endl;
+	ofs_result_txt	<< "REQ_SIZE_MAX 		= " << REQ_SIZE_MAX << endl;
+	ofs_result_txt	<< "DEFRAG_INTERVAL 	= " << DEFRAG_INTERVAL << endl;
+	ofs_result_txt	<< "DEFRAG_TOTAL_TIME_MAX 	= " << DEFRAG_TOTAL_TIME_MAX << endl;
+	ofs_result_txt	<< "DEFRAG_TIME 		= " << DEFRAG_TIME << endl;
+	ofs_result_txt	<< "MAX_HOP_NUM 		= " << MAX_HOP_NUM << endl;
+	cout 			<< "--- Simulation start ----" << endl;
+	cout  			<< "NODE_NUM 		= " << NODE_NUM << endl;
+	cout 			<< "LINK_NUM 		= " << LINK_NUM << endl;
+	cout 			<< "CAPASITY 		= " << CAPASITY << endl;
+	cout 			<< "REQ_NUM 		= " << REQ_NUM << endl;
+	cout 			<< "REQ_SIZE_MAX 		= " << REQ_SIZE_MAX << endl;
+	cout 			<< "DEFRAG_INTERVAL 	= " << DEFRAG_INTERVAL << endl;
+	cout 			<< "DEFRAG_TOTAL_TIME_MAX	= " << DEFRAG_TOTAL_TIME_MAX << endl;
+	cout 			<< "DEFRAG_TIME 		= " << DEFRAG_TIME << endl;
+	cout 			<< "MAX_HOP_NUM 		= " << MAX_HOP_NUM << endl;
 
 	int load = LOAD_START;
 	for(int l = 0; l < LOAD_REPEAT_NUM; l++)
