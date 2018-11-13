@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 			reInitialize();
 			initializeEvent();
 
-			for(algoCall = 0; algoCall <= 2; algoCall++)
+			for(algoCall = 4; algoCall <= 4; algoCall++)
 			{
 				for (int i = 0; i < REQ_NUM; i++)
 				{
@@ -93,6 +93,7 @@ int main(int argc, char* argv[])
 					nowEvent = eventQueue.top();
 	 				eventQueue.pop();
 	 				time_slot_now = nowEvent.time;
+
 	 				if(nowEvent.type == 1){
 	 					time_slot_now = nowEvent.time;
 	 					try {
@@ -105,6 +106,7 @@ int main(int argc, char* argv[])
 						delFromList(1, nowEvent.lpNum);
 						delFromList(2, nowEvent.lpNum);
 	 				}
+
 	 				if(nowEvent.type == 0)
 	 				{
 	 					if(lp_size[nowEvent.lpNum])

@@ -1,8 +1,9 @@
 #define INF 					999999999
 #define ITERATION 				3
-#define REQ_NUM 				200
-#define CAPASITY 				400
-#define LOAD_START 				800
+#define REQ_NUM 				50
+// #define CAPASITY 				400
+#define CAPASITY 				50
+#define LOAD_START 				300
 #define LOAD_GAIN 				10
 #define LOAD_REPEAT_NUM			10
 #define HOLDING_TIME 			10
@@ -15,4 +16,4 @@
 
 // (NODE_NUM,LINK_NUM) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
 #define NODE_NUM 				11
-#define LINK_NUM 				52
+#define LINK_NUM 				28

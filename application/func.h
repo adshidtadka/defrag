@@ -22,9 +22,9 @@ int checkFirstPrim(int);
 int checkFirstPrimRerouting(int);
 int retuneDownRerouting();
 int asign(int, int);
-int asignRerouting(int,int);
+int asignPrimRerouting(int,int);
 int asignBp(int, int);
-int asignBpRerouting(int, int);
+int asignBackRerouting(int, int);
 int printSpec(void);
 int genDemands(int);
 void delFromList(int, int);
@@ -46,7 +46,6 @@ int readResultReroutingPy();
 void statDefragPy(int);
 void statDefragReroutingPy(int);
 int statAlgoRerouting(void);
-int writeOutput(int);
 int writeOutputPy(int);
 int writeOutputReroutingPy(int);
 void addToList2(int, int, int);
@@ -218,118 +217,19 @@ int readInput(int argc, char* argv[0], int load)
 	return 0;
 }
 
-int writeOutput(int load)
-{
-	int i,j,ind=0;
-	int lp,n,f0;
-	int s,d;
-	int c = MAX_STEP;
-	int m=0;
-
-	ofstream ofs2;
-	ofs2.open("smpe_output.dat");
-	if(!ofs2){
-		cout<< "Cannot open ouput file"<<endl;
-		return 1;
-	}
-
-	lpNode *cur = activeList;
-	while ( cur != NULL ) {						// Checking all active LPs
-		m++;
-		lp = cur->x;
-		cur = cur->next;
-	}
-
-	ofs2 << endl;
-	ofs2 << "param REQ_NUM := " << m <<";" << endl;
-	ofs2 << "param B := " << CAPASITY <<";" << endl;
-	ofs2 << "param LINK_NUM := " << LINK_NUM <<";" << endl;
-	ofs2 << "param C := " << c <<";" << endl;
-	ofs2 << endl;
-	ofs2 << "param : CAPASITY K NODE_NUM F0 := " << endl;
-
-	ofstream ofs3;
-	ofs3.open("running.txt");
-	if(!ofs3){
-		cout<< "Cannot open ouput file"<<endl;
-		return 1;
-	}
-	ofs3 << "Load load := " << load <<";" << endl;
-	ofs3 << "param REQ_NUM := " << m <<";" << endl;
-	ofs3 << "Last LP := " << lp <<";" << endl;
-	ofs3.close();
-	// cout << "Load load := " << load <<";" << endl;
-	// cout << "param REQ_NUM := " << m <<";" << endl;
-	// cout << "Last LP := " << lp <<";" << endl;
-
-	cur = activeList;
-	while ( cur != NULL ){
-		lp = cur->x;
-		cur = cur->next;
-		n = lp_size[lp];
-		f0 = spec_ind[lp];
-		ofs2 << 2*ind <<" "<< ind <<" 1 "<< n <<" "<< f0 << endl;
-//	if(ind<3 || ind> 27) cout << "LP " << lp << " at " << f0 << endl;
-		f0 = bp_ind[lp];
-		ofs2 << 2*ind+1 <<" "<< ind <<" 0 "<< n <<" "<< f0 << endl;
-//	if(ind<3 || ind> 27) cout << "LP " << lp << " at " << f0 << endl;
-		ind++;
-	}
-	ofs2 << ";" << endl << endl;
-	cout << endl;
-
-	ofs2 << "set Q := " << endl;
-	ind =0;
-	cur = activeList;
-	while ( cur != NULL ){
-		lp = cur->x;
-		cur = cur->next;
-		s = source[lp];
-		d= dest[lp];
-
-		for(j=0;j<LINK_NUM;j++){
-			if(path_prim[s][d][j]) ofs2 << ind <<" "<< j << endl;
-		}
-		ind++;
-		for(j=0;j<LINK_NUM;j++){
-			if(path_back[s][d][j]) ofs2 << ind <<" "<< j << endl;
-		}
-		ind++;
-	}
-	ofs2 << ";" << endl << endl;
-
-	ofs2.close();
-	return 0;
-}
-
 int writeOutputPy(int load)
 {
 	int i,j,ind=0;
 	int lp,n,f0,k;
 	int s,d;
-	int c = MAX_STEP;
-	int m=0;
 
-	ofstream ofs2;
-	ofs2.open("./../result/ssr_lno_output.txt");
-	if(!ofs2){
-		cout<< "Cannot open ouput file"<<endl;
-		return 1;
-	}
-
+	int m = 0;
 	lpNode *cur = activeList;
-	while ( cur != NULL ) {						// Checking all active LPs
-		m++;   //activeなリクエストの数を数える
+	while ( cur != NULL ) {
+		m++;
 		lp = cur->x;
 		cur = cur->next;
 	}
-
-	ofs2 << "param CAPASITY   := " << m   << endl;
-	ofs2 << "param absP:= " << m*2 << endl;
-	ofs2 << "param absF:= " << CAPASITY   << endl;
-	ofs2 << "param absE:= " << LINK_NUM   << endl;
-	ofs2 << "param T   := " << c   << endl;
-	ofs2 << endl;
 
 	ofstream ofs3;
 	ofs3.open("./../result/ssr_lno_running.txt");
@@ -337,14 +237,24 @@ int writeOutputPy(int load)
 		cout<< "Cannot open ouput file"<<endl;
 		return 1;
 	}
-	ofs3 << "Load load := " << load <<";" << endl;
+	ofs3 << "Load A := " << load <<";" << endl;
 	ofs3 << "param REQ_NUM := " << m <<";" << endl;
 	ofs3 << "Last LP := " << lp <<";" << endl;
 	ofs3.close();
-	// cout << "Load load := " << load <<";" << endl;
-	// cout << "param REQ_NUM := " << m <<";" << endl;
-	// cout << "Last LP := " << lp <<";" << endl;
 
+	ofstream ofs2;
+	ofs2.open("./../result/ssr_lno_output.txt");
+	if(!ofs2){
+		cout<< "[error] cannot open ./../result/ssr_lno_output.txt"<<endl;
+		return 1;
+	}
+
+	ofs2 << "param S   := " << m   << endl;
+	ofs2 << "param absP:= " << m*2 << endl;
+	ofs2 << "param absF:= " << CAPASITY   << endl;
+	ofs2 << "param absE:= " << LINK_NUM   << endl;
+	ofs2 << "param T   := " << MAX_STEP   << endl;
+	ofs2 << endl;
 
 	ofs2 << "param : s_p k_p_init n_p f_p_init := " << endl;
 	cur = activeList;
@@ -369,7 +279,6 @@ int writeOutputPy(int load)
 		}
 	}
 	ofs2 << ";" << endl << endl;
-	// cout << endl;
 
 	ofs2 << "set P_e := " << endl;
 	ind =0;
@@ -381,17 +290,15 @@ int writeOutputPy(int load)
 		d= dest[lp];
 
 		for(j=0;j<LINK_NUM;j++){
-			if(path_prim[s][d][j]) ofs2 << ind <<" "<< j << endl;
+			if(path_prim_rr[j][lp]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
 		for(j=0;j<LINK_NUM;j++){
-			if(path_back[s][d][j]) ofs2 << ind <<" "<< j << endl;
+			if(path_back_rr[j][lp]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
 	}
 	ofs2 << ";" << endl << endl;
-
-	// printSpec();
 
 	ofs2.close();
 	return 0;
@@ -402,8 +309,25 @@ int writeOutputReroutingPy(int load)
 	int i,j,ind=0;
 	int lp,n,f0,k;
 	int s,d;
-	int c = MAX_STEP;
-	int m=0;
+
+	int m = 0;
+	lpNode *cur = activeList;
+	while ( cur != NULL ) {						// Checking all active LPs
+		m++;   //activeなリクエストの数を数える
+		lp = cur->x;
+		cur = cur->next;
+	}
+
+	ofstream ofs3;
+	ofs3.open("./../result/ssr_lno_running.txt");
+	if(!ofs3){
+		cout<< "Cannot open ouput file"<<endl;
+		return 1;
+	}
+	ofs3 << "Load A := " << load <<";" << endl;
+	ofs3 << "param M := " << m <<";" << endl;
+	ofs3 << "Last LP := " << lp <<";" << endl;
+	ofs3.close();
 
 	ofstream ofs2;
 	ofs2.open("./../result/ssrr_lno_output.txt");
@@ -412,35 +336,13 @@ int writeOutputReroutingPy(int load)
 		return 1;
 	}
 
-	lpNode *cur = activeList;
-	while ( cur != NULL ) {						// Checking all active LPs
-		m++;   //activeなリクエストの数を数える
-		lp = cur->x;
-		cur = cur->next;
-	}
-
-	ofs2 << "param CAPASITY   := " << m   << endl;
+	ofs2 << "param S   := " << m   << endl;
 	ofs2 << "param absP:= " << m*2 << endl;
 	ofs2 << "param absF:= " << CAPASITY   << endl;
 	ofs2 << "param absE:= " << LINK_NUM   << endl;
 	ofs2 << "param absV:= " << NODE_NUM   << endl;
-	ofs2 << "param T   := " << c   << endl;
+	ofs2 << "param T   := " << MAX_STEP   << endl;
 	ofs2 << endl;
-
-	ofstream ofs3;
-	ofs3.open("./../result/ssr_lno_running.txt");
-	if(!ofs3){
-		cout<< "Cannot open ouput file"<<endl;
-		return 1;
-	}
-	ofs3 << "Load load := " << load <<";" << endl;
-	ofs3 << "param REQ_NUM := " << m <<";" << endl;
-	ofs3 << "Last LP := " << lp <<";" << endl;
-	ofs3.close();
-	// cout << "Load load := " << load <<";" << endl;
-	// cout << "param REQ_NUM := " << m <<";" << endl;
-	// cout << "Last LP := " << lp <<";" << endl;
-
 
 	ofs2 << "param : s_p k_p_init n_p f_p_init := " << endl;
 	cur = activeList;
@@ -465,7 +367,6 @@ int writeOutputReroutingPy(int load)
 		}
 	}
 	ofs2 << ";" << endl << endl;
-	// cout << endl;
 
 	ofs2 << "E := " << endl;
 	for ( i = 0; i < NODE_NUM; i++){
@@ -620,7 +521,7 @@ int readResultPy()
 
 	fin.open ("./../result/ssr_lno_result.txt");
 		if (!fin){
-			cout <<"Cannot read ssr_lno_result.txt file" << endl;
+			cout <<"[error] cannot read ssr_lno_result.txt file" << endl;
 			return 1;
 		}
 
@@ -635,18 +536,19 @@ int readResultPy()
 		fin.ignore(INT_MAX,'=');
 
 		lpNode *cur = activeList;
-		while ( cur != NULL ) {			// Same as 		for(k=0; k<m; k++){ with m nb of siganls
+		while ( cur != NULL ) {
 			lp = cur->x;
 			cur = cur->next;
 
 			fin >> a >> b ;
-			asign(lp, b);
+			asignPrimRerouting(lp, b);
 			fin.ignore(INT_MAX,'\n');
 			fin >> a >> b ;
-			asignBp(lp, b);
+			asignBackRerouting(lp, b);
 			fin.ignore(INT_MAX,'\n');
 		}
 	fin.close();
+	printSpec();
 	return 0;
 }
 
@@ -675,11 +577,10 @@ int readResultReroutingPy()
 		realOp += b;
 
 		lpNode *cur = activeList;
-		while ( cur != NULL ) {			// Same as 		for(k=0; k<m; k++){ with m nb of siganls
+		while ( cur != NULL ) {
 			lp = cur->x;
 			cur = cur->next;
 
-			//initialize
 			for(i=0;i<LINK_NUM;i++){
 				path_prim_rr[i][lp] = 0;
 				path_back_rr[i][lp]   = 0;
@@ -687,18 +588,16 @@ int readResultReroutingPy()
 
 			fin.ignore(INT_MAX,'=');
 			fin >> a >> b >> c >> d;
-			while(!d){//同じパスなら
+			while(!d){
 				path_prim_rr[link[b][c]][lp] = 1;
 				fin.ignore(INT_MAX,'\n');
-				// cout << "path_prim_rr[link[" << b << "][" << c << "]][" << lp << "] = " << path_prim_rr[link[b][c]][lp] << endl;
 				fin >> a >> b >> c >> d;
 			}
 			fin.ignore(INT_MAX,'=');
 			fin >> a >> b >> c >> d;
-			while(!d){//同じパスなら
+			while(!d){
 				path_back_rr[link[b][c]][lp] = 1;
 				fin.ignore(INT_MAX,'\n');
-				// cout << "path_back_rr[link[" << b << "][" << c << "]][" << lp << "] = " << path_back_rr[link[b][c]][lp] << endl;
 				fin >> a >> b >> c >> d;
 			}
 		}
@@ -706,19 +605,21 @@ int readResultReroutingPy()
 		fin.ignore(INT_MAX,'=');
 
 		cur = activeList;
-		while ( cur != NULL ) {			// Same as 		for(k=0; k<m; k++){ with m nb of siganls
+		while ( cur != NULL )
+		{
 			lp = cur->x;
 			cur = cur->next;
 
 			fin >> a >> b ;
 			// printSpec();
-			asignRerouting(lp, b);
+			asignPrimRerouting(lp, b);
 			fin.ignore(INT_MAX,'\n');
 			fin >> a >> b ;
-			asignBpRerouting(lp, b);
+			asignBackRerouting(lp, b);
 			fin.ignore(INT_MAX,'\n');
 		}
 	fin.close();
+	printSpec();
 	return 0;
 }
 
@@ -868,7 +769,7 @@ int statAlgoRerouting()
 							togOp++;
 						}
 					}
-					asignRerouting(lp, a);
+					asignPrimRerouting(lp, a);
 				}
 				if(!b){
 					int bp_rr_prev[LINK_NUM];
@@ -925,7 +826,7 @@ int statAlgoRerouting()
 							togOp++;
 						}
 					}
-					asignBpRerouting(lp, a);
+					asignBackRerouting(lp, a);
 				}
 			}
 			cur2 = realList;
@@ -1034,7 +935,7 @@ int retuneDownRerouting()
 					}
 					mov_time++;
 				}
-				asignRerouting(i, a);
+				asignPrimRerouting(i, a);
 			}
 
 			if(isactive[i] == 1 && bp_ind[i] == index1){
@@ -1091,7 +992,7 @@ int retuneDownRerouting()
 					}
 					mov_time++;
 				}
-				asignBpRerouting(i, a);
+				asignBackRerouting(i, a);
 			}
 		}
 		ret_time += double(mov_time)*DEFRAG_TIME;
@@ -1291,8 +1192,8 @@ int firstFit1_1(int lp)
 		blocked++;
 		return 0;
 	}
-	asignRerouting(lp, a);
-	asignBpRerouting(lp, b);
+	asignPrimRerouting(lp, a);
+	asignBackRerouting(lp, b);
 	isactive[lp] = 1;
 	return 1;
 }
@@ -1420,7 +1321,7 @@ int asignBp(int lp, int index)
 	return 0;
 }
 
-int asignBpRerouting(int lp, int index)
+int asignBackRerouting(int lp, int index)
 {
 	int i,j,p;
 	int s = source[lp], d= dest[lp], b= lp_size[lp];
@@ -1676,7 +1577,7 @@ int asign(int lp, int index)
 
 }
 
-int asignRerouting(int lp, int index)
+int asignPrimRerouting(int lp, int index)
 {
 	int i,j,p;
 	int s = source[lp], d= dest[lp], b= lp_size[lp];
@@ -1800,18 +1701,17 @@ int searchPrimRoute(int s, int lp)
 	int a, b;
 	int to, cost;
 
-	priority_queue<Node, vector<Node>, greater<Node> > q; // 優先度付き待ち行列
+	priority_queue<Node, vector<Node>, greater<Node> > q;
 
 	Node Nodes[NODE_NUM];
 	Node doneNode;
 
-	//ノード情報input
 	for(i=0; i<NODE_NUM; i++){
 		for(j=0; j<NODE_NUM; j++){
 			if(link[i][j]>LINK_NUM) continue;
 			unconnectedFlag = 0;
 			for(k=0; k<lp_size[lp]; k++){
-				if(spec[s+k][link[i][j]] == 1 || path_back_rr[link[i][j]][lp]){//使われているまたはバックアップパスが使っている
+				if(spec[s+k][link[i][j]] == 1 || path_back_rr[link[i][j]][lp]){
 					unconnectedFlag = 1;
 				}
 			}
@@ -1823,7 +1723,6 @@ int searchPrimRoute(int s, int lp)
 		}
 	}
 
-	// 初期化
 	for(i=0; i<NODE_NUM; i++){
 		Nodes[i].done = false;
 		Nodes[i].cost = -1;
@@ -1831,37 +1730,29 @@ int searchPrimRoute(int s, int lp)
 		Nodes[i].from = INF;
 	}
 
-	Nodes[source[lp]].cost = 0; // スタートノードのコストは0
+	Nodes[source[lp]].cost = 0;
 
 	q.push(Nodes[source[lp]]);
 
-	// アルゴリズム実行
 	while(!q.empty() && Nodes[dest[lp]].from == INF){
-		// 確定ノードを取り出す
 		doneNode = q.top();
 		q.pop();
-		//既に確定されているか確認
 		if(doneNode.done) continue;
-	  	// 確定フラグを立てる
 	  	doneNode.done = true;
-	  	// 接続先ノードの情報を更新する
 	  	for(i = 0; i < doneNode.edges_to.size(); i++){
 	    	to = doneNode.edges_to[i];
 	    	cost = doneNode.cost + doneNode.edges_cost[i];
 			    if(Nodes[to].cost < 0 || cost < Nodes[to].cost){
 			    	Nodes[to].cost = cost;
-					Nodes[to].from = doneNode.nodeNum;//接続元ノードを示す
+					Nodes[to].from = doneNode.nodeNum;
 					q.push(Nodes[to]);
 				}
 		}
 	}
 
-
-	//ルートの代入
 	a = dest[lp];
 	b = Nodes[a].from;
 
-	// limit hop number
 	int hop_counter = 0;
 	while (b < NODE_NUM && a != b) {
 		a = b;
@@ -1873,29 +1764,25 @@ int searchPrimRoute(int s, int lp)
 		return 0;
 	}
 
-	//ルートの代入
 	a = dest[lp];
 	b = Nodes[a].from;
 
 	if (b < NODE_NUM) {
-		for (j = 0; j < NODE_NUM; j++) {//initialize
+		for (j = 0; j < NODE_NUM; j++) {
 			for (k = 0; k < NODE_NUM; k++) {
 				if(link[j][k]>LINK_NUM)continue;
 				path_prim_rr[link[j][k]][lp] = 0;
 			}
 		}
-		// bool isSame = true;
 		while (b < NODE_NUM && a != b) {
 			path_prim_rr[link[b][a]][lp] = 1;
-			// std::cout << "path_prim_rr[" << link[b][a] << "][" << lp << "] = " << path_prim_rr[link[b][a]][lp] << '\n';
 			a = b;
 			b = Nodes[a].from;
 		}
-		return 1;//割り当て確定
+		return 1;
 	}else{
-		return 0;//割り当て不可
+		return 0;
 	}
-
 }
 
 int searchBackRoute(int s, int lp)
@@ -1905,38 +1792,32 @@ int searchBackRoute(int s, int lp)
 	int a, b;
 	int to, cost;
 
-	priority_queue<Node, vector<Node>, greater<Node> > q; // 優先度付き待ち行列
+	priority_queue<Node, vector<Node>, greater<Node> > q;
 
 	Node Nodes[NODE_NUM];
 	Node doneNode;
 
-	//ノード情報input
 	for(i=0; i<NODE_NUM; i++){
 		for(j=0; j<NODE_NUM; j++){
 			if(link[i][j]>LINK_NUM) continue;
 			unconnectedFlag = 0;
 			for(k=0; k<lp_size[lp]; k++){
-				if(spec[s+k][link[i][j]] == 1 || path_prim_rr[link[i][j]][lp]){//使われているまたはプライマリパスが使っている
-					// cout << "path_prim_rr[" << link[i][j] << "][" << lp<< "] = " << path_prim_rr[link[i][j]][lp] << endl;
+				if(spec[s+k][link[i][j]] == 1 || path_prim_rr[link[i][j]][lp]){
 					unconnectedFlag = 1;
 				}
 			}
 			if(!unconnectedFlag){
 				Nodes[i].edges_to.push_back(j);
 				Nodes[i].edges_cost.push_back(1);
-				// Nodes[j].edges_to.push_back(i);
-				// Nodes[j].edges_cost.push_back(1);
 			}
 		}
 	}
 
 	for(i= 0; i < NODE_NUM ; i++){
 	    for(j=0;j < Nodes[i].edges_to.size() ; j++){
-	      // cout << "Nodes[" << i << "] = " << Nodes[i].edges_to[j] << '\n';
 	    }
  	}
 
-	// 初期化
 	for(i=0; i<NODE_NUM; i++){
 		Nodes[i].done = false;
 		Nodes[i].cost = -1;
@@ -1944,36 +1825,29 @@ int searchBackRoute(int s, int lp)
 		Nodes[i].from = INF;
 	}
 
-	Nodes[source[lp]].cost = 0; // スタートノードのコストは0
+	Nodes[source[lp]].cost = 0;
 
 	q.push(Nodes[source[lp]]);
 
-	// アルゴリズム実行
 	while(!q.empty() && Nodes[dest[lp]].from == INF){
-	  	// 確定ノードを取り出す
 		doneNode = q.top();
 	 	q.pop();
-		//既に確定されているか確認
 		if(doneNode.done) continue;
-	  	// 確定フラグを立てる
 	  	doneNode.done = true;
-	  	// 接続先ノードの情報を更新する
 	  	for(i = 0; i < doneNode.edges_to.size(); i++){
 	    	to = doneNode.edges_to[i];
 	    	cost = doneNode.cost + doneNode.edges_cost[i];
 	    	if(Nodes[to].cost < 0 || cost < Nodes[to].cost){
 	    		Nodes[to].cost = cost;
-				Nodes[to].from = doneNode.nodeNum;//接続元ノードを示す
+				Nodes[to].from = doneNode.nodeNum;
 				q.push(Nodes[to]);
 			}
 		}
 	}
 
-	//ルートの代入
 	a = dest[lp];
 	b = Nodes[a].from;
 
-	// limit hop number
 	int hop_counter = 0;
 	while (b < NODE_NUM && a != b) {
 		a = b;
@@ -1985,12 +1859,11 @@ int searchBackRoute(int s, int lp)
 		return 0;
 	}
 
-	//ルートの代入
 	a = dest[lp];
 	b = Nodes[a].from;
 
 	if (b < NODE_NUM && a != b) {
-		for (j = 0; j < NODE_NUM; j++) {//initialize
+		for (j = 0; j < NODE_NUM; j++) {
 			for (k = 0; k < NODE_NUM; k++) {
 				if(link[j][k]>LINK_NUM)continue;
 				path_back_rr[link[j][k]][lp] = 0;
@@ -1998,13 +1871,12 @@ int searchBackRoute(int s, int lp)
 		}
 		while (b < NODE_NUM && a != b) {
 			path_back_rr[link[b][a]][lp] = 1;
-			// std::cout << "path_back_rr[" << link[b][a] << "][" << lp << "] = " << path_back_rr[link[b][a]][lp] << '\n';
 			a = b;
 			b = Nodes[a].from;
 		}
-		return 1;//割り当て確定
+		return 1;
 	}else{
-		return 0;//割り当て不可
+		return 0;
 	}
 }
 
