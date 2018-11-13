@@ -221,7 +221,6 @@ int writeOutputPy(int load)
 {
 	int i,j,ind=0;
 	int lp,n,f0,k;
-	int s,d;
 
 	int m = 0;
 	lpNode *cur = activeList;
@@ -286,8 +285,6 @@ int writeOutputPy(int load)
 	while ( cur != NULL ){
 		lp = cur->x;
 		cur = cur->next;
-		s = source[lp];
-		d= dest[lp];
 
 		for(j=0;j<LINK_NUM;j++){
 			if(path_prim_rr[j][lp]) ofs2 << ind <<" "<< j << endl;
@@ -308,7 +305,6 @@ int writeOutputReroutingPy(int load)
 {
 	int i,j,ind=0;
 	int lp,n,f0,k;
-	int s,d;
 
 	int m = 0;
 	lpNode *cur = activeList;
@@ -416,9 +412,8 @@ int writeOutputReroutingPy(int load)
 	while ( cur != NULL ){
 		lp = cur->x;
 		cur = cur->next;
-		s = source[lp];
-		d= dest[lp];
-		ofs2 << s << " " << d << endl;
+
+		ofs2 << source[lp] << " " << dest[lp] << endl;
 	}
 	ofs2 << ";" << endl << endl;
 
@@ -1200,7 +1195,6 @@ int firstFit1_1(int lp)
 
 int removeLP1_1(int lp)
 {
-	int s = source[lp], d= dest[lp];
 	int index = spec_ind[lp],  b= lp_size[lp];
 	int i,j;
 	int a = isactive[lp];
@@ -1276,14 +1270,11 @@ int checkFirstBack(int lp)
 
 int checkFirstBackRerouting(int lp)
 {
-	int a=0, b=0, index=0;
+	int b=0, index=0;
 	int i,j,p;
 	bool asigned = 0, nofit = 0;
-	int s,d;
 	bool isGetRoot=0;
 
-	s = source[lp];
-	d= dest[lp];
 	b= lp_size[lp];
 	index = 0;
 
@@ -1303,28 +1294,10 @@ int checkFirstBackRerouting(int lp)
 	return 0;
 }
 
-int asignBp(int lp, int index)
-{
-	int i,j,p;
-	int s = source[lp], d= dest[lp], b= lp_size[lp];
-	bp_ind[lp] = index;
-	for(j=0;j<b;j++){
-		for(p=0;p<LINK_NUM;p++){
-			if(spec[index+j][p] == 1 && path_back[s][d][p] ==1){
-				cout << "spec[" <<  index+j << "][" << p << "] = " << spec[index+j][p] << endl;
-				cout << "path_back[" << s << "][" << d << "][" << p << "] = " << path_back[s][d][p] << endl;
-				throw "バックアップパス割り当てエラー";
-			}
-			spec[index+j][p] = spec[index+j][p] || path_back[s][d][p];
-		}
-	}
-	return 0;
-}
-
 int asignBackRerouting(int lp, int index)
 {
 	int i,j,p;
-	int s = source[lp], d= dest[lp], b= lp_size[lp];
+	int b= lp_size[lp];
 
 	bp_ind[lp] = index;
 	for(j=0;j<b;j++){
@@ -1556,34 +1529,13 @@ int printSpec()
 	return 0;
 }
 
-int asign(int lp, int index)
-{
-	int i,j,p;
-	int s = source[lp], d= dest[lp], b= lp_size[lp];
-
-	spec_ind[lp] = index;
-
-	for(j=0;j<b;j++){						//Asigning
-		for(p=0;p<LINK_NUM;p++){
-			if(spec[index+j][p] == 1 && path_prim[s][d][p] ==1){
-				cout << "index + j  = " << index + j << endl;
-				cout << "link_num = " << p << endl;
-				throw "プライマリパス割り当てエラー";
-			}
-			spec[index+j][p] = spec[index+j][p] || path_prim[s][d][p];
-		}
-	}
-	return 0;
-
-}
-
 int asignPrimRerouting(int lp, int index)
 {
 	int i,j,p;
-	int s = source[lp], d= dest[lp], b= lp_size[lp];
+	int b= lp_size[lp];
 
 	spec_ind[lp] = index;
-	for(j=0;j<b;j++){						//Asigning
+	for(j=0;j<b;j++){
 		for(p=0;p<LINK_NUM;p++){
 			if(spec[index+j][p] == 1 && path_prim_rr[p][lp] ==1) throw "プライマリパス割り当てエラー";
 			spec[index+j][p] = spec[index+j][p] || path_prim_rr[p][lp];
@@ -1649,7 +1601,7 @@ int checkExactBack(int lp)
 int checkExactPrimRerouting(int lp)
 {
 	int i,j,p;
-	int s = source[lp], d= dest[lp], b= lp_size[lp];
+	int b= lp_size[lp];
 	int lp1, index1, s1, d1;
 	bool isGetRoot;
 
@@ -1673,7 +1625,7 @@ int checkExactPrimRerouting(int lp)
 int checkExactBackRerouting(int lp)
 {
 	int i,j,p;
-	int s = source[lp], d= dest[lp], b= lp_size[lp];
+	int b= lp_size[lp];
 	int lp1, index1, s1, d1;
 	bool isGetRoot;
 
@@ -1882,7 +1834,6 @@ int searchBackRoute(int s, int lp)
 
 void deleteLPRerouting(int lp, int p)
 {
-	int s = source[lp], d= dest[lp];
 	int index = spec_ind[lp],  b= lp_size[lp];
 	int i,j;
 	int a = isactive[lp];

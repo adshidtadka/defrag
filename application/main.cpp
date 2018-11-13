@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 			reInitialize();
 			initializeEvent();
 
-			for(algoCall = 4; algoCall <= 4; algoCall++)
+			for(algoCall = 0; algoCall <= 2; algoCall++)
 			{
 				for (int i = 0; i < REQ_NUM; i++)
 				{
