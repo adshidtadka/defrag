@@ -12,9 +12,10 @@
 #define DEFRAG_INTERVAL 		0.2
 #define MAX_STEP 				3
 #define MAX_HOP_NUM 			99999
-
 // (NODE_NUM,LINK_NUM) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
 #define NODE_NUM 				11
 #define LINK_NUM 				28
 #define SEED_1					1448601515
 #define SEED_2					125
+#define ALGO_START				4
+#define ALGO_LOOP				4

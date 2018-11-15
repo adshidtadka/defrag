@@ -4,14 +4,14 @@
 int main(int argc, char* argv[])
 {
 	ofstream ofs_result_txt;
-	ofs_result_txt.open("./../result/result.txt");
+	ofs_result_txt.open("./../result/result.txt", ios::out);
 	if(!ofs_result_txt){
 		cout << "[error] Cannot open ./../result/result.txt" << endl;
 		return 1;
 	}
 
     ofstream ofs_result_csv;
-    ofs_result_csv.open("./../result/result.csv");
+    ofs_result_csv.open("./../result/result.csv", ios::out);
     if(!ofs_result_csv){
             cout << "[error] Cannot open ./../result/result.csv" << endl;
             return 1;
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 			reInitialize();
 			initializeEvent();
 
-			for(algoCall = 0; algoCall <= 2; algoCall++)
+			for(algoCall = ALGO_START; algoCall <= ALGO_LOOP; algoCall++)
 			{
 				for (int i = 0; i < REQ_NUM; i++)
 				{

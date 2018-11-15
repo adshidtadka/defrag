@@ -238,7 +238,7 @@ int writeGivenParamConv(int load)
 	}
 
 	ofstream ofs2;
-	ofs2.open("./../result/ssr_lno_output.txt");
+	ofs2.open("./../result/ssr_lno_output.txt", ios::out);
 	if(!ofs2){
 		cout<< "[error] cannot open ./../result/ssr_lno_output.txt"<<endl;
 		return 1;
@@ -311,7 +311,7 @@ int writeGivenParamProp(int load)
 	}
 
 	ofstream ofs2;
-	ofs2.open("./../result/ssrr_lno_output.txt");
+	ofs2.open("./../result/ssrr_lno_output.txt", ios::out);
 	if(!ofs2){
 		cout<< "Cannot open ssrr_lno_output.txt file"<<endl;
 		return 1;
@@ -398,9 +398,6 @@ int writeGivenParamProp(int load)
 		ofs2 << source[lp] << " " << dest[lp] << endl;
 	}
 	ofs2 << ";" << endl << endl;
-
-	// printSpec();
-
 	ofs2.close();
 	return 0;
 }
@@ -512,7 +509,6 @@ int readResultConv()
 			fin.ignore(INT_MAX,'\n');
 		}
 	fin.close();
-	printSpec();
 	return 0;
 }
 
@@ -575,7 +571,6 @@ int readResultProp()
 			cur = cur->next;
 
 			fin >> a >> b ;
-			// printSpec();
 			asignPrim(lp, b);
 			fin.ignore(INT_MAX,'\n');
 			fin >> a >> b ;
@@ -583,7 +578,6 @@ int readResultProp()
 			fin.ignore(INT_MAX,'\n');
 		}
 	fin.close();
-	printSpec();
 	return 0;
 }
 
@@ -1369,7 +1363,7 @@ int genDemands(int load)
 	uniform_int_distribution<int> traff_dist(1, REQ_SIZE_MAX);
 
 	ofstream ofs_input;
-    ofs_input.open("./../result/input.txt");
+    ofs_input.open("./../result/input.txt", ios::out);
 	if(!ofs_input){
 		cout << "[error] cannot open input file"<< endl;
 		return 1;
