@@ -17,13 +17,6 @@ int main(int argc, char* argv[])
             return 1;
     }
 
-    ofstream operation_num_csv;
-    operation_num_csv.open("./../result/operation_num.csv");
-    if(!operation_num_csv){
-            cout << "[error] Cannot open ./../result/operation_num.csv" << endl;
-            return 1;
-    }
-
 	ofs_result_txt 	<< "--- Simulation start ----" << endl;
 	ofs_result_txt 	<< "NODE_NUM 		= " << NODE_NUM << endl;
 	ofs_result_txt	<< "LINK_NUM 		= " << LINK_NUM << endl;
@@ -235,7 +228,6 @@ int main(int argc, char* argv[])
 			}
 		}
 		ofs_result_csv << load << ",";
-		operation_num_csv << load << ",";
 
 		double stdItNone, stdItConv, stdItProp, stdItConvIlp, stdItPropIlp;
 		double stdItNoneDiff, stdItConvDiff, stdItPropDiff, stdItConvIlpDiff, stdItPropIlpDiff;
@@ -279,19 +271,14 @@ int main(int argc, char* argv[])
 		ofs_result_txt 		<< "[algo4] confidence:	" << stdItPropIlp << endl << endl;
 		cout 				<< "[algo1] toggle:		" << togOpItConv/ITERATION << endl;
 		ofs_result_txt 		<< "[algo1] toggle:		" << togOpItConv/ITERATION << endl;
-		operation_num_csv 	<< togOpItConv/ITERATION << ",";
 		cout 				<< "[algo1] reallocate:	" << realOpItConv/ITERATION << endl << endl;
 		ofs_result_txt 		<< "[algo1] reallocate:	" << realOpItConv/ITERATION << endl << endl;
-		operation_num_csv 	<< realOpItConv/ITERATION << ",";
 		cout 				<< "[algo2] toggle:		" << togOpItProp/ITERATION << endl;
 		ofs_result_txt 		<< "[algo2] toggle:		" << togOpItProp/ITERATION << endl;
-		operation_num_csv 	<< togOpItProp/ITERATION << ",";
 		cout 				<< "[algo2] reallocate:	" << realOpItProp/ITERATION << endl;
 		ofs_result_txt 		<< "[algo2] reallocate:	" << realOpItProp/ITERATION << endl;
-		operation_num_csv 	<< realOpItProp/ITERATION << ",";
 		cout 				<< "[algo2] reroute:	" << rerouteOpItProp/ITERATION << endl << endl;
 		ofs_result_txt 		<< "[algo2] reroute:	" << rerouteOpItProp/ITERATION << endl << endl;
-		operation_num_csv 	<< rerouteOpItProp/ITERATION << endl;
 	}
 	ofs_result_txt.close();
 
