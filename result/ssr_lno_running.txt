@@ -1,3 +1,0 @@
-Load A := 1;
-param M := 3;
-Last LP := 48;
