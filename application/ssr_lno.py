@@ -364,7 +364,7 @@ def Rerouting():
 
     c = cplex.Cplex()
     setupproblem(c)
-    c.write("./../result/ssr_lno.lp") # fujun: you can debug by reading lp file.
+    # c.write("./../result/ssr_lno.lp") # fujun: you can debug by reading lp file.
     c.solve()
 
     sol = c.solution
