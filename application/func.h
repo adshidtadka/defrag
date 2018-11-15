@@ -237,17 +237,6 @@ int writeGivenParamConv(int load)
 		cur = cur->next;
 	}
 
-	ofstream ofs3;
-	ofs3.open("./../result/ssr_lno_running.txt");
-	if(!ofs3){
-		cout<< "Cannot open ouput file"<<endl;
-		return 1;
-	}
-	ofs3 << "Load A := " << load <<";" << endl;
-	ofs3 << "param REQ_NUM := " << m <<";" << endl;
-	ofs3 << "Last LP := " << lp <<";" << endl;
-	ofs3.close();
-
 	ofstream ofs2;
 	ofs2.open("./../result/ssr_lno_output.txt");
 	if(!ofs2){
@@ -320,17 +309,6 @@ int writeGivenParamProp(int load)
 		lp = cur->x;
 		cur = cur->next;
 	}
-
-	ofstream ofs3;
-	ofs3.open("./../result/ssr_lno_running.txt");
-	if(!ofs3){
-		cout<< "Cannot open ouput file"<<endl;
-		return 1;
-	}
-	ofs3 << "Load A := " << load <<";" << endl;
-	ofs3 << "param M := " << m <<";" << endl;
-	ofs3 << "Last LP := " << lp <<";" << endl;
-	ofs3.close();
 
 	ofstream ofs2;
 	ofs2.open("./../result/ssrr_lno_output.txt");
