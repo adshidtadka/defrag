@@ -1145,12 +1145,12 @@ int setupPath(int lp)
 		blocked++;
 		return 0;
 	}
+	asignPrim(lp, a);
 	b = checkFirstBackProp(lp);
 	if(b == INF){
 		blocked++;
 		return 0;
 	}
-	asignPrim(lp, a);
 	asignBack(lp, b);
 	isactive[lp] = 1;
 	return 1;
