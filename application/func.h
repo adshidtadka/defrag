@@ -794,7 +794,7 @@ int startAlgo()
 				delFromList(3, lp);
 			}
 			if(realcheck != realOp){
-				ret_time += DEFRAG_TIME;
+				ret_time += PROCESSING_TIME;
 				if((time_slot_now+ret_time >= fin_time || ret_time >= DEFRAG_TOTAL_TIME_MAX) || eventQueue.empty()){
 					return 0;	
 				}
@@ -953,7 +953,7 @@ int retuneDown()
 				asignBack(i, a);
 			}
 		}
-		ret_time += double(mov_time)*DEFRAG_TIME;
+		ret_time += double(mov_time)*PROCESSING_TIME;
 		nextEvent = eventQueue.top();
 		if(nextEvent.type == 0 && (time_slot_now+ret_time >= nextEvent.time || ret_time >= DEFRAG_TOTAL_TIME_MAX)){
 			time_slot_now += ret_time;

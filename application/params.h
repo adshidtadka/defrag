@@ -7,7 +7,7 @@
 #define LOAD_REPEAT_NUM			10
 #define HOLDING_TIME 			10
 #define REQ_SIZE_MAX 			16
-#define DEFRAG_TIME 			0.1
+#define PROCESSING_TIME 			0.1
 #define DEFRAG_TOTAL_TIME_MAX 	100
 #define DEFRAG_INTERVAL 		0.2
 #define MAX_STEP 				3
