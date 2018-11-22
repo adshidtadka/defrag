@@ -28,14 +28,14 @@ void delFromList(int, int);
 void addToList(int, int, int);
 int checkExactPrimConv(int);
 int checkExactBackConv(int);
-int checkExactPrimProp(int);
-int checkExactBackProp(int);
+int checkExactPrimProp(int, bool);
+int checkExactBackProp(int, bool);
 int checkFirstPrimConv(int);
-int checkFirstPrimProp(int);
+int checkFirstPrimProp(int, bool);
 int checkFirstBackConv(int);
-int checkFirstBackProp(int);
-int searchRoutePrim(int, int);
-int searchRouteBack(int, int);
+int checkFirstBackProp(int, bool);
+int searchRoutePrim(int, int, bool);
+int searchRouteBack(int, int, bool);
 void delLp(int, int);
 int removeLP1_1(int);
 int setupPath(int);
@@ -689,7 +689,7 @@ int startAlgo()
 					delLp(lp, 1);
 					if (algoCall == 2 || algoCall == 4)
 					{
-						a = checkExactPrimProp(lp);
+						a = checkExactPrimProp(lp, false);
 					} else {
 						a = checkExactPrimConv(lp);
 					}
@@ -697,7 +697,7 @@ int startAlgo()
 					{
 						if (algoCall == 2 || algoCall == 4)
 						{
-							a = checkFirstPrimProp(lp);
+							a = checkFirstPrimProp(lp, false);
 						} else {
 							a = checkFirstPrimConv(lp);
 						}
@@ -746,7 +746,7 @@ int startAlgo()
 					delLp(lp, 2);
 					if (algoCall == 2 || algoCall == 4)
 					{
-						a = checkExactBackProp(lp);
+						a = checkExactBackProp(lp, false);
 					} else {
 						a = checkExactBackConv(lp);
 					}
@@ -754,7 +754,7 @@ int startAlgo()
 					{
 						if (algoCall == 2 || algoCall == 4)
 						{
-							a = checkFirstBackProp(lp);
+							a = checkFirstBackProp(lp, false);
 						} else {
 							a = checkFirstBackConv(lp);
 						}
@@ -856,14 +856,14 @@ int retuneDown()
 				delLp(i, 1);
 				if (algoCall == 2 || algoCall == 4)
 				{
-					a = checkExactPrimProp(i);
+					a = checkExactPrimProp(i, false);
 				} else {
 					a = checkExactPrimConv(i);
 				}
 				if(a==CAPASITY || a > ind_prim[i]){
 					if (algoCall == 2 || algoCall == 4)
 					{
-						a = checkFirstPrimProp(i);
+						a = checkFirstPrimProp(i, false);
 					} else {
 						a = checkFirstPrimConv(i);
 					}
@@ -913,14 +913,14 @@ int retuneDown()
 				delLp(i, 2);
 				if (algoCall == 2 || algoCall == 4)
 				{
-					a = checkExactBackProp(i);
+					a = checkExactBackProp(i, false);
 				} else {
 					a = checkExactBackConv(i);
 				}
 				if(a==CAPASITY || a > ind_back[i]){
 					if (algoCall == 2 || algoCall == 4)
 					{
-						a = checkFirstBackProp(i);
+						a = checkFirstBackProp(i, false);
 					} else {
 						a = checkFirstBackConv(i);
 					}
@@ -1140,13 +1140,14 @@ void delFromList2(int a, int n, int st)
 int setupPath(int lp)
 {
 	int a, b;
-	a = checkFirstPrimProp(lp);
+
+	a = checkFirstPrimProp(lp, true);
 	if(a == INF){
 		blocked++;
 		return 0;
 	}
 	asignPrim(lp, a);
-	b = checkFirstBackProp(lp);
+	b = checkFirstBackProp(lp, true);
 	if(b == INF){
 		blocked++;
 		return 0;
@@ -1231,7 +1232,7 @@ int checkFirstBackConv(int lp)
 	return 0;
 }
 
-int checkFirstBackProp(int lp)
+int checkFirstBackProp(int lp, bool isSetUp)
 {
 	int b=0, index=0;
 	int i,j,p;
@@ -1244,7 +1245,7 @@ int checkFirstBackProp(int lp)
 	while(index <= (CAPASITY-b) && !asigned)   		  //Checking all spectrum range
 	{
 		if(!b) break;
-		isGetRoot = searchRouteBack(index, lp);
+		isGetRoot = searchRouteBack(index, lp, isSetUp);
 		if(isGetRoot){
 			asigned= 1;
 			return index;
@@ -1428,7 +1429,7 @@ int checkFirstPrimConv(int lp)
 	return 0;
 }
 
-int checkFirstPrimProp(int lp)
+int checkFirstPrimProp(int lp, bool isSetUp)
 {
 	bool asigned = 0;
 	bool isGetRoot = 0;
@@ -1438,7 +1439,7 @@ int checkFirstPrimProp(int lp)
 	while(index <= (CAPASITY-b) && !asigned)
 	{
 		if (!b) break;
-		isGetRoot = searchRoutePrim(index, lp);
+		isGetRoot = searchRoutePrim(index, lp, isSetUp);
 		if(isGetRoot){
 			asigned= 1;
 			return index;
@@ -1544,7 +1545,7 @@ int checkExactBackConv(int lp)
 	return CAPASITY;
 }
 
-int checkExactPrimProp(int lp)
+int checkExactPrimProp(int lp, bool isSetUp)
 {
 	int i,j,p;
 	int b= lp_size[lp];
@@ -1553,10 +1554,10 @@ int checkExactPrimProp(int lp)
 
 	for(i=0;i<CAPASITY-b;i++){
 		isGetRoot = 0;
-		isGetRoot = searchRoutePrim(i, lp);
+		isGetRoot = searchRoutePrim(i, lp, false);
 		if(isGetRoot){
 			isGetRoot = 0;
-			isGetRoot = searchRoutePrim(i+1, lp);
+			isGetRoot = searchRoutePrim(i+1, lp, false);
 			if(!isGetRoot){
 				// cout << "return i = " << i << endl;
 				return i;
@@ -1568,7 +1569,7 @@ int checkExactPrimProp(int lp)
 	return CAPASITY;
 }
 
-int checkExactBackProp(int lp)
+int checkExactBackProp(int lp, bool isSetUp)
 {
 	int i,j,p;
 	int b= lp_size[lp];
@@ -1577,10 +1578,10 @@ int checkExactBackProp(int lp)
 
 	for(i=0;i<CAPASITY-b;i++){
 		isGetRoot = 0;
-		isGetRoot = searchRouteBack(i, lp);
+		isGetRoot = searchRouteBack(i, lp, isSetUp);
 		if(isGetRoot){
 			isGetRoot = 0;
-			isGetRoot = searchRouteBack(i+1, lp);
+			isGetRoot = searchRouteBack(i+1, lp, isSetUp);
 			if(!isGetRoot){
 				// cout << "return i = " << i << endl;
 				return i;
@@ -1592,7 +1593,7 @@ int checkExactBackProp(int lp)
 	return CAPASITY;
 }
 
-int searchRoutePrim(int s, int lp)
+int searchRoutePrim(int s, int lp, bool isSetUp)
 {
 	int i, j, k;
 	bool unconnectedFlag;
@@ -1648,18 +1649,21 @@ int searchRoutePrim(int s, int lp)
 		}
 	}
 
-	a = dest[lp];
-	b = Nodes[a].from;
-
-	int hop_counter = 0;
-	while (b < NODE_NUM && a != b) {
-		a = b;
-		b = Nodes[a].from;
-		hop_counter++;
-	}
-	if (hop_counter > MAX_HOP_NUM)
+	if (isSetUp)
 	{
-		return 0;
+		a = dest[lp];
+		b = Nodes[a].from;
+
+		int hop_counter = 0;
+		while (b < NODE_NUM && a != b) {
+			a = b;
+			b = Nodes[a].from;
+			hop_counter++;
+		}
+		if (hop_counter > MAX_HOP_NUM)
+		{
+			return 0;
+		}
 	}
 
 	a = dest[lp];
@@ -1683,7 +1687,7 @@ int searchRoutePrim(int s, int lp)
 	}
 }
 
-int searchRouteBack(int s, int lp)
+int searchRouteBack(int s, int lp, bool isSetUp)
 {
 	int i, j, k;
 	bool unconnectedFlag;
@@ -1743,18 +1747,21 @@ int searchRouteBack(int s, int lp)
 		}
 	}
 
-	a = dest[lp];
-	b = Nodes[a].from;
-
-	int hop_counter = 0;
-	while (b < NODE_NUM && a != b) {
-		a = b;
-		b = Nodes[a].from;
-		hop_counter++;
-	}
-	if (hop_counter > MAX_HOP_NUM)
+	if (isSetUp)
 	{
-		return 0;
+		a = dest[lp];
+		b = Nodes[a].from;
+
+		int hop_counter = 0;
+		while (b < NODE_NUM && a != b) {
+			a = b;
+			b = Nodes[a].from;
+			hop_counter++;
+		}
+		if (hop_counter > MAX_HOP_NUM)
+		{
+			return 0;
+		}
 	}
 
 	a = dest[lp];
