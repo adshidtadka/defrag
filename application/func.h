@@ -1146,12 +1146,12 @@ int setupPath(int lp)
 		blocked++;
 		return 0;
 	}
-	asignPrim(lp, a);
 	b = checkFirstBackProp(lp, true);
 	if(b == INF){
 		blocked++;
 		return 0;
 	}
+	asignPrim(lp, a);
 	asignBack(lp, b);
 	isactive[lp] = 1;
 	return 1;
@@ -1554,10 +1554,10 @@ int checkExactPrimProp(int lp, bool isSetUp)
 
 	for(i=0;i<CAPASITY-b;i++){
 		isGetRoot = 0;
-		isGetRoot = searchRoutePrim(i, lp, false);
+		isGetRoot = searchRoutePrim(i, lp, isSetUp);
 		if(isGetRoot){
 			isGetRoot = 0;
-			isGetRoot = searchRoutePrim(i+1, lp, false);
+			isGetRoot = searchRoutePrim(i+1, lp, isSetUp);
 			if(!isGetRoot){
 				// cout << "return i = " << i << endl;
 				return i;
@@ -1649,7 +1649,7 @@ int searchRoutePrim(int s, int lp, bool isSetUp)
 		}
 	}
 
-	if (isSetUp)
+	if (!isSetUp)
 	{
 		a = dest[lp];
 		b = Nodes[a].from;
@@ -1747,7 +1747,7 @@ int searchRouteBack(int s, int lp, bool isSetUp)
 		}
 	}
 
-	if (isSetUp)
+	if (!isSetUp)
 	{
 		a = dest[lp];
 		b = Nodes[a].from;

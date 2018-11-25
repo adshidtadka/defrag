@@ -1,13 +1,13 @@
 #define INF 					999999999
-#define ITERATION 				3
-#define REQ_NUM 				200
+#define ITERATION 				5
+#define REQ_NUM 				10000
 #define CAPASITY 				400
-#define LOAD_START 				300
+#define LOAD_START 				50
 #define LOAD_GAIN 				10
 #define LOAD_REPEAT_NUM			10
 #define HOLDING_TIME 			10
 #define REQ_SIZE_MAX 			16
-#define PROCESSING_TIME 			0.1
+#define PROCESSING_TIME 		0.1
 #define DEFRAG_TOTAL_TIME_MAX 	100
 #define DEFRAG_INTERVAL 		0.2
 #define MAX_STEP 				3
