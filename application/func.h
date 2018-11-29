@@ -702,6 +702,11 @@ int startAlgo()
 							a = checkFirstPrimConv(lp);
 						}
 					}
+					if (a == INF)
+					{
+						cout << "a = INF in statAlgo prim" << endl;
+						a  = ind_prim[lp];
+					}
 					bool isSame = true;
 					for (int i = 0; i < NODE_NUM; ++i)
 					{
@@ -758,6 +763,11 @@ int startAlgo()
 						} else {
 							a = checkFirstBackConv(lp);
 						}
+					}
+					if (a == INF)
+					{
+						cout << "a = INF in statAlgo back" << endl;
+						a = ind_back[lp];
 					}
 					bool isSame = true;
 					for (int i = 0; i < NODE_NUM; ++i)
@@ -868,6 +878,11 @@ int retuneDown()
 						a = checkFirstPrimConv(i);
 					}
 				}
+				if (a == INF)
+				{
+					cout << "a = INF in retuneDown prim" << endl;
+					a = ind_prim[i];
+				}
 				bool isSame = true;
 				for (int b = 0; b < NODE_NUM; ++b)
 				{
@@ -924,6 +939,11 @@ int retuneDown()
 					} else {
 						a = checkFirstBackConv(i);
 					}
+				}
+				if (a == INF)
+				{
+					cout << "a = INF in retuneDown back" << endl;
+					a = ind_back[i];
 				}
 				bool isSame = true;
 				for (int b = 0; b < NODE_NUM; ++b)
