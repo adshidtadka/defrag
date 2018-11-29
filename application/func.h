@@ -704,7 +704,6 @@ int startAlgo()
 					}
 					if (a == INF)
 					{
-						cout << "a = INF in statAlgo prim" << endl;
 						a  = ind_prim[lp];
 					}
 					bool isSame = true;
@@ -766,7 +765,6 @@ int startAlgo()
 					}
 					if (a == INF)
 					{
-						cout << "a = INF in statAlgo back" << endl;
 						a = ind_back[lp];
 					}
 					bool isSame = true;
@@ -880,7 +878,6 @@ int retuneDown()
 				}
 				if (a == INF)
 				{
-					cout << "a = INF in retuneDown prim" << endl;
 					a = ind_prim[i];
 				}
 				bool isSame = true;
@@ -942,7 +939,6 @@ int retuneDown()
 				}
 				if (a == INF)
 				{
-					cout << "a = INF in retuneDown back" << endl;
 					a = ind_back[i];
 				}
 				bool isSame = true;
