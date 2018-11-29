@@ -53,8 +53,8 @@ double var(double, int);
 double standard(double, int);
 double finTime();
 
-bool path_prim_rr[LINK_NUM][REQ_NUM];
-bool path_back_rr[LINK_NUM][REQ_NUM];
+bool path_prim[LINK_NUM][REQ_NUM];
+bool path_back[LINK_NUM][REQ_NUM];
 int link[NODE_NUM][NODE_NUM];
 bool spec[CAPASITY][LINK_NUM];
 
@@ -283,11 +283,11 @@ int writeGivenParamConv(int load)
 		cur = cur->next;
 
 		for(j=0;j<LINK_NUM;j++){
-			if(path_prim_rr[j][lp]) ofs2 << ind <<" "<< j << endl;
+			if(path_prim[j][lp]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
 		for(j=0;j<LINK_NUM;j++){
-			if(path_back_rr[j][lp]) ofs2 << ind <<" "<< j << endl;
+			if(path_back[j][lp]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
 	}
@@ -368,7 +368,7 @@ int writeGivenParamProp(int load)
 		for ( i = 0; i < NODE_NUM; i++) {
 			for ( j = 0; j < NODE_NUM; j++ ){
 				if(link[i][j] < LINK_NUM){
-					if (path_prim_rr[link[i][j]][lp]){
+					if (path_prim[link[i][j]][lp]){
 						ofs2 << ind << " " << i << " " << j << endl;
 					}
 				}
@@ -379,7 +379,7 @@ int writeGivenParamProp(int load)
 		for ( i = 0; i < NODE_NUM; i++) {
 			for ( j = 0; j < NODE_NUM; j++ ){
 				if(link[i][j] < LINK_NUM){
-					if (path_back_rr[link[i][j]][lp]){
+					if (path_back[link[i][j]][lp]){
 						ofs2 << ind << " " << i << " " << j << endl;
 					}
 				}
@@ -542,21 +542,21 @@ int readResultProp()
 			cur = cur->next;
 
 			for(i=0;i<LINK_NUM;i++){
-				path_prim_rr[i][lp] = 0;
-				path_back_rr[i][lp]   = 0;
+				path_prim[i][lp] = 0;
+				path_back[i][lp]   = 0;
 			}
 
 			fin.ignore(INT_MAX,'=');
 			fin >> a >> b >> c >> d;
 			while(!d){
-				path_prim_rr[link[b][c]][lp] = 1;
+				path_prim[link[b][c]][lp] = 1;
 				fin.ignore(INT_MAX,'\n');
 				fin >> a >> b >> c >> d;
 			}
 			fin.ignore(INT_MAX,'=');
 			fin >> a >> b >> c >> d;
 			while(!d){
-				path_back_rr[link[b][c]][lp] = 1;
+				path_back[link[b][c]][lp] = 1;
 				fin.ignore(INT_MAX,'\n');
 				fin >> a >> b >> c >> d;
 			}
@@ -637,22 +637,22 @@ int startAlgo()
 						if(lpState[cur2->x]){
 							if(lpState[lp]){
 								for(i=0;i<LINK_NUM;i++){
-									if(path_prim_rr[i][cur2->x] && path_prim_rr[i][lp]) conf =1;
+									if(path_prim[i][cur2->x] && path_prim[i][lp]) conf =1;
 								}
 							}else{
 								for(i=0;i<LINK_NUM;i++){
-									if(path_prim_rr[i][cur2->x] && path_back_rr[i][lp])conf =1;
+									if(path_prim[i][cur2->x] && path_back[i][lp])conf =1;
 								}
 
 							}
 						}else{
 							if(lpState[lp]){
 								for(i=0;i<LINK_NUM;i++){
-									if(path_back_rr[i][cur2->x] && path_prim_rr[i][lp]) conf =1;
+									if(path_back[i][cur2->x] && path_prim[i][lp]) conf =1;
 								}
 							}else{
 								for(i=0;i<LINK_NUM;i++){
-									if(path_back_rr[i][cur2->x] && path_back_rr[i][lp]) conf =1;
+									if(path_back[i][cur2->x] && path_back[i][lp]) conf =1;
 								}
 							}
 						}
@@ -673,17 +673,17 @@ int startAlgo()
 				b =  lpState[lp];
 				cur2 = cur2->next;
 				if(b){
-					int path_rr_prev[LINK_NUM];
+					int path_prev[LINK_NUM];
 					for (int i = 0; i < LINK_NUM; ++i)
 					{
-						path_rr_prev[i] = 0;
+						path_prev[i] = 0;
 					}
 					for (int i = 0; i < NODE_NUM; ++i)
 					{
 						for (int j = 0; j < NODE_NUM; ++j)
 						{
 							if (link[i][j] > LINK_NUM) continue;
-							path_rr_prev[link[i][j]] = path_prim_rr[link[i][j]][lp];
+							path_prev[link[i][j]] = path_prim[link[i][j]][lp];
 						}
 					}
 					delLp(lp, 1);
@@ -708,7 +708,7 @@ int startAlgo()
 						for (int j = 0; j < NODE_NUM; ++j)
 						{
 							if (link[i][j] > LINK_NUM) continue;
-							if (path_rr_prev[link[i][j]] != path_prim_rr[link[i][j]][lp])
+							if (path_prev[link[i][j]] != path_prim[link[i][j]][lp])
 							{
 								isSame = false;
 							}
@@ -740,7 +740,7 @@ int startAlgo()
 						for (int j = 0; j < NODE_NUM; ++j)
 						{
 							if (link[i][j] > LINK_NUM) continue;
-							bp_rr_prev[link[i][j]] = path_back_rr[link[i][j]][lp];
+							bp_rr_prev[link[i][j]] = path_back[link[i][j]][lp];
 						}
 					}
 					delLp(lp, 2);
@@ -765,7 +765,7 @@ int startAlgo()
 						for (int j = 0; j < NODE_NUM; ++j)
 						{
 							if (link[i][j] > LINK_NUM) continue;
-							if (bp_rr_prev[link[i][j]] != path_back_rr[link[i][j]][lp])
+							if (bp_rr_prev[link[i][j]] != path_back[link[i][j]][lp])
 							{
 								isSame = false;
 							}
@@ -840,17 +840,17 @@ int retuneDown()
 			i = cur->x;
 			cur = cur->next;
 			if(isactive[i] == 1 && ind_prim[i] == index1){
-				int path_rr_prev[LINK_NUM]; //to compare the previous root and new route
+				int path_prev[LINK_NUM]; //to compare the previous root and new route
 				for (int b = 0; b < LINK_NUM; ++b)
 				{
-					path_rr_prev[b] = 0;
+					path_prev[b] = 0;
 				}
 				for (int b = 0; b < NODE_NUM; ++b)
 				{
 					for (int c = 0; c < NODE_NUM; ++c)
 					{
 						if (link[b][c] > LINK_NUM) continue;
-						path_rr_prev[link[b][c]] = path_prim_rr[link[b][c]][i];
+						path_prev[link[b][c]] = path_prim[link[b][c]][i];
 					}
 				}
 				delLp(i, 1);
@@ -874,7 +874,7 @@ int retuneDown()
 					for (int c = 0; c < NODE_NUM; ++c)
 					{
 						if (link[b][c] > LINK_NUM) continue;
-						if (path_rr_prev[link[b][c]] != path_prim_rr[link[b][c]][i])
+						if (path_prev[link[b][c]] != path_prim[link[b][c]][i])
 						{
 							isSame = false;
 						}
@@ -907,7 +907,7 @@ int retuneDown()
 					for (int c = 0; c < NODE_NUM; ++c)
 					{
 						if (link[b][c] > LINK_NUM) continue;
-						bp_rr_prev[link[b][c]] = path_back_rr[link[b][c]][i];
+						bp_rr_prev[link[b][c]] = path_back[link[b][c]][i];
 					}
 				}
 				delLp(i, 2);
@@ -931,7 +931,7 @@ int retuneDown()
 					for (int c = 0; c < NODE_NUM; ++c)
 					{
 						if (link[b][c] > LINK_NUM) continue;
-						if (bp_rr_prev[link[b][c]] != path_back_rr[link[b][c]][i])
+						if (bp_rr_prev[link[b][c]] != path_back[link[b][c]][i])
 						{
 							isSame = false;
 						}
@@ -1166,24 +1166,24 @@ int removeLP1_1(int lp)
 	if(a){
 		for(i=0; i<b; i++){
 			for(j=0;j<LINK_NUM;j++){
-				if (path_prim_rr[j][lp] == 1 && spec[index+i][j] == 0)
+				if (path_prim[j][lp] == 1 && spec[index+i][j] == 0)
 				{
-					cout << "path_prim_rr[" << j << "][" << lp << "] = " << path_prim_rr[j][lp] << ", spec[" << index+i << "][" << j << "] = " << spec[index+i][j] << endl;
+					cout << "path_prim[" << j << "][" << lp << "] = " << path_prim[j][lp] << ", spec[" << index+i << "][" << j << "] = " << spec[index+i][j] << endl;
 					throw "[error] cannot delete primary path";
 				}
-				spec[index+i][j] = path_prim_rr[j][lp] ^ spec[index+i][j];
+				spec[index+i][j] = path_prim[j][lp] ^ spec[index+i][j];
 			}
 		}
 		index = ind_back[lp];
 		if(index < INF){
 			for(i=0; i<b; i++){
 				for(j=0;j<LINK_NUM;j++){
-					if (path_back_rr[j][lp] == 1 && spec[index+i][j] == 0)
+					if (path_back[j][lp] == 1 && spec[index+i][j] == 0)
 					{
-						cout << "path_back_rr[" << j << "][" << lp << "] = " << path_back_rr[j][lp] << ", spec[" << index+i << "][" << j << "] = " << spec[index+i][j] << endl;
+						cout << "path_back[" << j << "][" << lp << "] = " << path_back[j][lp] << ", spec[" << index+i << "][" << j << "] = " << spec[index+i][j] << endl;
 						throw "[error] cannot delete backup path";
 					}
-					spec[index+i][j] = path_back_rr[j][lp] ^ spec[index+i][j];
+					spec[index+i][j] = path_back[j][lp] ^ spec[index+i][j];
 				}
 			}
 		}
@@ -1204,7 +1204,7 @@ int checkFirstBackConv(int lp)
 		int i;
 		for (i = 0; i < LINK_NUM; i++)
 		{
-			if (spec[index][i] && path_back_rr[i][lp])
+			if (spec[index][i] && path_back[i][lp])
 			{
 				index++;
 				break;
@@ -1212,7 +1212,7 @@ int checkFirstBackConv(int lp)
 				nofit = 0;
 				for (int j = 0; j < b; j++)
 				{
-					if (spec[index+j][i] && path_back_rr[i][lp])
+					if (spec[index+j][i] && path_back[i][lp])
 					{
 						index += j;
 						nofit = 1;
@@ -1266,8 +1266,8 @@ int asignBack(int lp, int index)
 	ind_back[lp] = index;
 	for(j=0;j<b;j++){
 		for(p=0;p<LINK_NUM;p++){
-			if(spec[index+j][p] == 1 && path_back_rr[p][lp] ==1) throw "バックアップパス割り当てエラー";
-			spec[index+j][p] = spec[index+j][p] || path_back_rr[p][lp];
+			if(spec[index+j][p] == 1 && path_back[p][lp] ==1) throw "バックアップパス割り当てエラー";
+			spec[index+j][p] = spec[index+j][p] || path_back[p][lp];
 		}
 	}
 
@@ -1288,8 +1288,8 @@ int initialize(void)
 	{
 		for (int j = 0; j < REQ_NUM; j++)
 		{
-			path_prim_rr[i][j] 	= 0;
-			path_back_rr[i][j] 	= 0;
+			path_prim[i][j] 	= 0;
+			path_back[i][j] 	= 0;
 		}
 	}
 
@@ -1403,14 +1403,14 @@ int checkFirstPrimConv(int lp)
 		int i;
 		for (i = 0; i < LINK_NUM; i++)
 		{
-			if (spec[index][i] && path_prim_rr[i][lp]){
+			if (spec[index][i] && path_prim[i][lp]){
 				index++;
 				break;
 			} else {
 				nofit = 0;
 				for(int j = 0; j < b; j++)
 				{
-					if(spec[index+j][i] && path_prim_rr[i][lp]){
+					if(spec[index+j][i] && path_prim[i][lp]){
 						index += j;
 						nofit = 1;
 						break;
@@ -1484,8 +1484,8 @@ int asignPrim(int lp, int index)
 	ind_prim[lp] = index;
 	for(j=0;j<b;j++){
 		for(p=0;p<LINK_NUM;p++){
-			if(spec[index+j][p] == 1 && path_prim_rr[p][lp] ==1) throw "プライマリパス割り当てエラー";
-			spec[index+j][p] = spec[index+j][p] || path_prim_rr[p][lp];
+			if(spec[index+j][p] == 1 && path_prim[p][lp] ==1) throw "プライマリパス割り当てエラー";
+			spec[index+j][p] = spec[index+j][p] || path_prim[p][lp];
 		}
 	}
 
@@ -1500,7 +1500,7 @@ int checkExactPrimConv(int lp)
 	for(int i=0;i<CAPASITY;i++){
 		nonalign = 0;
 		for(int j=0;j<LINK_NUM;j++){
-			if(path_prim_rr[j][lp]){
+			if(path_prim[j][lp]){
 				if(spec[i][j]) nonalign =1;
 			}
 		}
@@ -1527,7 +1527,7 @@ int checkExactBackConv(int lp)
 		nonalign = 0;
 		for(int j = 0; j < LINK_NUM; j++)
 		{
-			if (path_back_rr[j][lp]){
+			if (path_back[j][lp]){
 				if(spec[i][j]) nonalign =1;
 			}
 		}
@@ -1610,7 +1610,7 @@ int searchRoutePrim(int s, int lp, bool isSetUp)
 			if(link[i][j]>LINK_NUM) continue;
 			unconnectedFlag = 0;
 			for(k=0; k<lp_size[lp]; k++){
-				if(spec[s+k][link[i][j]] == 1 || path_back_rr[link[i][j]][lp]){
+				if(spec[s+k][link[i][j]] == 1 || path_back[link[i][j]][lp]){
 					unconnectedFlag = 1;
 				}
 			}
@@ -1673,11 +1673,11 @@ int searchRoutePrim(int s, int lp, bool isSetUp)
 		for (j = 0; j < NODE_NUM; j++) {
 			for (k = 0; k < NODE_NUM; k++) {
 				if(link[j][k]>LINK_NUM)continue;
-				path_prim_rr[link[j][k]][lp] = 0;
+				path_prim[link[j][k]][lp] = 0;
 			}
 		}
 		while (b < NODE_NUM && a != b) {
-			path_prim_rr[link[b][a]][lp] = 1;
+			path_prim[link[b][a]][lp] = 1;
 			a = b;
 			b = Nodes[a].from;
 		}
@@ -1704,7 +1704,7 @@ int searchRouteBack(int s, int lp, bool isSetUp)
 			if(link[i][j]>LINK_NUM) continue;
 			unconnectedFlag = 0;
 			for(k=0; k<lp_size[lp]; k++){
-				if(spec[s+k][link[i][j]] == 1 || path_prim_rr[link[i][j]][lp]){
+				if(spec[s+k][link[i][j]] == 1 || path_prim[link[i][j]][lp]){
 					unconnectedFlag = 1;
 				}
 			}
@@ -1771,11 +1771,11 @@ int searchRouteBack(int s, int lp, bool isSetUp)
 		for (j = 0; j < NODE_NUM; j++) {
 			for (k = 0; k < NODE_NUM; k++) {
 				if(link[j][k]>LINK_NUM)continue;
-				path_back_rr[link[j][k]][lp] = 0;
+				path_back[link[j][k]][lp] = 0;
 			}
 		}
 		while (b < NODE_NUM && a != b) {
-			path_back_rr[link[b][a]][lp] = 1;
+			path_back[link[b][a]][lp] = 1;
 			a = b;
 			b = Nodes[a].from;
 		}
@@ -1796,8 +1796,8 @@ void delLp(int lp, int p)
 		if(p==0 || p==1){
 			for(i=0; i<b; i++){
 				for(j=0;j<LINK_NUM;j++){
-					if(spec[index+i][j] == 0 && path_prim_rr[j][lp] == 1) throw "プライマリパス消去エラー";
-					spec[index+i][j] = path_prim_rr[j][lp] ^	spec[index+i][j];
+					if(spec[index+i][j] == 0 && path_prim[j][lp] == 1) throw "プライマリパス消去エラー";
+					spec[index+i][j] = path_prim[j][lp] ^	spec[index+i][j];
 				}
 			}
 		}
@@ -1807,8 +1807,8 @@ void delLp(int lp, int p)
 			if(index == INF) return;
 			for(i=0; i<b; i++){
 				for(j=0;j<LINK_NUM;j++){
-					if(spec[index+i][j] == 0 && path_back_rr[j][lp] == 1) throw "バックアップパス消去エラー";
-					spec[index+i][j] = path_back_rr[j][lp] ^ spec[index+i][j];
+					if(spec[index+i][j] == 0 && path_back[j][lp] == 1) throw "バックアップパス消去エラー";
+					spec[index+i][j] = path_back[j][lp] ^ spec[index+i][j];
 				}
 			}
 		}
