@@ -18,4 +18,4 @@
 #define SEED_1					1448601515
 #define SEED_2					125
 #define ALGO_START				2
-#define ALGO_LOOP				0
+#define ALGO_LOOP				2
