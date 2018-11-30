@@ -17,6 +17,13 @@ int main(int argc, char* argv[])
             return 1;
     }
 
+    ofstream ofs_result_operation_csv;
+    ofs_result_operation_csv.open("./../result/result_operation.csv", ios::out);
+    if(!ofs_result_operation_csv){
+            cout << "[error] Cannot open ./../result/result_operation.csv" << endl;
+            return 1;
+    }
+
 	ofs_result_txt 	<< "-------- Simulation start --------" << endl;
 	ofs_result_txt 	<< "NODE_NUM 		= " << NODE_NUM << endl;
 	ofs_result_txt	<< "LINK_NUM 		= " << LINK_NUM << endl;
@@ -228,6 +235,7 @@ int main(int argc, char* argv[])
 			}
 		}
 		ofs_result_csv << load << ",";
+		ofs_result_operation_csv << load << ",";
 
 		double stdItNone, stdItConv, stdItProp, stdItConvIlp, stdItPropIlp;
 		double stdItNoneDiff, stdItConvDiff, stdItPropDiff, stdItConvIlpDiff, stdItPropIlpDiff;
@@ -242,43 +250,48 @@ int main(int argc, char* argv[])
 		stdItConvIlpDiff = blkdItConvIlp*0.05 - stdItConvIlp*1.96;
 		stdItPropIlpDiff = blkdItPropIlp*0.05 - stdItPropIlp*1.96;
 
-		cout				<< endl << "Average results" << endl;
-		ofs_result_txt		<< endl << "Average results" << endl;
-		cout 				<< "[none] blocked:		" << blkdItNone/ITERATION << endl;
-		ofs_result_txt 		<< "[none] blocked:		" << blkdItNone/ITERATION << endl;
-		ofs_result_csv 		<< blkdItNone/ITERATION << ",";
-		cout 				<< "[none] confidence:	" << stdItNone << endl << endl;
-		ofs_result_txt 		<< "[none] confidence:	" << stdItNone << endl << endl;
-		cout 				<< "[algo_conv] blocked:		" << blkdItConv/ITERATION << endl;
-		ofs_result_txt 		<< "[algo_conv] blocked:		" << blkdItConv/ITERATION << endl;
-		ofs_result_csv 		<< blkdItConv/ITERATION << ",";
-		cout 				<< "[algo_conv] confidence:	" << stdItConv << endl << endl;
-		ofs_result_txt 		<< "[algo_conv] confidence:	" << stdItConv << endl << endl;
-		cout 				<< "[algo_prop] blocked:		" << blkdItProp/ITERATION << endl;
-		ofs_result_txt 		<< "[algo_prop] blocked:		" << blkdItProp/ITERATION << endl;
-		ofs_result_csv 		<< blkdItProp/ITERATION << ",";
-		cout 				<< "[algo_prop] confidence:	" << stdItProp << endl << endl;
-		ofs_result_txt 		<< "[algo_prop] confidence:	" << stdItProp << endl << endl;
-		cout 				<< "[ilp_conv] blocked:		" << blkdItConvIlp/ITERATION << endl;
-		ofs_result_txt 		<< "[ilp_conv] blocked:		" << blkdItConvIlp/ITERATION << endl;
-		ofs_result_csv 		<< blkdItConvIlp/ITERATION << ",";
-		cout 				<< "[ilp_conv] confidence:	" << stdItConvIlp << endl << endl;
-		ofs_result_txt 		<< "[ilp_conv] confidence:	" << stdItConvIlp << endl << endl;
-		cout 				<< "[ilp_prop] blocked:		" << blkdItPropIlp/ITERATION << endl;
-		ofs_result_txt 		<< "[ilp_prop] blocked:		" << blkdItPropIlp/ITERATION << endl;
-		ofs_result_csv 		<< blkdItPropIlp/ITERATION << endl;
-		cout 				<< "[ilp_prop] confidence:	" << stdItPropIlp << endl << endl;
-		ofs_result_txt 		<< "[ilp_prop] confidence:	" << stdItPropIlp << endl << endl;
-		cout 				<< "[algo_conv] toggle:		" << togOpItConv/ITERATION << endl;
-		ofs_result_txt 		<< "[algo_conv] toggle:		" << togOpItConv/ITERATION << endl;
-		cout 				<< "[algo_conv] reallocate:	" << realOpItConv/ITERATION << endl << endl;
-		ofs_result_txt 		<< "[algo_conv] reallocate:	" << realOpItConv/ITERATION << endl << endl;
-		cout 				<< "[algo_prop] toggle:		" << togOpItProp/ITERATION << endl;
-		ofs_result_txt 		<< "[algo_prop] toggle:		" << togOpItProp/ITERATION << endl;
-		cout 				<< "[algo_prop] reallocate:	" << realOpItProp/ITERATION << endl;
-		ofs_result_txt 		<< "[algo_prop] reallocate:	" << realOpItProp/ITERATION << endl;
-		cout 				<< "[algo_prop] reroute:	" << rerouteOpItProp/ITERATION << endl << endl;
-		ofs_result_txt 		<< "[algo_prop] reroute:	" << rerouteOpItProp/ITERATION << endl << endl;
+		cout						<< endl << "Average results" << endl;
+		ofs_result_txt				<< endl << "Average results" << endl;
+		cout 						<< "[none] blocked:		" << blkdItNone/ITERATION << endl;
+		ofs_result_txt 				<< "[none] blocked:		" << blkdItNone/ITERATION << endl;
+		ofs_result_csv 				<< blkdItNone/ITERATION << ",";
+		cout 						<< "[none] confidence:	" << stdItNone << endl << endl;
+		ofs_result_txt 				<< "[none] confidence:	" << stdItNone << endl << endl;
+		cout 						<< "[algo_conv] blocked:		" << blkdItConv/ITERATION << endl;
+		ofs_result_txt 				<< "[algo_conv] blocked:		" << blkdItConv/ITERATION << endl;
+		ofs_result_csv 				<< blkdItConv/ITERATION << ",";
+		cout 						<< "[algo_conv] confidence:	" << stdItConv << endl << endl;
+		ofs_result_txt 				<< "[algo_conv] confidence:	" << stdItConv << endl << endl;
+		cout 						<< "[algo_prop] blocked:		" << blkdItProp/ITERATION << endl;
+		ofs_result_txt 				<< "[algo_prop] blocked:		" << blkdItProp/ITERATION << endl;
+		ofs_result_csv 				<< blkdItProp/ITERATION << ",";
+		cout 						<< "[algo_prop] confidence:	" << stdItProp << endl << endl;
+		ofs_result_txt 				<< "[algo_prop] confidence:	" << stdItProp << endl << endl;
+		cout 						<< "[ilp_conv] blocked:		" << blkdItConvIlp/ITERATION << endl;
+		ofs_result_txt 				<< "[ilp_conv] blocked:		" << blkdItConvIlp/ITERATION << endl;
+		ofs_result_csv 				<< blkdItConvIlp/ITERATION << ",";
+		cout 						<< "[ilp_conv] confidence:	" << stdItConvIlp << endl << endl;
+		ofs_result_txt 				<< "[ilp_conv] confidence:	" << stdItConvIlp << endl << endl;
+		cout 						<< "[ilp_prop] blocked:		" << blkdItPropIlp/ITERATION << endl;
+		ofs_result_txt 				<< "[ilp_prop] blocked:		" << blkdItPropIlp/ITERATION << endl;
+		ofs_result_csv 				<< blkdItPropIlp/ITERATION << endl;
+		cout 						<< "[ilp_prop] confidence:	" << stdItPropIlp << endl << endl;
+		ofs_result_txt 				<< "[ilp_prop] confidence:	" << stdItPropIlp << endl << endl;
+		cout 						<< "[algo_conv] toggle:		" << togOpItConv/ITERATION << endl;
+		ofs_result_txt 				<< "[algo_conv] toggle:		" << togOpItConv/ITERATION << endl;
+		ofs_result_operation_csv	<< togOpItConv/ITERATION << ",";
+		cout 						<< "[algo_conv] reallocate:	" << realOpItConv/ITERATION << endl << endl;
+		ofs_result_txt 				<< "[algo_conv] reallocate:	" << realOpItConv/ITERATION << endl << endl;
+		ofs_result_operation_csv	<< realOpItConv/ITERATION << ",";
+		cout 						<< "[algo_prop] toggle:		" << togOpItProp/ITERATION << endl;
+		ofs_result_txt 				<< "[algo_prop] toggle:		" << togOpItProp/ITERATION << endl;
+		ofs_result_operation_csv	<< togOpItProp/ITERATION << ",";
+		cout 						<< "[algo_prop] reallocate:	" << realOpItProp/ITERATION << endl;
+		ofs_result_txt 				<< "[algo_prop] reallocate:	" << realOpItProp/ITERATION << endl;
+		ofs_result_operation_csv	<< realOpItProp/ITERATION << ",";
+		cout 						<< "[algo_prop] reroute:	" << rerouteOpItProp/ITERATION << endl << endl;
+		ofs_result_txt 				<< "[algo_prop] reroute:	" << rerouteOpItProp/ITERATION << endl << endl;
+		ofs_result_operation_csv	<< rerouteOpItProp/ITERATION << endl;
 	}
 	ofs_result_txt.close();
 
