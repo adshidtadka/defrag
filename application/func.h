@@ -62,8 +62,8 @@ int lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM];
 int isactive[REQ_NUM];
 double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
 int ind_prim[REQ_NUM], ind_back[REQ_NUM];
-bool lpState[REQ_NUM];
-bool bpState[REQ_NUM];
+bool state_prim[REQ_NUM];
+bool state_back[REQ_NUM];
 unsigned seed1 = SEED_1;
 unsigned seed2 = SEED_2;
 int blocked;
@@ -257,7 +257,7 @@ int writeGivenParamConv(int load)
 		lp = cur->x;
 		cur = cur->next;
 		n = lp_size[lp];
-		k = lpState[lp];
+		k = state_prim[lp];
 		if (k)
 		{
 			f0 = ind_prim[lp];
@@ -331,7 +331,7 @@ int writeGivenParamProp(int load)
 		lp = cur->x;
 		cur = cur->next;
 		n = lp_size[lp];
-		k = lpState[lp];
+		k = state_prim[lp];
 		if (k)
 		{
 			f0 = ind_prim[lp];
@@ -634,8 +634,8 @@ int startAlgo()
 				}else{
 					int conf = 0;
 					while(cur2 != NULL){
-						if(lpState[cur2->x]){
-							if(lpState[lp]){
+						if(state_prim[cur2->x]){
+							if(state_prim[lp]){
 								for(i=0;i<LINK_NUM;i++){
 									if(path_prim[i][cur2->x] && path_prim[i][lp]) conf =1;
 								}
@@ -646,7 +646,7 @@ int startAlgo()
 
 							}
 						}else{
-							if(lpState[lp]){
+							if(state_prim[lp]){
 								for(i=0;i<LINK_NUM;i++){
 									if(path_back[i][cur2->x] && path_prim[i][lp]) conf =1;
 								}
@@ -670,7 +670,7 @@ int startAlgo()
 			int realcheck = realOp;
 			while ( cur2 != NULL ){
 				lp = cur2->x;
-				b =  lpState[lp];
+				b =  state_prim[lp];
 				cur2 = cur2->next;
 				if(b){
 					int path_prev[LINK_NUM];
@@ -725,9 +725,9 @@ int startAlgo()
 					if(a != ind_prim[lp]){
 						realOp++;
 						realMov++;
-						if(lpState[lp]){
-							bpState[lp] = lpState[lp];
-							lpState[lp] = !bpState[lp];
+						if(state_prim[lp]){
+							state_back[lp] = state_prim[lp];
+							state_prim[lp] = !state_back[lp];
 							togOp++;
 						}
 					}
@@ -786,9 +786,9 @@ int startAlgo()
 					if(a != ind_back[lp]){
 						realOp++;
 						realMov++;
-						if(bpState[lp]){
-							bpState[lp] = lpState[lp];
-							lpState[lp] = !bpState[lp];
+						if(state_back[lp]){
+							state_back[lp] = state_prim[lp];
+							state_prim[lp] = !state_back[lp];
 							togOp++;
 						}
 					}
@@ -898,9 +898,9 @@ int retuneDown()
 				}
 				if(a != ind_prim[i]){
 					realOp++;
-					if(lpState[i]){
-						bpState[i] = lpState[i];
-						lpState[i] = !bpState[i];
+					if(state_prim[i]){
+						state_back[i] = state_prim[i];
+						state_prim[i] = !state_back[i];
 						togOp++;
 					}
 					mov_time++;
@@ -959,9 +959,9 @@ int retuneDown()
 				}
 				if(a != ind_back[i]){
 					realOp++;
-					if(bpState[i]){		// Actual primary
-						bpState[i] = lpState[i];
-						lpState[i] = !bpState[i];
+					if(state_back[i]){		// Actual primary
+						state_back[i] = state_prim[i];
+						state_prim[i] = !state_back[i];
 						togOp++;
 					}
 					mov_time++;
@@ -1321,7 +1321,7 @@ int reInitialize(void)
 
 	for(int i=0;i<REQ_NUM;i++){
 		ind_prim[i]=0; isactive[i]=0;
-		lpState[i]=1; bpState[i]=0;
+		state_prim[i]=1; state_back[i]=0;
 	}
 
 	while(!eventQueue.empty()){
