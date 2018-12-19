@@ -64,6 +64,8 @@ double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
 int ind_prim[REQ_NUM], ind_back[REQ_NUM];
 bool state_prim[REQ_NUM];
 bool state_back[REQ_NUM];
+int limit_hop_prim[REQ_NUM];
+int limit_hop_back[REQ_NUM];
 unsigned seed1 = SEED_1;
 unsigned seed2 = SEED_2;
 int blocked;
@@ -1322,6 +1324,7 @@ int reInitialize(void)
 	for(int i=0;i<REQ_NUM;i++){
 		ind_prim[i]=0; isactive[i]=0;
 		state_prim[i]=1; state_back[i]=0;
+		limit_hop_prim[i] = 0; limit_hop_back[i] = 0;
 	}
 
 	while(!eventQueue.empty()){
@@ -1665,18 +1668,22 @@ int searchRoutePrim(int s, int lp, bool isSetUp)
 		}
 	}
 
-	if (!isSetUp)
-	{
-		a = dest[lp];
-		b = Nodes[a].from;
+	int dest_node = dest[lp];
+	int from_node = Nodes[dest_node].from;
+	int hop_counter = 0;
+	while(from_node < NODE_NUM && dest_node != from_node) {
+	    dest_node = from_node;
+	    from_node = Nodes[dest_node].from;
+	    hop_counter++;
+	}
 
-		int hop_counter = 0;
-		while (b < NODE_NUM && a != b) {
-			a = b;
-			b = Nodes[a].from;
-			hop_counter++;
-		}
-		if (hop_counter > MAX_HOP_NUM)
+	if (isSetUp)
+	{
+		limit_hop_prim[lp] = hop_counter + ADDITIONAL_HOP;
+	} 
+	else 
+	{
+		if (hop_counter > limit_hop_prim[lp])
 		{
 			return 0;
 		}
@@ -1763,18 +1770,22 @@ int searchRouteBack(int s, int lp, bool isSetUp)
 		}
 	}
 
-	if (!isSetUp)
-	{
-		a = dest[lp];
-		b = Nodes[a].from;
+	int dest_node = dest[lp];
+	int from_node = Nodes[dest_node].from;
+	int hop_counter = 0;
+	while(from_node < NODE_NUM && dest_node != from_node) {
+	    dest_node = from_node;
+	    from_node = Nodes[dest_node].from;
+	    hop_counter++;
+	}
 
-		int hop_counter = 0;
-		while (b < NODE_NUM && a != b) {
-			a = b;
-			b = Nodes[a].from;
-			hop_counter++;
-		}
-		if (hop_counter > MAX_HOP_NUM)
+	if (isSetUp)
+	{
+		limit_hop_back[lp] = hop_counter + ADDITIONAL_HOP;
+	} 
+	else 
+	{
+		if (hop_counter > limit_hop_back[lp])
 		{
 			return 0;
 		}

@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 	ofs_result_txt	<< "DEFRAG_INTERVAL 	= " << DEFRAG_INTERVAL << endl;
 	ofs_result_txt	<< "DEFRAG_TOTAL_TIME_MAX 	= " << DEFRAG_TOTAL_TIME_MAX << endl;
 	ofs_result_txt	<< "PROCESSING_TIME 		= " << PROCESSING_TIME << endl;
-	ofs_result_txt	<< "MAX_HOP_NUM 		= " << MAX_HOP_NUM << endl;
+	ofs_result_txt	<< "ADDITIONAL_HOP 		= " << ADDITIONAL_HOP << endl;
 	cout 			<< "-------- Simulation start --------" << endl;
 	cout  			<< "NODE_NUM 		= " << NODE_NUM << endl;
 	cout 			<< "LINK_NUM 		= " << LINK_NUM << endl;
@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 	cout 			<< "DEFRAG_INTERVAL 	= " << DEFRAG_INTERVAL << endl;
 	cout 			<< "DEFRAG_TOTAL_TIME_MAX	= " << DEFRAG_TOTAL_TIME_MAX << endl;
 	cout 			<< "PROCESSING_TIME 		= " << PROCESSING_TIME << endl;
-	cout 			<< "MAX_HOP_NUM 		= " << MAX_HOP_NUM << endl;
+	cout 			<< "ADDITIONAL_HOP 		= " << ADDITIONAL_HOP << endl;
 
 	int load = LOAD_START;
 	for(int l = 0; l < LOAD_REPEAT_NUM; l++)
