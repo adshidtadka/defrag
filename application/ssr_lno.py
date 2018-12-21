@@ -94,6 +94,7 @@ def setupproblem(c):
     c.set_error_stream(None)
     c.set_warning_stream(None)
     c.set_results_stream(None)
+    
     c.objective.set_sense(c.objective.sense.minimize)
 
     # assignment variables: x_p_f_t
