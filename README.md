@@ -12,8 +12,12 @@
 # download simulator
 git clone https://github.com/adshidtadka/defragmentation
 
+# create result folder
+cd defragmentation
+mkdir result
+
 # move to apprecation folder
-cd defragmentation/application
+cd application
 
 # put parameter
 vim params.h
