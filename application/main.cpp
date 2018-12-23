@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 	ofs_result_txt	<< "REQ_SIZE_MAX 		= " << REQ_SIZE_MAX << endl;
 	ofs_result_txt	<< "DEFRAG_INTERVAL 	= " << DEFRAG_INTERVAL << endl;
 	ofs_result_txt	<< "DEFRAG_TOTAL_TIME_MAX 	= " << DEFRAG_TOTAL_TIME_MAX << endl;
-	ofs_result_txt	<< "PROCESSING_TIME 		= " << PROCESSING_TIME << endl;
+	ofs_result_txt	<< "PROCESSING_TIME 	= " << PROCESSING_TIME << endl;
 	ofs_result_txt	<< "ADDITIONAL_HOP 		= " << ADDITIONAL_HOP << endl;
 	cout 			<< "-------- Simulation start --------" << endl;
 	cout  			<< "NODE_NUM 		= " << NODE_NUM << endl;
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 	cout 			<< "REQ_SIZE_MAX 		= " << REQ_SIZE_MAX << endl;
 	cout 			<< "DEFRAG_INTERVAL 	= " << DEFRAG_INTERVAL << endl;
 	cout 			<< "DEFRAG_TOTAL_TIME_MAX	= " << DEFRAG_TOTAL_TIME_MAX << endl;
-	cout 			<< "PROCESSING_TIME 		= " << PROCESSING_TIME << endl;
+	cout 			<< "PROCESSING_TIME 	= " << PROCESSING_TIME << endl;
 	cout 			<< "ADDITIONAL_HOP 		= " << ADDITIONAL_HOP << endl;
 
 	int load = LOAD_START;
