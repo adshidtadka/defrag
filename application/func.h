@@ -52,6 +52,8 @@ double ave(double, int);
 double var(double, int);
 double standard(double, int);
 double finTime();
+int isAvailablePrim(int, int, int);
+int isAvailableBack(int, int, int);
 
 bool path_prim[LINK_NUM][REQ_NUM];
 bool path_back[LINK_NUM][REQ_NUM];
@@ -1575,13 +1577,17 @@ int checkExactPrimProp(int lp, bool isSetUp)
 		isGetRoot = 0;
 		isGetRoot = searchRoutePrim(i, lp, isSetUp);
 		if(isGetRoot){
-			isGetRoot = 0;
-			isGetRoot = searchRoutePrim(i+1, lp, isSetUp);
-			if(!isGetRoot){
-				// cout << "return i = " << i << endl;
+			// confirm non-availability
+			if (i + 1 + b == CAPASITY)
+			{
 				return i;
-			}else{
-				i++;//無駄に探さない
+			} 
+			else 
+			{
+				if (isAvailablePrim(i + 1 + b, 1, lp) == 0)
+				{
+					return i;
+				}
 			}
 		}
 	}
@@ -1590,26 +1596,64 @@ int checkExactPrimProp(int lp, bool isSetUp)
 
 int checkExactBackProp(int lp, bool isSetUp)
 {
-	int i,j,p;
-	int b= lp_size[lp];
-	int lp1, index1, s1, d1;
+	int b = lp_size[lp];
 	bool isGetRoot;
 
-	for(i=0;i<CAPASITY-b;i++){
+	for(int i = 0; i < CAPASITY - b; i++){
 		isGetRoot = 0;
 		isGetRoot = searchRouteBack(i, lp, isSetUp);
 		if(isGetRoot){
-			isGetRoot = 0;
-			isGetRoot = searchRouteBack(i+1, lp, isSetUp);
-			if(!isGetRoot){
-				// cout << "return i = " << i << endl;
+			// confirm non-availability
+			if (i + 1 + b == CAPASITY)
+			{
 				return i;
-			}else{
-				i++;//無駄に探さない
+			} 
+			else 
+			{
+				if (isAvailableBack(i + 1 + b, 1, lp) == 0)
+				{
+					return i;
+				}
 			}
 		}
 	}
 	return CAPASITY;
+}
+
+int isAvailablePrim(int index, int times, int lp) {
+
+	for (int i = index; i < index + times; ++i)
+	{
+		for (int j = 0; j < LINK_NUM; ++j)
+		{
+			if (path_prim[j][i])
+			{
+				if (spec[i][j])
+				{
+					return 0;
+				}
+			}
+		}
+	}
+	return 1;
+}
+
+int isAvailableBack(int index, int times, int lp) {
+
+	for (int i = index; i < index + times; ++i)
+	{
+		for (int j = 0; j < LINK_NUM; ++j)
+		{
+			if (path_back[j][i])
+			{
+				if (spec[i][j])
+				{
+					return 0;
+				}
+			}
+		}
+	}
+	return 1;
 }
 
 int searchRoutePrim(int s, int lp, bool isSetUp)
