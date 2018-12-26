@@ -1516,22 +1516,32 @@ int asignPrim(int lp, int index)
 int checkExactPrimConv(int lp)
 {
 	int b= lp_size[lp];
-	int nonalign = 0, consecSB =0;
+	int consecSB =0;
 
-	for(int i=0;i<CAPASITY;i++){
-		nonalign = 0;
-		for(int j=0;j<LINK_NUM;j++){
-			if(path_prim[j][lp]){
-				if(spec[i][j]) nonalign =1;
+	for(int  i = 0; i < CAPASITY; i++)
+	{
+		
+		if (isAvailablePrim(i, 1, lp))
+		{
+			 consecSB++;
+		} 
+		else 
+		{
+			if (consecSB == b){
+				 return i-b;	
+			}
+			else
+			{
+				consecSB = 0;
 			}
 		}
-		if(nonalign==0) consecSB++;
-		if(nonalign){
-			if(consecSB == b) return i-b;
-			consecSB = 0;
-		}
-		if(i==CAPASITY-1){
-			if(consecSB == b) return i-b+1;
+
+		if (i == CAPASITY - 1)
+		{
+			if (consecSB == b)
+			{
+				 return i - b + 1;	
+			}
 			consecSB = 0;
 		}
 	}
@@ -1540,26 +1550,33 @@ int checkExactPrimConv(int lp)
 
 int checkExactBackConv(int lp)
 {
-	int b = lp_size[lp];
-	int nonalign = 0, consecSB =0;
+	int b= lp_size[lp];
+	int consecSB =0;
 
-	for(int i = 0; i < CAPASITY; i++)
+	for(int  i = 0; i < CAPASITY; i++)
 	{
-		nonalign = 0;
-		for(int j = 0; j < LINK_NUM; j++)
+		
+		if (isAvailableBack(i, 1, lp))
 		{
-			if (path_back[j][lp]){
-				if(spec[i][j]) nonalign =1;
+			 consecSB++;
+		} 
+		else 
+		{
+			if (consecSB == b){
+				 return i-b;	
+			}
+			else
+			{
+				consecSB = 0;
 			}
 		}
-		if(nonalign==0) consecSB++;
-		if(nonalign)
+
+		if (i == CAPASITY - 1)
 		{
-			if(consecSB == b) return i-b;
-			consecSB = 0;
-		}
-		if(i==CAPASITY-1){
-			if(consecSB == b) return i-b+1;
+			if (consecSB == b)
+			{
+				 return i - b + 1;	
+			}
 			consecSB = 0;
 		}
 	}
@@ -1626,7 +1643,7 @@ int isAvailablePrim(int index, int times, int lp) {
 	{
 		for (int j = 0; j < LINK_NUM; ++j)
 		{
-			if (path_prim[j][i] && spec[i][j])
+			if (path_prim[j][lp] && spec[i][j])
 			{
 				return 0;
 			}
@@ -1641,7 +1658,7 @@ int isAvailableBack(int index, int times, int lp) {
 	{
 		for (int j = 0; j < LINK_NUM; ++j)
 		{
-			if (path_back[j][i] && spec[i][j])
+			if (path_back[j][lp] && spec[i][j])
 			{
 				return 0;
 			}
