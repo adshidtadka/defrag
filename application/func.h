@@ -1626,12 +1626,9 @@ int isAvailablePrim(int index, int times, int lp) {
 	{
 		for (int j = 0; j < LINK_NUM; ++j)
 		{
-			if (path_prim[j][i])
+			if (path_prim[j][i] && spec[i][j])
 			{
-				if (spec[i][j])
-				{
-					return 0;
-				}
+				return 0;
 			}
 		}
 	}
@@ -1644,12 +1641,9 @@ int isAvailableBack(int index, int times, int lp) {
 	{
 		for (int j = 0; j < LINK_NUM; ++j)
 		{
-			if (path_back[j][i])
+			if (path_back[j][i] && spec[i][j])
 			{
-				if (spec[i][j])
-				{
-					return 0;
-				}
+				return 0;
 			}
 		}
 	}
