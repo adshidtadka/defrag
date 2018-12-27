@@ -1212,46 +1212,6 @@ int removeLP1_1(int lp)
 	return 0;
 }
 
-int checkFirstBackConv(int lp)
-{
-	bool asigned = 0, nofit = 0;
-	int b= lp_size[lp];
-	int index = 0;
-
-	while(index <= (CAPASITY-b) && !asigned)
-	{
-		if (!b) break;
-		int i;
-		for (i = 0; i < LINK_NUM; i++)
-		{
-			if (spec[index][i] && path_back[i][lp])
-			{
-				index++;
-				break;
-			} else {
-				nofit = 0;
-				for (int j = 0; j < b; j++)
-				{
-					if (spec[index+j][i] && path_back[i][lp])
-					{
-						index += j;
-						nofit = 1;
-						break;
-					}
-				}
-			}
-			if (nofit) break;
-		}
-		if (i == LINK_NUM && !nofit){
-			asigned= 1;
-			return index;
-		}
-	}
-	if(!asigned)
-		return INF;
-	return 0;
-}
-
 int checkFirstBackProp(int lp, bool isSetUp)
 {
 	int b=0, index=0;
@@ -1414,40 +1374,32 @@ int genDemands(int load)
 
 int checkFirstPrimConv(int lp)
 {
-	bool asigned = 0, nofit = 0;
-	int b = lp_size[lp];
-	int index = 0;
-
-	while (index <= (CAPASITY-b) && !asigned)
+	for (int i = 0; i < CAPASITY - lp_size[lp]; ++i)
 	{
-		if (!b) break;
-		int i;
-		for (i = 0; i < LINK_NUM; i++)
+		if (isAvailablePrim(i, 1, lp))
 		{
-			if (spec[index][i] && path_prim[i][lp]){
-				index++;
-				break;
-			} else {
-				nofit = 0;
-				for(int j = 0; j < b; j++)
-				{
-					if(spec[index+j][i] && path_prim[i][lp]){
-						index += j;
-						nofit = 1;
-						break;
-					}
-				}
+			if (isAvailablePrim(i + 1, lp_size[lp] - 1, lp))
+			{
+				return i;
 			}
-			if (nofit) break;
-		}
-		if (i == LINK_NUM && !nofit){
-			asigned= 1;
-			return index;
 		}
 	}
-	if(!asigned)
-		return INF;
-	return 0;
+	return INF;
+}
+
+int checkFirstBackConv(int lp)
+{
+	for (int i = 0; i < CAPASITY - lp_size[lp]; ++i)
+	{
+		if (isAvailableBack(i, 1, lp))
+		{
+			if (isAvailableBack(i + 1, lp_size[lp] - 1, lp))
+			{
+				return i;
+			}
+		}
+	}
+	return INF;
 }
 
 int checkFirstPrimProp(int lp, bool isSetUp)
@@ -1520,7 +1472,6 @@ int checkExactPrimConv(int lp)
 
 	for(int  i = 0; i < CAPASITY; i++)
 	{
-		
 		if (isAvailablePrim(i, 1, lp))
 		{
 			 consecSB++;
