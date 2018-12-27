@@ -1376,50 +1376,26 @@ int checkFirstBackConv(int lp)
 
 int checkFirstPrimProp(int lp, bool isSetUp)
 {
-	bool asigned = 0;
-	bool isGetRoot = 0;
-	int b= lp_size[lp];
-	int index=0;
-
-	while(index <= (CAPASITY-b) && !asigned)
+	for (int i = 0; i < CAPASITY - lp_size[lp]; ++i)
 	{
-		if (!b) break;
-		isGetRoot = searchRoutePrim(index, lp, isSetUp);
-		if(isGetRoot){
-			asigned= 1;
-			return index;
-		} else {
-			index++;
+		if (searchRoutePrim(i, lp, isSetUp))
+		{
+			return i;
 		}
 	}
-	if(!asigned) return INF;
-	return 0;
+	return INF;
 }
 
 int checkFirstBackProp(int lp, bool isSetUp)
 {
-	int b=0, index=0;
-	int i,j,p;
-	bool asigned = 0, nofit = 0;
-	bool isGetRoot=0;
-
-	b= lp_size[lp];
-	index = 0;
-
-	while(index <= (CAPASITY-b) && !asigned)   		  //Checking all spectrum range
+	for (int i = 0; i < CAPASITY - lp_size[lp]; ++i)
 	{
-		if(!b) break;
-		isGetRoot = searchRouteBack(index, lp, isSetUp);
-		if(isGetRoot){
-			asigned= 1;
-			return index;
-		}else{
-			index++;
+		if (searchRouteBack(i, lp, isSetUp))
+		{
+			return i;
 		}
 	}
-	if(!asigned)
-		return INF;
-	return 0;
+	return INF;
 }
 
 int asignPrim(int lp, int index)
