@@ -474,6 +474,46 @@ double standard(double data[], int n) {
     return sqrt(var(data, n));                  // 標準偏差=分散の平方根
 }
 
+int genDemands(int load)
+{
+	double expired_num = 1/double(HOLDING_TIME);
+	double inter_arr = double(HOLDING_TIME)/load;
+
+	srand (seed2);
+
+	default_random_engine generator (seed1);
+	exponential_distribution<double> next_arr(1/inter_arr);
+	exponential_distribution<double> hold_time_gen(expired_num);
+	uniform_int_distribution<int> traff_dist(1, REQ_SIZE_MAX);
+
+	ofstream ofs_input;
+    ofs_input.open("./../result/input.txt", ios::out);
+	if(!ofs_input){
+		cout << "[error] cannot open input file"<< endl;
+		return 1;
+	}
+
+	ofs_input << "expired number per 1 sec and inter arrival time_slot_now:=" << expired_num <<", "<<  inter_arr << endl;
+	ofs_input << "lp number, source, destination, size, arrival time_slot_now, holding time_slot_now:=" << endl;
+
+	t_req_event[0] = 0;
+	for (int i = 0; i < REQ_NUM; ++i)
+	{
+		lp_size[i] = traff_dist(generator);
+		source[i] = rand() % NODE_NUM;
+		dest[i] = rand() % NODE_NUM;
+		while (source[i] == dest[i]) dest[i] = rand() % NODE_NUM;
+		t_hold_event[i] = hold_time_gen(generator);
+		t_exp_event[i] = t_req_event[i] + t_hold_event[i];
+		t_req_event[i+1] = t_req_event[i] + next_arr(generator);
+		ofs_input << i  << ": "<< source[i]  <<" " << dest[i]  <<" " << lp_size[i]  <<" " << t_req_event[i] <<" " << t_hold_event[i] << endl;
+	}
+
+	ofs_input << ":;"<< endl << endl;
+	ofs_input.close();
+	return 0;
+}
+
 int readResultConv()
 {
 	int i,j;
@@ -1159,14 +1199,12 @@ void delFromList2(int a, int n, int st)
 
 int setupPath(int lp)
 {
-	int a, b;
-
-	a = checkFirstPrimProp(lp, true);
+	int a = checkFirstPrimProp(lp, true);
 	if(a == INF){
 		blocked++;
 		return 0;
 	}
-	b = checkFirstBackProp(lp, true);
+	int b = checkFirstBackProp(lp, true);
 	if(b == INF){
 		blocked++;
 		return 0;
@@ -1209,32 +1247,6 @@ int removeLP1_1(int lp)
 		}
 		isactive[lp] = 0;
 	}
-	return 0;
-}
-
-int checkFirstBackProp(int lp, bool isSetUp)
-{
-	int b=0, index=0;
-	int i,j,p;
-	bool asigned = 0, nofit = 0;
-	bool isGetRoot=0;
-
-	b= lp_size[lp];
-	index = 0;
-
-	while(index <= (CAPASITY-b) && !asigned)   		  //Checking all spectrum range
-	{
-		if(!b) break;
-		isGetRoot = searchRouteBack(index, lp, isSetUp);
-		if(isGetRoot){
-			asigned= 1;
-			return index;
-		}else{
-			index++;
-		}
-	}
-	if(!asigned)
-		return INF;
 	return 0;
 }
 
@@ -1332,46 +1344,6 @@ int initializeEvent(void)
 	return 0;
 }
 
-int genDemands(int load)
-{
-	double expired_num = 1/double(HOLDING_TIME);
-	double inter_arr = double(HOLDING_TIME)/load;
-
-	srand (seed2);
-
-	default_random_engine generator (seed1);
-	exponential_distribution<double> next_arr(1/inter_arr);
-	exponential_distribution<double> hold_time_gen(expired_num);
-	uniform_int_distribution<int> traff_dist(1, REQ_SIZE_MAX);
-
-	ofstream ofs_input;
-    ofs_input.open("./../result/input.txt", ios::out);
-	if(!ofs_input){
-		cout << "[error] cannot open input file"<< endl;
-		return 1;
-	}
-
-	ofs_input << "expired number per 1 sec and inter arrival time_slot_now:=" << expired_num <<", "<<  inter_arr << endl;
-	ofs_input << "lp number, source, destination, size, arrival time_slot_now, holding time_slot_now:=" << endl;
-
-	t_req_event[0] = 0;
-	for (int i = 0; i < REQ_NUM; ++i)
-	{
-		lp_size[i] = traff_dist(generator);
-		source[i] = rand() % NODE_NUM;
-		dest[i] = rand() % NODE_NUM;
-		while (source[i] == dest[i]) dest[i] = rand() % NODE_NUM;
-		t_hold_event[i] = hold_time_gen(generator);
-		t_exp_event[i] = t_req_event[i] + t_hold_event[i];
-		t_req_event[i+1] = t_req_event[i] + next_arr(generator);
-		ofs_input << i  << ": "<< source[i]  <<" " << dest[i]  <<" " << lp_size[i]  <<" " << t_req_event[i] <<" " << t_hold_event[i] << endl;
-	}
-
-	ofs_input << ":;"<< endl << endl;
-	ofs_input.close();
-	return 0;
-}
-
 int checkFirstPrimConv(int lp)
 {
 	for (int i = 0; i < CAPASITY - lp_size[lp]; ++i)
@@ -1424,28 +1396,29 @@ int checkFirstPrimProp(int lp, bool isSetUp)
 	return 0;
 }
 
-
-int printSpec()
+int checkFirstBackProp(int lp, bool isSetUp)
 {
-	int i,j;
-	cout << "1:low index " << CAPASITY - 1 << endl;
-	cout << " Spectrum :=" << endl;
-	cout << "  l :";
-	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
-	cout << endl;
-	for (i=CAPASITY-1; i>=0; i--){
-		if(i / 10 < 1) cout << " ";
-		if(i / 100 <1) cout << " ";
-		cout << i << " :";
-		for(j=0;j<LINK_NUM;j++){
-			cout << "  " << spec[i][j];
+	int b=0, index=0;
+	int i,j,p;
+	bool asigned = 0, nofit = 0;
+	bool isGetRoot=0;
+
+	b= lp_size[lp];
+	index = 0;
+
+	while(index <= (CAPASITY-b) && !asigned)   		  //Checking all spectrum range
+	{
+		if(!b) break;
+		isGetRoot = searchRouteBack(index, lp, isSetUp);
+		if(isGetRoot){
+			asigned= 1;
+			return index;
+		}else{
+			index++;
 		}
-		cout << endl;
 	}
-	cout << "  l :";
-	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
-	cout << endl;
-	cout << endl;
+	if(!asigned)
+		return INF;
 	return 0;
 }
 
@@ -1848,4 +1821,26 @@ void delLp(int lp, int p)
 	}
 }
 
-
+int printSpec()
+{
+	int i,j;
+	cout << "1:low index " << CAPASITY - 1 << endl;
+	cout << " Spectrum :=" << endl;
+	cout << "  l :";
+	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
+	cout << endl;
+	for (i=CAPASITY-1; i>=0; i--){
+		if(i / 10 < 1) cout << " ";
+		if(i / 100 <1) cout << " ";
+		cout << i << " :";
+		for(j=0;j<LINK_NUM;j++){
+			cout << "  " << spec[i][j];
+		}
+		cout << endl;
+	}
+	cout << "  l :";
+	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
+	cout << endl;
+	cout << endl;
+	return 0;
+}
