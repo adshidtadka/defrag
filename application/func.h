@@ -52,6 +52,8 @@ double ave(double, int);
 double var(double, int);
 double standard(double, int);
 double finTime();
+int isAvailablePrim(int, int, int);
+int isAvailableBack(int, int, int);
 
 bool path_prim[LINK_NUM][REQ_NUM];
 bool path_back[LINK_NUM][REQ_NUM];
@@ -470,6 +472,46 @@ double var(double data[], int n) {
 // 標準偏差の計算
 double standard(double data[], int n) {
     return sqrt(var(data, n));                  // 標準偏差=分散の平方根
+}
+
+int genDemands(int load)
+{
+	double expired_num = 1/double(HOLDING_TIME);
+	double inter_arr = double(HOLDING_TIME)/load;
+
+	srand (seed2);
+
+	default_random_engine generator (seed1);
+	exponential_distribution<double> next_arr(1/inter_arr);
+	exponential_distribution<double> hold_time_gen(expired_num);
+	uniform_int_distribution<int> traff_dist(1, REQ_SIZE_MAX);
+
+	ofstream ofs_input;
+    ofs_input.open("./../result/input.txt", ios::out);
+	if(!ofs_input){
+		cout << "[error] cannot open input file"<< endl;
+		return 1;
+	}
+
+	ofs_input << "expired number per 1 sec and inter arrival time_slot_now:=" << expired_num <<", "<<  inter_arr << endl;
+	ofs_input << "lp number, source, destination, size, arrival time_slot_now, holding time_slot_now:=" << endl;
+
+	t_req_event[0] = 0;
+	for (int i = 0; i < REQ_NUM; ++i)
+	{
+		lp_size[i] = traff_dist(generator);
+		source[i] = rand() % NODE_NUM;
+		dest[i] = rand() % NODE_NUM;
+		while (source[i] == dest[i]) dest[i] = rand() % NODE_NUM;
+		t_hold_event[i] = hold_time_gen(generator);
+		t_exp_event[i] = t_req_event[i] + t_hold_event[i];
+		t_req_event[i+1] = t_req_event[i] + next_arr(generator);
+		ofs_input << i  << ": "<< source[i]  <<" " << dest[i]  <<" " << lp_size[i]  <<" " << t_req_event[i] <<" " << t_hold_event[i] << endl;
+	}
+
+	ofs_input << ":;"<< endl << endl;
+	ofs_input.close();
+	return 0;
 }
 
 int readResultConv()
@@ -1157,14 +1199,12 @@ void delFromList2(int a, int n, int st)
 
 int setupPath(int lp)
 {
-	int a, b;
-
-	a = checkFirstPrimProp(lp, true);
+	int a = checkFirstPrimProp(lp, true);
 	if(a == INF){
 		blocked++;
 		return 0;
 	}
-	b = checkFirstBackProp(lp, true);
+	int b = checkFirstBackProp(lp, true);
 	if(b == INF){
 		blocked++;
 		return 0;
@@ -1207,72 +1247,6 @@ int removeLP1_1(int lp)
 		}
 		isactive[lp] = 0;
 	}
-	return 0;
-}
-
-int checkFirstBackConv(int lp)
-{
-	bool asigned = 0, nofit = 0;
-	int b= lp_size[lp];
-	int index = 0;
-
-	while(index <= (CAPASITY-b) && !asigned)
-	{
-		if (!b) break;
-		int i;
-		for (i = 0; i < LINK_NUM; i++)
-		{
-			if (spec[index][i] && path_back[i][lp])
-			{
-				index++;
-				break;
-			} else {
-				nofit = 0;
-				for (int j = 0; j < b; j++)
-				{
-					if (spec[index+j][i] && path_back[i][lp])
-					{
-						index += j;
-						nofit = 1;
-						break;
-					}
-				}
-			}
-			if (nofit) break;
-		}
-		if (i == LINK_NUM && !nofit){
-			asigned= 1;
-			return index;
-		}
-	}
-	if(!asigned)
-		return INF;
-	return 0;
-}
-
-int checkFirstBackProp(int lp, bool isSetUp)
-{
-	int b=0, index=0;
-	int i,j,p;
-	bool asigned = 0, nofit = 0;
-	bool isGetRoot=0;
-
-	b= lp_size[lp];
-	index = 0;
-
-	while(index <= (CAPASITY-b) && !asigned)   		  //Checking all spectrum range
-	{
-		if(!b) break;
-		isGetRoot = searchRouteBack(index, lp, isSetUp);
-		if(isGetRoot){
-			asigned= 1;
-			return index;
-		}else{
-			index++;
-		}
-	}
-	if(!asigned)
-		return INF;
 	return 0;
 }
 
@@ -1370,129 +1344,58 @@ int initializeEvent(void)
 	return 0;
 }
 
-int genDemands(int load)
-{
-	double expired_num = 1/double(HOLDING_TIME);
-	double inter_arr = double(HOLDING_TIME)/load;
-
-	srand (seed2);
-
-	default_random_engine generator (seed1);
-	exponential_distribution<double> next_arr(1/inter_arr);
-	exponential_distribution<double> hold_time_gen(expired_num);
-	uniform_int_distribution<int> traff_dist(1, REQ_SIZE_MAX);
-
-	ofstream ofs_input;
-    ofs_input.open("./../result/input.txt", ios::out);
-	if(!ofs_input){
-		cout << "[error] cannot open input file"<< endl;
-		return 1;
-	}
-
-	ofs_input << "expired number per 1 sec and inter arrival time_slot_now:=" << expired_num <<", "<<  inter_arr << endl;
-	ofs_input << "lp number, source, destination, size, arrival time_slot_now, holding time_slot_now:=" << endl;
-
-	t_req_event[0] = 0;
-	for (int i = 0; i < REQ_NUM; ++i)
-	{
-		lp_size[i] = traff_dist(generator);
-		source[i] = rand() % NODE_NUM;
-		dest[i] = rand() % NODE_NUM;
-		while (source[i] == dest[i]) dest[i] = rand() % NODE_NUM;
-		t_hold_event[i] = hold_time_gen(generator);
-		t_exp_event[i] = t_req_event[i] + t_hold_event[i];
-		t_req_event[i+1] = t_req_event[i] + next_arr(generator);
-		ofs_input << i  << ": "<< source[i]  <<" " << dest[i]  <<" " << lp_size[i]  <<" " << t_req_event[i] <<" " << t_hold_event[i] << endl;
-	}
-
-	ofs_input << ":;"<< endl << endl;
-	ofs_input.close();
-	return 0;
-}
-
 int checkFirstPrimConv(int lp)
 {
-	bool asigned = 0, nofit = 0;
-	int b = lp_size[lp];
-	int index = 0;
-
-	while (index <= (CAPASITY-b) && !asigned)
+	for (int i = 0; i < CAPASITY - lp_size[lp]; ++i)
 	{
-		if (!b) break;
-		int i;
-		for (i = 0; i < LINK_NUM; i++)
+		if (isAvailablePrim(i, 1, lp))
 		{
-			if (spec[index][i] && path_prim[i][lp]){
-				index++;
-				break;
-			} else {
-				nofit = 0;
-				for(int j = 0; j < b; j++)
-				{
-					if(spec[index+j][i] && path_prim[i][lp]){
-						index += j;
-						nofit = 1;
-						break;
-					}
-				}
+			if (isAvailablePrim(i + 1, lp_size[lp] - 1, lp))
+			{
+				return i;
 			}
-			if (nofit) break;
-		}
-		if (i == LINK_NUM && !nofit){
-			asigned= 1;
-			return index;
 		}
 	}
-	if(!asigned)
-		return INF;
-	return 0;
+	return INF;
+}
+
+int checkFirstBackConv(int lp)
+{
+	for (int i = 0; i < CAPASITY - lp_size[lp]; ++i)
+	{
+		if (isAvailableBack(i, 1, lp))
+		{
+			if (isAvailableBack(i + 1, lp_size[lp] - 1, lp))
+			{
+				return i;
+			}
+		}
+	}
+	return INF;
 }
 
 int checkFirstPrimProp(int lp, bool isSetUp)
 {
-	bool asigned = 0;
-	bool isGetRoot = 0;
-	int b= lp_size[lp];
-	int index=0;
-
-	while(index <= (CAPASITY-b) && !asigned)
+	for (int i = 0; i < CAPASITY - lp_size[lp]; ++i)
 	{
-		if (!b) break;
-		isGetRoot = searchRoutePrim(index, lp, isSetUp);
-		if(isGetRoot){
-			asigned= 1;
-			return index;
-		} else {
-			index++;
+		if (searchRoutePrim(i, lp, isSetUp))
+		{
+			return i;
 		}
 	}
-	if(!asigned) return INF;
-	return 0;
+	return INF;
 }
 
-
-int printSpec()
+int checkFirstBackProp(int lp, bool isSetUp)
 {
-	int i,j;
-	cout << "1:low index " << CAPASITY - 1 << endl;
-	cout << " Spectrum :=" << endl;
-	cout << "  l :";
-	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
-	cout << endl;
-	for (i=CAPASITY-1; i>=0; i--){
-		if(i / 10 < 1) cout << " ";
-		if(i / 100 <1) cout << " ";
-		cout << i << " :";
-		for(j=0;j<LINK_NUM;j++){
-			cout << "  " << spec[i][j];
+	for (int i = 0; i < CAPASITY - lp_size[lp]; ++i)
+	{
+		if (searchRouteBack(i, lp, isSetUp))
+		{
+			return i;
 		}
-		cout << endl;
 	}
-	cout << "  l :";
-	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
-	cout << endl;
-	cout << endl;
-	return 0;
+	return INF;
 }
 
 int asignPrim(int lp, int index)
@@ -1514,22 +1417,31 @@ int asignPrim(int lp, int index)
 int checkExactPrimConv(int lp)
 {
 	int b= lp_size[lp];
-	int nonalign = 0, consecSB =0;
+	int consecSB =0;
 
-	for(int i=0;i<CAPASITY;i++){
-		nonalign = 0;
-		for(int j=0;j<LINK_NUM;j++){
-			if(path_prim[j][lp]){
-				if(spec[i][j]) nonalign =1;
+	for(int  i = 0; i < CAPASITY; i++)
+	{
+		if (isAvailablePrim(i, 1, lp))
+		{
+			 consecSB++;
+		} 
+		else 
+		{
+			if (consecSB == b){
+				 return i-b;	
+			}
+			else
+			{
+				consecSB = 0;
 			}
 		}
-		if(nonalign==0) consecSB++;
-		if(nonalign){
-			if(consecSB == b) return i-b;
-			consecSB = 0;
-		}
-		if(i==CAPASITY-1){
-			if(consecSB == b) return i-b+1;
+
+		if (i == CAPASITY - 1)
+		{
+			if (consecSB == b)
+			{
+				 return i - b + 1;	
+			}
 			consecSB = 0;
 		}
 	}
@@ -1538,26 +1450,33 @@ int checkExactPrimConv(int lp)
 
 int checkExactBackConv(int lp)
 {
-	int b = lp_size[lp];
-	int nonalign = 0, consecSB =0;
+	int b= lp_size[lp];
+	int consecSB =0;
 
-	for(int i = 0; i < CAPASITY; i++)
+	for(int  i = 0; i < CAPASITY; i++)
 	{
-		nonalign = 0;
-		for(int j = 0; j < LINK_NUM; j++)
+		
+		if (isAvailableBack(i, 1, lp))
 		{
-			if (path_back[j][lp]){
-				if(spec[i][j]) nonalign =1;
+			 consecSB++;
+		} 
+		else 
+		{
+			if (consecSB == b){
+				 return i-b;	
+			}
+			else
+			{
+				consecSB = 0;
 			}
 		}
-		if(nonalign==0) consecSB++;
-		if(nonalign)
+
+		if (i == CAPASITY - 1)
 		{
-			if(consecSB == b) return i-b;
-			consecSB = 0;
-		}
-		if(i==CAPASITY-1){
-			if(consecSB == b) return i-b+1;
+			if (consecSB == b)
+			{
+				 return i - b + 1;	
+			}
 			consecSB = 0;
 		}
 	}
@@ -1575,13 +1494,17 @@ int checkExactPrimProp(int lp, bool isSetUp)
 		isGetRoot = 0;
 		isGetRoot = searchRoutePrim(i, lp, isSetUp);
 		if(isGetRoot){
-			isGetRoot = 0;
-			isGetRoot = searchRoutePrim(i+1, lp, isSetUp);
-			if(!isGetRoot){
-				// cout << "return i = " << i << endl;
+			// confirm non-availability
+			if (i + 1 + b == CAPASITY)
+			{
 				return i;
-			}else{
-				i++;//無駄に探さない
+			} 
+			else 
+			{
+				if (isAvailablePrim(i + 1 + b, 1, lp) == 0)
+				{
+					return i;
+				}
 			}
 		}
 	}
@@ -1590,26 +1513,58 @@ int checkExactPrimProp(int lp, bool isSetUp)
 
 int checkExactBackProp(int lp, bool isSetUp)
 {
-	int i,j,p;
-	int b= lp_size[lp];
-	int lp1, index1, s1, d1;
+	int b = lp_size[lp];
 	bool isGetRoot;
 
-	for(i=0;i<CAPASITY-b;i++){
+	for(int i = 0; i < CAPASITY - b; i++){
 		isGetRoot = 0;
 		isGetRoot = searchRouteBack(i, lp, isSetUp);
 		if(isGetRoot){
-			isGetRoot = 0;
-			isGetRoot = searchRouteBack(i+1, lp, isSetUp);
-			if(!isGetRoot){
-				// cout << "return i = " << i << endl;
+			// confirm non-availability
+			if (i + 1 + b == CAPASITY)
+			{
 				return i;
-			}else{
-				i++;//無駄に探さない
+			} 
+			else 
+			{
+				if (isAvailableBack(i + 1 + b, 1, lp) == 0)
+				{
+					return i;
+				}
 			}
 		}
 	}
 	return CAPASITY;
+}
+
+int isAvailablePrim(int index, int times, int lp) {
+
+	for (int i = index; i < index + times; ++i)
+	{
+		for (int j = 0; j < LINK_NUM; ++j)
+		{
+			if (path_prim[j][lp] && spec[i][j])
+			{
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+
+int isAvailableBack(int index, int times, int lp) {
+
+	for (int i = index; i < index + times; ++i)
+	{
+		for (int j = 0; j < LINK_NUM; ++j)
+		{
+			if (path_back[j][lp] && spec[i][j])
+			{
+				return 0;
+			}
+		}
+	}
+	return 1;
 }
 
 int searchRoutePrim(int s, int lp, bool isSetUp)
@@ -1842,4 +1797,26 @@ void delLp(int lp, int p)
 	}
 }
 
-
+int printSpec()
+{
+	int i,j;
+	cout << "1:low index " << CAPASITY - 1 << endl;
+	cout << " Spectrum :=" << endl;
+	cout << "  l :";
+	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
+	cout << endl;
+	for (i=CAPASITY-1; i>=0; i--){
+		if(i / 10 < 1) cout << " ";
+		if(i / 100 <1) cout << " ";
+		cout << i << " :";
+		for(j=0;j<LINK_NUM;j++){
+			cout << "  " << spec[i][j];
+		}
+		cout << endl;
+	}
+	cout << "  l :";
+	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
+	cout << endl;
+	cout << endl;
+	return 0;
+}

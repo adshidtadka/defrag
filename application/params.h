@@ -11,7 +11,7 @@
 #define DEFRAG_TOTAL_TIME_MAX 	100
 #define DEFRAG_INTERVAL 		0.2
 #define MAX_STEP 				3
-#define ADDITIONAL_HOP 			2
+#define ADDITIONAL_HOP 			0
 // (NODE_NUM,LINK_NUM) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
 #define NODE_NUM 				11
 #define LINK_NUM 				28
