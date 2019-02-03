@@ -55,21 +55,21 @@ double finTime();
 int isAvailablePrim(int, int, int);
 int isAvailableBack(int, int, int);
 
-bool path_prim[LINK_NUM][REQ_NUM];
-bool path_back[LINK_NUM][REQ_NUM];
-int link[NODE_NUM][NODE_NUM];
-bool spec[CAPASITY][LINK_NUM];
+bool path_prim[Constant::LINK_NUM][Constant::REQ_NUM];
+bool path_back[Constant::LINK_NUM][Constant::REQ_NUM];
+int link[Constant::NODE_NUM][Constant::NODE_NUM];
+bool spec[Constant::CAPACITY][Constant::LINK_NUM];
 
-int lp_size[REQ_NUM], source[REQ_NUM], dest[REQ_NUM];
-int isactive[REQ_NUM];
-double t_req_event[REQ_NUM], t_hold_event[REQ_NUM], t_exp_event[REQ_NUM];
-int ind_prim[REQ_NUM], ind_back[REQ_NUM];
-bool state_prim[REQ_NUM];
-bool state_back[REQ_NUM];
-int limit_hop_prim[REQ_NUM];
-int limit_hop_back[REQ_NUM];
-unsigned seed1 = SEED_1;
-unsigned seed2 = SEED_2;
+int lp_size[Constant::REQ_NUM], source[Constant::REQ_NUM], dest[Constant::REQ_NUM];
+int isactive[Constant::REQ_NUM];
+double t_req_event[Constant::REQ_NUM], t_hold_event[Constant::REQ_NUM], t_exp_event[Constant::REQ_NUM];
+int ind_prim[Constant::REQ_NUM], ind_back[Constant::REQ_NUM];
+bool state_prim[Constant::REQ_NUM];
+bool state_back[Constant::REQ_NUM];
+int limit_hop_prim[Constant::REQ_NUM];
+int limit_hop_back[Constant::REQ_NUM];
+unsigned seed1 = Constant::SEED_1;
+unsigned seed2 = Constant::SEED_2;
 int blocked;
 int algoCall;
 int defragCount;
@@ -110,8 +110,8 @@ struct Event
 };
 priority_queue<Event, vector<Event>, greater<Event> > eventQueue;
 priority_queue<Event, vector<Event>, greater<Event> > deleteQueue;
-Event startEvent[REQ_NUM];
-Event endEvent[REQ_NUM];
+Event startEvent[Constant::REQ_NUM];
+Event endEvent[Constant::REQ_NUM];
 Event nowEvent;
 Event nextEvent;
 vector<Event> defragEvent;
@@ -145,7 +145,7 @@ int readInput(int argc, char* argv[0], int load)
 		return 1;
 	}
 	fin.ignore(INT_MAX,'=');
-	for(int k = 0; k < LINK_NUM; k++)
+	for(int k = 0; k < Constant::LINK_NUM; k++)
 	{
 		int a, b;
 		fin >> a >> b ;
@@ -250,9 +250,9 @@ int writeGivenParamConv(int load)
 
 	ofs2 << "param S   := " << m   << endl;
 	ofs2 << "param absP:= " << m*2 << endl;
-	ofs2 << "param absF:= " << CAPASITY   << endl;
-	ofs2 << "param absE:= " << LINK_NUM   << endl;
-	ofs2 << "param T   := " << MAX_STEP   << endl;
+	ofs2 << "param absF:= " << Constant::CAPACITY   << endl;
+	ofs2 << "param absE:= " << Constant::LINK_NUM   << endl;
+	ofs2 << "param T   := " << Constant::MAX_STEP   << endl;
 	ofs2 << endl;
 
 	ofs2 << "param : s_p k_p_init n_p f_p_init := " << endl;
@@ -286,11 +286,11 @@ int writeGivenParamConv(int load)
 		lp = cur->x;
 		cur = cur->next;
 
-		for(j=0;j<LINK_NUM;j++){
+		for(j=0;j<Constant::LINK_NUM;j++){
 			if(path_prim[j][lp]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
-		for(j=0;j<LINK_NUM;j++){
+		for(j=0;j<Constant::LINK_NUM;j++){
 			if(path_back[j][lp]) ofs2 << ind <<" "<< j << endl;
 		}
 		ind++;
@@ -323,10 +323,10 @@ int writeGivenParamProp(int load)
 
 	ofs2 << "param S   := " << m   << endl;
 	ofs2 << "param absP:= " << m*2 << endl;
-	ofs2 << "param absF:= " << CAPASITY   << endl;
-	ofs2 << "param absE:= " << LINK_NUM   << endl;
-	ofs2 << "param absV:= " << NODE_NUM   << endl;
-	ofs2 << "param T   := " << MAX_STEP   << endl;
+	ofs2 << "param absF:= " << Constant::CAPACITY   << endl;
+	ofs2 << "param absE:= " << Constant::LINK_NUM   << endl;
+	ofs2 << "param absV:= " << Constant::NODE_NUM   << endl;
+	ofs2 << "param T   := " << Constant::MAX_STEP   << endl;
 	ofs2 << endl;
 
 	ofs2 << "param : s_p k_p_init n_p f_p_init := " << endl;
@@ -354,9 +354,9 @@ int writeGivenParamProp(int load)
 	ofs2 << ";" << endl << endl;
 
 	ofs2 << "E := " << endl;
-	for ( i = 0; i < NODE_NUM; i++){
-		for ( j = 0; j < NODE_NUM; j++){
-			if (link[i][j] < LINK_NUM){
+	for ( i = 0; i < Constant::NODE_NUM; i++){
+		for ( j = 0; j < Constant::NODE_NUM; j++){
+			if (link[i][j] < Constant::LINK_NUM){
 				ofs2 << i << " " << j << endl;
 			}
 		}
@@ -369,9 +369,9 @@ int writeGivenParamProp(int load)
 	while ( cur != NULL ){
 		lp = cur->x;
 		cur = cur->next;
-		for ( i = 0; i < NODE_NUM; i++) {
-			for ( j = 0; j < NODE_NUM; j++ ){
-				if(link[i][j] < LINK_NUM){
+		for ( i = 0; i < Constant::NODE_NUM; i++) {
+			for ( j = 0; j < Constant::NODE_NUM; j++ ){
+				if(link[i][j] < Constant::LINK_NUM){
 					if (path_prim[link[i][j]][lp]){
 						ofs2 << ind << " " << i << " " << j << endl;
 					}
@@ -380,9 +380,9 @@ int writeGivenParamProp(int load)
 		}
 
 		ind++;
-		for ( i = 0; i < NODE_NUM; i++) {
-			for ( j = 0; j < NODE_NUM; j++ ){
-				if(link[i][j] < LINK_NUM){
+		for ( i = 0; i < Constant::NODE_NUM; i++) {
+			for ( j = 0; j < Constant::NODE_NUM; j++ ){
+				if(link[i][j] < Constant::LINK_NUM){
 					if (path_back[link[i][j]][lp]){
 						ofs2 << ind << " " << i << " " << j << endl;
 					}
@@ -476,15 +476,15 @@ double standard(double data[], int n) {
 
 int genDemands(int load)
 {
-	double expired_num = 1/double(HOLDING_TIME);
-	double inter_arr = double(HOLDING_TIME)/load;
+	double expired_num = 1/double(Constant::HOLDING_TIME);
+	double inter_arr = double(Constant::HOLDING_TIME)/load;
 
 	srand (seed2);
 
 	default_random_engine generator (seed1);
 	exponential_distribution<double> next_arr(1/inter_arr);
 	exponential_distribution<double> hold_time_gen(expired_num);
-	uniform_int_distribution<int> traff_dist(1, REQ_SIZE_MAX);
+	uniform_int_distribution<int> traff_dist(1, Constant::REQ_SIZE_MAX);
 
 	ofstream ofs_input;
     ofs_input.open("./../result/input.txt", ios::out);
@@ -497,12 +497,12 @@ int genDemands(int load)
 	ofs_input << "lp number, source, destination, size, arrival time_slot_now, holding time_slot_now:=" << endl;
 
 	t_req_event[0] = 0;
-	for (int i = 0; i < REQ_NUM; ++i)
+	for (int i = 0; i < Constant::REQ_NUM; ++i)
 	{
 		lp_size[i] = traff_dist(generator);
-		source[i] = rand() % NODE_NUM;
-		dest[i] = rand() % NODE_NUM;
-		while (source[i] == dest[i]) dest[i] = rand() % NODE_NUM;
+		source[i] = rand() % Constant::NODE_NUM;
+		dest[i] = rand() % Constant::NODE_NUM;
+		while (source[i] == dest[i]) dest[i] = rand() % Constant::NODE_NUM;
 		t_hold_event[i] = hold_time_gen(generator);
 		t_exp_event[i] = t_req_event[i] + t_hold_event[i];
 		t_req_event[i+1] = t_req_event[i] + next_arr(generator);
@@ -520,8 +520,8 @@ int readResultConv()
 	int a,b, lp;
 	ifstream fin, fin1;
 
-	for(i=0;i<CAPASITY;i++){
-		for(j=0;j<LINK_NUM;j++)  spec[i][j]= 0;
+	for(i=0;i<Constant::CAPACITY;i++){
+		for(j=0;j<Constant::LINK_NUM;j++)  spec[i][j]= 0;
 	}
 
 	fin.open ("./../result/ssr_lno_result.txt");
@@ -562,8 +562,8 @@ int readResultProp()
 	int a,b,c,d,lp;
 	ifstream fin, fin1;
 
-	for(i=0;i<CAPASITY;i++){
-		for(j=0;j<LINK_NUM;j++)  spec[i][j]= 0;
+	for(i=0;i<Constant::CAPACITY;i++){
+		for(j=0;j<Constant::LINK_NUM;j++)  spec[i][j]= 0;
 	}
 
 	fin.open ("./../result/ssrr_lno_result.txt");
@@ -585,7 +585,7 @@ int readResultProp()
 			lp = cur->x;
 			cur = cur->next;
 
-			for(i=0;i<LINK_NUM;i++){
+			for(i=0;i<Constant::LINK_NUM;i++){
 				path_prim[i][lp] = 0;
 				path_back[i][lp]   = 0;
 			}
@@ -680,22 +680,22 @@ int startAlgo()
 					while(cur2 != NULL){
 						if(state_prim[cur2->x]){
 							if(state_prim[lp]){
-								for(i=0;i<LINK_NUM;i++){
+								for(i=0;i<Constant::LINK_NUM;i++){
 									if(path_prim[i][cur2->x] && path_prim[i][lp]) conf =1;
 								}
 							}else{
-								for(i=0;i<LINK_NUM;i++){
+								for(i=0;i<Constant::LINK_NUM;i++){
 									if(path_prim[i][cur2->x] && path_back[i][lp])conf =1;
 								}
 
 							}
 						}else{
 							if(state_prim[lp]){
-								for(i=0;i<LINK_NUM;i++){
+								for(i=0;i<Constant::LINK_NUM;i++){
 									if(path_back[i][cur2->x] && path_prim[i][lp]) conf =1;
 								}
 							}else{
-								for(i=0;i<LINK_NUM;i++){
+								for(i=0;i<Constant::LINK_NUM;i++){
 									if(path_back[i][cur2->x] && path_back[i][lp]) conf =1;
 								}
 							}
@@ -717,16 +717,16 @@ int startAlgo()
 				b =  state_prim[lp];
 				cur2 = cur2->next;
 				if(b){
-					int path_prev[LINK_NUM];
-					for (int i = 0; i < LINK_NUM; ++i)
+					int path_prev[Constant::LINK_NUM];
+					for (int i = 0; i < Constant::LINK_NUM; ++i)
 					{
 						path_prev[i] = 0;
 					}
-					for (int i = 0; i < NODE_NUM; ++i)
+					for (int i = 0; i < Constant::NODE_NUM; ++i)
 					{
-						for (int j = 0; j < NODE_NUM; ++j)
+						for (int j = 0; j < Constant::NODE_NUM; ++j)
 						{
-							if (link[i][j] > LINK_NUM) continue;
+							if (link[i][j] > Constant::LINK_NUM) continue;
 							path_prev[link[i][j]] = path_prim[link[i][j]][lp];
 						}
 					}
@@ -737,7 +737,7 @@ int startAlgo()
 					} else {
 						a = checkExactPrimConv(lp);
 					}
-					if (a == CAPASITY || a > ind_prim[lp])
+					if (a == Constant::CAPACITY || a > ind_prim[lp])
 					{
 						if (algoCall == 2 || algoCall == 4)
 						{
@@ -746,16 +746,16 @@ int startAlgo()
 							a = checkFirstPrimConv(lp);
 						}
 					}
-					if (a == INF)
+					if (a == Constant::INF)
 					{
 						a  = ind_prim[lp];
 					}
 					bool isSame = true;
-					for (int i = 0; i < NODE_NUM; ++i)
+					for (int i = 0; i < Constant::NODE_NUM; ++i)
 					{
-						for (int j = 0; j < NODE_NUM; ++j)
+						for (int j = 0; j < Constant::NODE_NUM; ++j)
 						{
-							if (link[i][j] > LINK_NUM) continue;
+							if (link[i][j] > Constant::LINK_NUM) continue;
 							if (path_prev[link[i][j]] != path_prim[link[i][j]][lp])
 							{
 								isSame = false;
@@ -778,16 +778,16 @@ int startAlgo()
 					asignPrim(lp, a);
 				}
 				if(!b){
-					int bp_rr_prev[LINK_NUM];
-					for (int i = 0; i < LINK_NUM; ++i)
+					int bp_rr_prev[Constant::LINK_NUM];
+					for (int i = 0; i < Constant::LINK_NUM; ++i)
 					{
 						bp_rr_prev[i] = 0;
 					}
-					for (int i = 0; i < NODE_NUM; ++i)
+					for (int i = 0; i < Constant::NODE_NUM; ++i)
 					{
-						for (int j = 0; j < NODE_NUM; ++j)
+						for (int j = 0; j < Constant::NODE_NUM; ++j)
 						{
-							if (link[i][j] > LINK_NUM) continue;
+							if (link[i][j] > Constant::LINK_NUM) continue;
 							bp_rr_prev[link[i][j]] = path_back[link[i][j]][lp];
 						}
 					}
@@ -798,7 +798,7 @@ int startAlgo()
 					} else {
 						a = checkExactBackConv(lp);
 					}
-					if (a == CAPASITY || a > ind_back[lp])
+					if (a == Constant::CAPACITY || a > ind_back[lp])
 					{
 						if (algoCall == 2 || algoCall == 4)
 						{
@@ -807,16 +807,16 @@ int startAlgo()
 							a = checkFirstBackConv(lp);
 						}
 					}
-					if (a == INF)
+					if (a == Constant::INF)
 					{
 						a = ind_back[lp];
 					}
 					bool isSame = true;
-					for (int i = 0; i < NODE_NUM; ++i)
+					for (int i = 0; i < Constant::NODE_NUM; ++i)
 					{
-						for (int j = 0; j < NODE_NUM; ++j)
+						for (int j = 0; j < Constant::NODE_NUM; ++j)
 						{
-							if (link[i][j] > LINK_NUM) continue;
+							if (link[i][j] > Constant::LINK_NUM) continue;
 							if (bp_rr_prev[link[i][j]] != path_back[link[i][j]][lp])
 							{
 								isSame = false;
@@ -846,8 +846,8 @@ int startAlgo()
 				delFromList(3, lp);
 			}
 			if(realcheck != realOp){
-				ret_time += PROCESSING_TIME;
-				if((time_slot_now+ret_time >= fin_time || ret_time >= DEFRAG_TOTAL_TIME_MAX) || eventQueue.empty()){
+				ret_time += Constant::PROCESSING_TIME;
+				if((time_slot_now+ret_time >= fin_time || ret_time >= Constant::DEFRAG_TOTAL_TIME_MAX) || eventQueue.empty()){
 					return 0;	
 				}
 			}
@@ -885,23 +885,23 @@ int retuneDown()
 
 	index1 = 1;
 
-	while(index1 < CAPASITY-1 && k++ < INF){			//Sweep the spectrum
+	while(index1 < Constant::CAPACITY-1 && k++ < Constant::INF){			//Sweep the spectrum
 		lpNode *cur = activeList; 
 		mov_time = 0 ;
 		while ( cur != NULL ) {						// Checking all active LPs
 			i = cur->x;
 			cur = cur->next;
 			if(isactive[i] == 1 && ind_prim[i] == index1){
-				int path_prev[LINK_NUM]; //to compare the previous root and new route
-				for (int b = 0; b < LINK_NUM; ++b)
+				int path_prev[Constant::LINK_NUM]; //to compare the previous root and new route
+				for (int b = 0; b < Constant::LINK_NUM; ++b)
 				{
 					path_prev[b] = 0;
 				}
-				for (int b = 0; b < NODE_NUM; ++b)
+				for (int b = 0; b < Constant::NODE_NUM; ++b)
 				{
-					for (int c = 0; c < NODE_NUM; ++c)
+					for (int c = 0; c < Constant::NODE_NUM; ++c)
 					{
-						if (link[b][c] > LINK_NUM) continue;
+						if (link[b][c] > Constant::LINK_NUM) continue;
 						path_prev[link[b][c]] = path_prim[link[b][c]][i];
 					}
 				}
@@ -912,7 +912,7 @@ int retuneDown()
 				} else {
 					a = checkExactPrimConv(i);
 				}
-				if(a==CAPASITY || a > ind_prim[i]){
+				if(a==Constant::CAPACITY || a > ind_prim[i]){
 					if (algoCall == 2 || algoCall == 4)
 					{
 						a = checkFirstPrimProp(i, false);
@@ -920,16 +920,16 @@ int retuneDown()
 						a = checkFirstPrimConv(i);
 					}
 				}
-				if (a == INF)
+				if (a == Constant::INF)
 				{
 					a = ind_prim[i];
 				}
 				bool isSame = true;
-				for (int b = 0; b < NODE_NUM; ++b)
+				for (int b = 0; b < Constant::NODE_NUM; ++b)
 				{
-					for (int c = 0; c < NODE_NUM; ++c)
+					for (int c = 0; c < Constant::NODE_NUM; ++c)
 					{
-						if (link[b][c] > LINK_NUM) continue;
+						if (link[b][c] > Constant::LINK_NUM) continue;
 						if (path_prev[link[b][c]] != path_prim[link[b][c]][i])
 						{
 							isSame = false;
@@ -953,16 +953,16 @@ int retuneDown()
 			}
 
 			if(isactive[i] == 1 && ind_back[i] == index1){
-				int bp_rr_prev[LINK_NUM]; //to compare the previous root and new route
-				for (int b = 0; b < LINK_NUM; ++b)
+				int bp_rr_prev[Constant::LINK_NUM]; //to compare the previous root and new route
+				for (int b = 0; b < Constant::LINK_NUM; ++b)
 				{
 					bp_rr_prev[b] = 0;
 				}
-				for (int b = 0; b < NODE_NUM; ++b)
+				for (int b = 0; b < Constant::NODE_NUM; ++b)
 				{
-					for (int c = 0; c < NODE_NUM; ++c)
+					for (int c = 0; c < Constant::NODE_NUM; ++c)
 					{
-						if (link[b][c] > LINK_NUM) continue;
+						if (link[b][c] > Constant::LINK_NUM) continue;
 						bp_rr_prev[link[b][c]] = path_back[link[b][c]][i];
 					}
 				}
@@ -973,7 +973,7 @@ int retuneDown()
 				} else {
 					a = checkExactBackConv(i);
 				}
-				if(a==CAPASITY || a > ind_back[i]){
+				if(a==Constant::CAPACITY || a > ind_back[i]){
 					if (algoCall == 2 || algoCall == 4)
 					{
 						a = checkFirstBackProp(i, false);
@@ -981,16 +981,16 @@ int retuneDown()
 						a = checkFirstBackConv(i);
 					}
 				}
-				if (a == INF)
+				if (a == Constant::INF)
 				{
 					a = ind_back[i];
 				}
 				bool isSame = true;
-				for (int b = 0; b < NODE_NUM; ++b)
+				for (int b = 0; b < Constant::NODE_NUM; ++b)
 				{
-					for (int c = 0; c < NODE_NUM; ++c)
+					for (int c = 0; c < Constant::NODE_NUM; ++c)
 					{
-						if (link[b][c] > LINK_NUM) continue;
+						if (link[b][c] > Constant::LINK_NUM) continue;
 						if (bp_rr_prev[link[b][c]] != path_back[link[b][c]][i])
 						{
 							isSame = false;
@@ -1013,9 +1013,9 @@ int retuneDown()
 				asignBack(i, a);
 			}
 		}
-		ret_time += double(mov_time)*PROCESSING_TIME;
+		ret_time += double(mov_time)*Constant::PROCESSING_TIME;
 		nextEvent = eventQueue.top();
-		if(nextEvent.type == 0 && (time_slot_now+ret_time >= nextEvent.time || ret_time >= DEFRAG_TOTAL_TIME_MAX)){
+		if(nextEvent.type == 0 && (time_slot_now+ret_time >= nextEvent.time || ret_time >= Constant::DEFRAG_TOTAL_TIME_MAX)){
 			time_slot_now += ret_time;
 			return 0;	
 		}
@@ -1200,12 +1200,12 @@ void delFromList2(int a, int n, int st)
 int setupPath(int lp)
 {
 	int a = checkFirstPrimProp(lp, true);
-	if(a == INF){
+	if(a == Constant::INF){
 		blocked++;
 		return 0;
 	}
 	int b = checkFirstBackProp(lp, true);
-	if(b == INF){
+	if(b == Constant::INF){
 		blocked++;
 		return 0;
 	}
@@ -1223,7 +1223,7 @@ int removeLP1_1(int lp)
 
 	if(a){
 		for(i=0; i<b; i++){
-			for(j=0;j<LINK_NUM;j++){
+			for(j=0;j<Constant::LINK_NUM;j++){
 				if (path_prim[j][lp] == 1 && spec[index+i][j] == 0)
 				{
 					cout << "path_prim[" << j << "][" << lp << "] = " << path_prim[j][lp] << ", spec[" << index+i << "][" << j << "] = " << spec[index+i][j] << endl;
@@ -1233,9 +1233,9 @@ int removeLP1_1(int lp)
 			}
 		}
 		index = ind_back[lp];
-		if(index < INF){
+		if(index < Constant::INF){
 			for(i=0; i<b; i++){
-				for(j=0;j<LINK_NUM;j++){
+				for(j=0;j<Constant::LINK_NUM;j++){
 					if (path_back[j][lp] == 1 && spec[index+i][j] == 0)
 					{
 						cout << "path_back[" << j << "][" << lp << "] = " << path_back[j][lp] << ", spec[" << index+i << "][" << j << "] = " << spec[index+i][j] << endl;
@@ -1257,7 +1257,7 @@ int asignBack(int lp, int index)
 
 	ind_back[lp] = index;
 	for(j=0;j<b;j++){
-		for(p=0;p<LINK_NUM;p++){
+		for(p=0;p<Constant::LINK_NUM;p++){
 			if(spec[index+j][p] == 1 && path_back[p][lp] ==1) throw "バックアップパス割り当てエラー";
 			spec[index+j][p] = spec[index+j][p] || path_back[p][lp];
 		}
@@ -1268,17 +1268,17 @@ int asignBack(int lp, int index)
 
 int initialize(void)
 {
-	for (int i = 0; i < NODE_NUM; i++)
+	for (int i = 0; i < Constant::NODE_NUM; i++)
 	{
-		for (int j = 0; j < NODE_NUM; j++)
+		for (int j = 0; j < Constant::NODE_NUM; j++)
 		{
-			link[i][j] = INF;
+			link[i][j] = Constant::INF;
 		}
 	}
 
-	for (int i = 0; i < LINK_NUM; i++)
+	for (int i = 0; i < Constant::LINK_NUM; i++)
 	{
-		for (int j = 0; j < REQ_NUM; j++)
+		for (int j = 0; j < Constant::REQ_NUM; j++)
 		{
 			path_prim[i][j] 	= 0;
 			path_back[i][j] 	= 0;
@@ -1295,7 +1295,7 @@ int reInitialize(void)
 	realOp = 0;
 	rerouteOp = 0;
 
-	for(int i=0;i<REQ_NUM;i++){
+	for(int i=0;i<Constant::REQ_NUM;i++){
 		ind_prim[i]=0; isactive[i]=0;
 		state_prim[i]=1; state_back[i]=0;
 		limit_hop_prim[i] = 0; limit_hop_back[i] = 0;
@@ -1308,8 +1308,8 @@ int reInitialize(void)
 		deleteQueue.pop();
 	}
 
-	for(int i=0;i<CAPASITY;i++){
-		for(int j=0;j<LINK_NUM;j++)  spec[i][j]= 0;
+	for(int i=0;i<Constant::CAPACITY;i++){
+		for(int j=0;j<Constant::LINK_NUM;j++)  spec[i][j]= 0;
 	}
 
 	activeList = NULL;
@@ -1321,7 +1321,7 @@ int reInitialize(void)
 
 int initializeEvent(void)
 {
-	for (int i = 0; i < REQ_NUM; i++)
+	for (int i = 0; i < Constant::REQ_NUM; i++)
 	{
 		endEvent[i].time = t_exp_event[i];
 		endEvent[i].type = 1;
@@ -1333,11 +1333,11 @@ int initializeEvent(void)
 
 	defragEvent.clear();
 
-	defragCount = round(endEvent[REQ_NUM-1].time / DEFRAG_INTERVAL);
+	defragCount = round(endEvent[Constant::REQ_NUM-1].time / Constant::DEFRAG_INTERVAL);
 	defragEvent.resize(defragCount);
 	for (int j = 0; j < defragCount ; j++)
 	{
-		defragEvent[j].time = j * DEFRAG_INTERVAL;
+		defragEvent[j].time = j * Constant::DEFRAG_INTERVAL;
 		defragEvent[j].type = 2;
 	}
 
@@ -1346,7 +1346,7 @@ int initializeEvent(void)
 
 int checkFirstPrimConv(int lp)
 {
-	for (int i = 0; i < CAPASITY - lp_size[lp]; ++i)
+	for (int i = 0; i < Constant::CAPACITY - lp_size[lp]; ++i)
 	{
 		if (isAvailablePrim(i, 1, lp))
 		{
@@ -1356,12 +1356,12 @@ int checkFirstPrimConv(int lp)
 			}
 		}
 	}
-	return INF;
+	return Constant::INF;
 }
 
 int checkFirstBackConv(int lp)
 {
-	for (int i = 0; i < CAPASITY - lp_size[lp]; ++i)
+	for (int i = 0; i < Constant::CAPACITY - lp_size[lp]; ++i)
 	{
 		if (isAvailableBack(i, 1, lp))
 		{
@@ -1371,31 +1371,31 @@ int checkFirstBackConv(int lp)
 			}
 		}
 	}
-	return INF;
+	return Constant::INF;
 }
 
 int checkFirstPrimProp(int lp, bool isSetUp)
 {
-	for (int i = 0; i < CAPASITY - lp_size[lp]; ++i)
+	for (int i = 0; i < Constant::CAPACITY - lp_size[lp]; ++i)
 	{
 		if (searchRoutePrim(i, lp, isSetUp))
 		{
 			return i;
 		}
 	}
-	return INF;
+	return Constant::INF;
 }
 
 int checkFirstBackProp(int lp, bool isSetUp)
 {
-	for (int i = 0; i < CAPASITY - lp_size[lp]; ++i)
+	for (int i = 0; i < Constant::CAPACITY - lp_size[lp]; ++i)
 	{
 		if (searchRouteBack(i, lp, isSetUp))
 		{
 			return i;
 		}
 	}
-	return INF;
+	return Constant::INF;
 }
 
 int asignPrim(int lp, int index)
@@ -1405,7 +1405,7 @@ int asignPrim(int lp, int index)
 
 	ind_prim[lp] = index;
 	for(j=0;j<b;j++){
-		for(p=0;p<LINK_NUM;p++){
+		for(p=0;p<Constant::LINK_NUM;p++){
 			if(spec[index+j][p] == 1 && path_prim[p][lp] ==1) throw "プライマリパス割り当てエラー";
 			spec[index+j][p] = spec[index+j][p] || path_prim[p][lp];
 		}
@@ -1419,7 +1419,7 @@ int checkExactPrimConv(int lp)
 	int b= lp_size[lp];
 	int consecSB =0;
 
-	for(int  i = 0; i < CAPASITY; i++)
+	for(int  i = 0; i < Constant::CAPACITY; i++)
 	{
 		if (isAvailablePrim(i, 1, lp))
 		{
@@ -1436,7 +1436,7 @@ int checkExactPrimConv(int lp)
 			}
 		}
 
-		if (i == CAPASITY - 1)
+		if (i == Constant::CAPACITY - 1)
 		{
 			if (consecSB == b)
 			{
@@ -1445,7 +1445,7 @@ int checkExactPrimConv(int lp)
 			consecSB = 0;
 		}
 	}
-	return CAPASITY;
+	return Constant::CAPACITY;
 }
 
 int checkExactBackConv(int lp)
@@ -1453,7 +1453,7 @@ int checkExactBackConv(int lp)
 	int b= lp_size[lp];
 	int consecSB =0;
 
-	for(int  i = 0; i < CAPASITY; i++)
+	for(int  i = 0; i < Constant::CAPACITY; i++)
 	{
 		
 		if (isAvailableBack(i, 1, lp))
@@ -1471,7 +1471,7 @@ int checkExactBackConv(int lp)
 			}
 		}
 
-		if (i == CAPASITY - 1)
+		if (i == Constant::CAPACITY - 1)
 		{
 			if (consecSB == b)
 			{
@@ -1480,7 +1480,7 @@ int checkExactBackConv(int lp)
 			consecSB = 0;
 		}
 	}
-	return CAPASITY;
+	return Constant::CAPACITY;
 }
 
 int checkExactPrimProp(int lp, bool isSetUp)
@@ -1490,12 +1490,12 @@ int checkExactPrimProp(int lp, bool isSetUp)
 	int lp1, index1, s1, d1;
 	bool isGetRoot;
 
-	for(i=0;i<CAPASITY-b;i++){
+	for(i=0;i<Constant::CAPACITY-b;i++){
 		isGetRoot = 0;
 		isGetRoot = searchRoutePrim(i, lp, isSetUp);
 		if(isGetRoot){
 			// confirm non-availability
-			if (i + 1 + b == CAPASITY)
+			if (i + 1 + b == Constant::CAPACITY)
 			{
 				return i;
 			} 
@@ -1508,7 +1508,7 @@ int checkExactPrimProp(int lp, bool isSetUp)
 			}
 		}
 	}
-	return CAPASITY;
+	return Constant::CAPACITY;
 }
 
 int checkExactBackProp(int lp, bool isSetUp)
@@ -1516,12 +1516,12 @@ int checkExactBackProp(int lp, bool isSetUp)
 	int b = lp_size[lp];
 	bool isGetRoot;
 
-	for(int i = 0; i < CAPASITY - b; i++){
+	for(int i = 0; i < Constant::CAPACITY - b; i++){
 		isGetRoot = 0;
 		isGetRoot = searchRouteBack(i, lp, isSetUp);
 		if(isGetRoot){
 			// confirm non-availability
-			if (i + 1 + b == CAPASITY)
+			if (i + 1 + b == Constant::CAPACITY)
 			{
 				return i;
 			} 
@@ -1534,14 +1534,14 @@ int checkExactBackProp(int lp, bool isSetUp)
 			}
 		}
 	}
-	return CAPASITY;
+	return Constant::CAPACITY;
 }
 
 int isAvailablePrim(int index, int times, int lp) {
 
 	for (int i = index; i < index + times; ++i)
 	{
-		for (int j = 0; j < LINK_NUM; ++j)
+		for (int j = 0; j < Constant::LINK_NUM; ++j)
 		{
 			if (path_prim[j][lp] && spec[i][j])
 			{
@@ -1556,7 +1556,7 @@ int isAvailableBack(int index, int times, int lp) {
 
 	for (int i = index; i < index + times; ++i)
 	{
-		for (int j = 0; j < LINK_NUM; ++j)
+		for (int j = 0; j < Constant::LINK_NUM; ++j)
 		{
 			if (path_back[j][lp] && spec[i][j])
 			{
@@ -1576,12 +1576,12 @@ int searchRoutePrim(int s, int lp, bool isSetUp)
 
 	priority_queue<Node, vector<Node>, greater<Node> > q;
 
-	Node Nodes[NODE_NUM];
+	Node Nodes[Constant::NODE_NUM];
 	Node doneNode;
 
-	for(i=0; i<NODE_NUM; i++){
-		for(j=0; j<NODE_NUM; j++){
-			if(link[i][j]>LINK_NUM) continue;
+	for(i=0; i<Constant::NODE_NUM; i++){
+		for(j=0; j<Constant::NODE_NUM; j++){
+			if(link[i][j]>Constant::LINK_NUM) continue;
 			unconnectedFlag = 0;
 			for(k=0; k<lp_size[lp]; k++){
 				if(spec[s+k][link[i][j]] == 1 || path_back[link[i][j]][lp]){
@@ -1596,18 +1596,18 @@ int searchRoutePrim(int s, int lp, bool isSetUp)
 		}
 	}
 
-	for(i=0; i<NODE_NUM; i++){
+	for(i=0; i<Constant::NODE_NUM; i++){
 		Nodes[i].done = false;
 		Nodes[i].cost = -1;
 		Nodes[i].nodeNum = i;
-		Nodes[i].from = INF;
+		Nodes[i].from = Constant::INF;
 	}
 
 	Nodes[source[lp]].cost = 0;
 
 	q.push(Nodes[source[lp]]);
 
-	while(!q.empty() && Nodes[dest[lp]].from == INF){
+	while(!q.empty() && Nodes[dest[lp]].from == Constant::INF){
 		doneNode = q.top();
 		q.pop();
 		if(doneNode.done) continue;
@@ -1626,7 +1626,7 @@ int searchRoutePrim(int s, int lp, bool isSetUp)
 	int dest_node = dest[lp];
 	int from_node = Nodes[dest_node].from;
 	int hop_counter = 0;
-	while(from_node < NODE_NUM && dest_node != from_node) {
+	while(from_node < Constant::NODE_NUM && dest_node != from_node) {
 	    dest_node = from_node;
 	    from_node = Nodes[dest_node].from;
 	    hop_counter++;
@@ -1634,7 +1634,7 @@ int searchRoutePrim(int s, int lp, bool isSetUp)
 
 	if (isSetUp)
 	{
-		limit_hop_prim[lp] = hop_counter + ADDITIONAL_HOP;
+		limit_hop_prim[lp] = hop_counter + Constant::ADDITIONAL_HOP;
 	} 
 	else 
 	{
@@ -1647,14 +1647,14 @@ int searchRoutePrim(int s, int lp, bool isSetUp)
 	a = dest[lp];
 	b = Nodes[a].from;
 
-	if (b < NODE_NUM) {
-		for (j = 0; j < NODE_NUM; j++) {
-			for (k = 0; k < NODE_NUM; k++) {
-				if(link[j][k]>LINK_NUM)continue;
+	if (b < Constant::NODE_NUM) {
+		for (j = 0; j < Constant::NODE_NUM; j++) {
+			for (k = 0; k < Constant::NODE_NUM; k++) {
+				if(link[j][k]>Constant::LINK_NUM)continue;
 				path_prim[link[j][k]][lp] = 0;
 			}
 		}
-		while (b < NODE_NUM && a != b) {
+		while (b < Constant::NODE_NUM && a != b) {
 			path_prim[link[b][a]][lp] = 1;
 			a = b;
 			b = Nodes[a].from;
@@ -1674,12 +1674,12 @@ int searchRouteBack(int s, int lp, bool isSetUp)
 
 	priority_queue<Node, vector<Node>, greater<Node> > q;
 
-	Node Nodes[NODE_NUM];
+	Node Nodes[Constant::NODE_NUM];
 	Node doneNode;
 
-	for(i=0; i<NODE_NUM; i++){
-		for(j=0; j<NODE_NUM; j++){
-			if(link[i][j]>LINK_NUM) continue;
+	for(i=0; i<Constant::NODE_NUM; i++){
+		for(j=0; j<Constant::NODE_NUM; j++){
+			if(link[i][j]>Constant::LINK_NUM) continue;
 			unconnectedFlag = 0;
 			for(k=0; k<lp_size[lp]; k++){
 				if(spec[s+k][link[i][j]] == 1 || path_prim[link[i][j]][lp]){
@@ -1693,23 +1693,23 @@ int searchRouteBack(int s, int lp, bool isSetUp)
 		}
 	}
 
-	for(i= 0; i < NODE_NUM ; i++){
+	for(i= 0; i < Constant::NODE_NUM ; i++){
 	    for(j=0;j < Nodes[i].edges_to.size() ; j++){
 	    }
  	}
 
-	for(i=0; i<NODE_NUM; i++){
+	for(i=0; i<Constant::NODE_NUM; i++){
 		Nodes[i].done = false;
 		Nodes[i].cost = -1;
 		Nodes[i].nodeNum = i;
-		Nodes[i].from = INF;
+		Nodes[i].from = Constant::INF;
 	}
 
 	Nodes[source[lp]].cost = 0;
 
 	q.push(Nodes[source[lp]]);
 
-	while(!q.empty() && Nodes[dest[lp]].from == INF){
+	while(!q.empty() && Nodes[dest[lp]].from == Constant::INF){
 		doneNode = q.top();
 	 	q.pop();
 		if(doneNode.done) continue;
@@ -1728,7 +1728,7 @@ int searchRouteBack(int s, int lp, bool isSetUp)
 	int dest_node = dest[lp];
 	int from_node = Nodes[dest_node].from;
 	int hop_counter = 0;
-	while(from_node < NODE_NUM && dest_node != from_node) {
+	while(from_node < Constant::NODE_NUM && dest_node != from_node) {
 	    dest_node = from_node;
 	    from_node = Nodes[dest_node].from;
 	    hop_counter++;
@@ -1736,7 +1736,7 @@ int searchRouteBack(int s, int lp, bool isSetUp)
 
 	if (isSetUp)
 	{
-		limit_hop_back[lp] = hop_counter + ADDITIONAL_HOP;
+		limit_hop_back[lp] = hop_counter + Constant::ADDITIONAL_HOP;
 	} 
 	else 
 	{
@@ -1749,14 +1749,14 @@ int searchRouteBack(int s, int lp, bool isSetUp)
 	a = dest[lp];
 	b = Nodes[a].from;
 
-	if (b < NODE_NUM && a != b) {
-		for (j = 0; j < NODE_NUM; j++) {
-			for (k = 0; k < NODE_NUM; k++) {
-				if(link[j][k]>LINK_NUM)continue;
+	if (b < Constant::NODE_NUM && a != b) {
+		for (j = 0; j < Constant::NODE_NUM; j++) {
+			for (k = 0; k < Constant::NODE_NUM; k++) {
+				if(link[j][k]>Constant::LINK_NUM)continue;
 				path_back[link[j][k]][lp] = 0;
 			}
 		}
-		while (b < NODE_NUM && a != b) {
+		while (b < Constant::NODE_NUM && a != b) {
 			path_back[link[b][a]][lp] = 1;
 			a = b;
 			b = Nodes[a].from;
@@ -1777,7 +1777,7 @@ void delLp(int lp, int p)
 	if(a){
 		if(p==0 || p==1){
 			for(i=0; i<b; i++){
-				for(j=0;j<LINK_NUM;j++){
+				for(j=0;j<Constant::LINK_NUM;j++){
 					if(spec[index+i][j] == 0 && path_prim[j][lp] == 1) throw "プライマリパス消去エラー";
 					spec[index+i][j] = path_prim[j][lp] ^	spec[index+i][j];
 				}
@@ -1786,9 +1786,9 @@ void delLp(int lp, int p)
 
 		if(p==0 || p==2){
 			index = ind_back[lp];
-			if(index == INF) return;
+			if(index == Constant::INF) return;
 			for(i=0; i<b; i++){
-				for(j=0;j<LINK_NUM;j++){
+				for(j=0;j<Constant::LINK_NUM;j++){
 					if(spec[index+i][j] == 0 && path_back[j][lp] == 1) throw "バックアップパス消去エラー";
 					spec[index+i][j] = path_back[j][lp] ^ spec[index+i][j];
 				}
@@ -1800,22 +1800,22 @@ void delLp(int lp, int p)
 int printSpec()
 {
 	int i,j;
-	cout << "1:low index " << CAPASITY - 1 << endl;
+	cout << "1:low index " << Constant::CAPACITY - 1 << endl;
 	cout << " Spectrum :=" << endl;
 	cout << "  l :";
-	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
+	for (i=0;i<Constant::LINK_NUM;i++) cout <<"  "<< i ;
 	cout << endl;
-	for (i=CAPASITY-1; i>=0; i--){
+	for (i=Constant::CAPACITY-1; i>=0; i--){
 		if(i / 10 < 1) cout << " ";
 		if(i / 100 <1) cout << " ";
 		cout << i << " :";
-		for(j=0;j<LINK_NUM;j++){
+		for(j=0;j<Constant::LINK_NUM;j++){
 			cout << "  " << spec[i][j];
 		}
 		cout << endl;
 	}
 	cout << "  l :";
-	for (i=0;i<LINK_NUM;i++) cout <<"  "<< i ;
+	for (i=0;i<Constant::LINK_NUM;i++) cout <<"  "<< i ;
 	cout << endl;
 	cout << endl;
 	return 0;

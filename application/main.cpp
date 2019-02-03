@@ -25,36 +25,36 @@ int main(int argc, char* argv[])
     }
 
 	ofs_result_txt 	<< "-------- Simulation start --------" << endl;
-	ofs_result_txt 	<< "NODE_NUM 		= " << NODE_NUM << endl;
-	ofs_result_txt	<< "LINK_NUM 		= " << LINK_NUM << endl;
-	ofs_result_txt	<< "CAPASITY 		= " << CAPASITY << endl;
-	ofs_result_txt	<< "REQ_NUM 		= " << REQ_NUM << endl;
-	ofs_result_txt	<< "REQ_SIZE_MAX 		= " << REQ_SIZE_MAX << endl;
-	ofs_result_txt	<< "DEFRAG_INTERVAL 	= " << DEFRAG_INTERVAL << endl;
-	ofs_result_txt	<< "DEFRAG_TOTAL_TIME_MAX 	= " << DEFRAG_TOTAL_TIME_MAX << endl;
-	ofs_result_txt	<< "PROCESSING_TIME 	= " << PROCESSING_TIME << endl;
-	ofs_result_txt	<< "ADDITIONAL_HOP 		= " << ADDITIONAL_HOP << endl;
+	ofs_result_txt 	<< "Constant::NODE_NUM 		= " << Constant::NODE_NUM << endl;
+	ofs_result_txt	<< "Constant::LINK_NUM 		= " << Constant::LINK_NUM << endl;
+	ofs_result_txt	<< "Constant::CAPACITY 		= " << Constant::CAPACITY << endl;
+	ofs_result_txt	<< "Constant::REQ_NUM 		= " << Constant::REQ_NUM << endl;
+	ofs_result_txt	<< "Constant::REQ_SIZE_MAX 		= " << Constant::REQ_SIZE_MAX << endl;
+	ofs_result_txt	<< "Constant::DEFRAG_INTERVAL 	= " << Constant::DEFRAG_INTERVAL << endl;
+	ofs_result_txt	<< "Constant::DEFRAG_TOTAL_TIME_MAX 	= " << Constant::DEFRAG_TOTAL_TIME_MAX << endl;
+	ofs_result_txt	<< "Constant::PROCESSING_TIME 	= " << Constant::PROCESSING_TIME << endl;
+	ofs_result_txt	<< "Constant::ADDITIONAL_HOP 		= " << Constant::ADDITIONAL_HOP << endl;
 	cout 			<< "-------- Simulation start --------" << endl;
-	cout  			<< "NODE_NUM 		= " << NODE_NUM << endl;
-	cout 			<< "LINK_NUM 		= " << LINK_NUM << endl;
-	cout 			<< "CAPASITY 		= " << CAPASITY << endl;
-	cout 			<< "REQ_NUM 		= " << REQ_NUM << endl;
-	cout 			<< "REQ_SIZE_MAX 		= " << REQ_SIZE_MAX << endl;
-	cout 			<< "DEFRAG_INTERVAL 	= " << DEFRAG_INTERVAL << endl;
-	cout 			<< "DEFRAG_TOTAL_TIME_MAX	= " << DEFRAG_TOTAL_TIME_MAX << endl;
-	cout 			<< "PROCESSING_TIME 	= " << PROCESSING_TIME << endl;
-	cout 			<< "ADDITIONAL_HOP 		= " << ADDITIONAL_HOP << endl;
+	cout  			<< "Constant::NODE_NUM 		= " << Constant::NODE_NUM << endl;
+	cout 			<< "Constant::LINK_NUM 		= " << Constant::LINK_NUM << endl;
+	cout 			<< "Constant::CAPACITY 		= " << Constant::CAPACITY << endl;
+	cout 			<< "Constant::REQ_NUM 		= " << Constant::REQ_NUM << endl;
+	cout 			<< "Constant::REQ_SIZE_MAX 		= " << Constant::REQ_SIZE_MAX << endl;
+	cout 			<< "Constant::DEFRAG_INTERVAL 	= " << Constant::DEFRAG_INTERVAL << endl;
+	cout 			<< "Constant::DEFRAG_TOTAL_TIME_MAX	= " << Constant::DEFRAG_TOTAL_TIME_MAX << endl;
+	cout 			<< "Constant::PROCESSING_TIME 	= " << Constant::PROCESSING_TIME << endl;
+	cout 			<< "Constant::ADDITIONAL_HOP 	= " << Constant::ADDITIONAL_HOP << endl;
 
-	int load = LOAD_START;
-	for(int l = 0; l < LOAD_REPEAT_NUM; l++)
+	int load = Constant::LOAD_START;
+	for(int l = 0; l < Constant::LOAD_REPEAT_NUM; l++)
 	{
 		int blkdItNone = 0, blkdItConv = 0, blkdItProp = 0, blkdItConvIlp = 0, blkdItPropIlp = 0;
 		int togOpItConv = 0, togOpItProp = 0;
 		int realOpItConv = 0, realOpItProp = 0;
 		int rerouteOpItProp = 0;
-		double stdItNoneArr[ITERATION] = {}, stdItConvArr[ITERATION] = {}, stdItPropArr[ITERATION] = {}, stdItConvIlpArr[ITERATION] = {}, stdItPropIlpArr[ITERATION] = {};
+		double stdItNoneArr[Constant::ITERATION] = {}, stdItConvArr[Constant::ITERATION] = {}, stdItPropArr[Constant::ITERATION] = {}, stdItConvIlpArr[Constant::ITERATION] = {}, stdItPropIlpArr[Constant::ITERATION] = {};
 		if(l != 0){
-			load = load + LOAD_GAIN;
+			load = load + Constant::LOAD_GAIN;
 		}
 		ofs_result_txt 	<< endl << "---- load = "<< load << " ----" << endl;
 		cout 			<< endl << "---- load = "<< load << " ----" << endl;
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 		    return 1;
 		}
 		
-		for (int it = 0; it < ITERATION; it++)
+		for (int it = 0; it < Constant::ITERATION; it++)
 		{
 			ofs_result_txt 	<< endl << "Iteration = "<< it << endl;
 			cout 			<< endl << "Iteration = "<< it << endl;
@@ -75,9 +75,9 @@ int main(int argc, char* argv[])
 			reInitialize();
 			initializeEvent();
 
-			for(algoCall = ALGO_START; algoCall <= ALGO_FINISH; algoCall++)
+			for(algoCall = Constant::ALGO_START; algoCall <= Constant::ALGO_FINISH; algoCall++)
 			{
-				for (int i = 0; i < REQ_NUM; i++)
+				for (int i = 0; i < Constant::REQ_NUM; i++)
 				{
 					eventQueue.push(endEvent[i]);
 					eventQueue.push(startEvent[i]);
@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
 							}
 							int sort_val1 = 0, sort_val2 = 0;
 							if(b) addToList(nowEvent.lpNum, sort_val1, sort_val2);
-							if (nowEvent.lpNum == REQ_NUM-1)
+							if (nowEvent.lpNum == Constant::REQ_NUM-1)
 							{
 								while(!eventQueue.empty())
 								{
@@ -239,11 +239,11 @@ int main(int argc, char* argv[])
 
 		double stdItNone, stdItConv, stdItProp, stdItConvIlp, stdItPropIlp;
 		double stdItNoneDiff, stdItConvDiff, stdItPropDiff, stdItConvIlpDiff, stdItPropIlpDiff;
-		stdItNone = standard(stdItNoneArr, ITERATION);
-		stdItConv = standard(stdItConvArr, ITERATION);
-		stdItProp = standard(stdItPropArr, ITERATION);
-		stdItConvIlp = standard(stdItConvIlpArr, ITERATION);
-		stdItPropIlp = standard(stdItPropIlpArr, ITERATION);
+		stdItNone = standard(stdItNoneArr, Constant::ITERATION);
+		stdItConv = standard(stdItConvArr, Constant::ITERATION);
+		stdItProp = standard(stdItPropArr, Constant::ITERATION);
+		stdItConvIlp = standard(stdItConvIlpArr, Constant::ITERATION);
+		stdItPropIlp = standard(stdItPropIlpArr, Constant::ITERATION);
 		stdItNoneDiff = blkdItNone*0.05 - stdItNone*1.96;
 		stdItConvDiff = blkdItConv*0.05 - stdItConv*1.96;
 		stdItPropDiff = blkdItProp*0.05 - stdItProp*1.96;
@@ -252,46 +252,46 @@ int main(int argc, char* argv[])
 
 		cout						<< endl << "Average results" << endl;
 		ofs_result_txt				<< endl << "Average results" << endl;
-		cout 						<< "[none] blocked:		" << blkdItNone/ITERATION << endl;
-		ofs_result_txt 				<< "[none] blocked:		" << blkdItNone/ITERATION << endl;
-		ofs_result_csv 				<< blkdItNone/ITERATION << ",";
+		cout 						<< "[none] blocked:		" << blkdItNone/Constant::ITERATION << endl;
+		ofs_result_txt 				<< "[none] blocked:		" << blkdItNone/Constant::ITERATION << endl;
+		ofs_result_csv 				<< blkdItNone/Constant::ITERATION << ",";
 		cout 						<< "[none] confidence:	" << stdItNone << endl << endl;
 		ofs_result_txt 				<< "[none] confidence:	" << stdItNone << endl << endl;
-		cout 						<< "[algo_conv] blocked:		" << blkdItConv/ITERATION << endl;
-		ofs_result_txt 				<< "[algo_conv] blocked:		" << blkdItConv/ITERATION << endl;
-		ofs_result_csv 				<< blkdItConv/ITERATION << ",";
+		cout 						<< "[algo_conv] blocked:		" << blkdItConv/Constant::ITERATION << endl;
+		ofs_result_txt 				<< "[algo_conv] blocked:		" << blkdItConv/Constant::ITERATION << endl;
+		ofs_result_csv 				<< blkdItConv/Constant::ITERATION << ",";
 		cout 						<< "[algo_conv] confidence:	" << stdItConv << endl << endl;
 		ofs_result_txt 				<< "[algo_conv] confidence:	" << stdItConv << endl << endl;
-		cout 						<< "[algo_prop] blocked:		" << blkdItProp/ITERATION << endl;
-		ofs_result_txt 				<< "[algo_prop] blocked:		" << blkdItProp/ITERATION << endl;
-		ofs_result_csv 				<< blkdItProp/ITERATION << ",";
+		cout 						<< "[algo_prop] blocked:		" << blkdItProp/Constant::ITERATION << endl;
+		ofs_result_txt 				<< "[algo_prop] blocked:		" << blkdItProp/Constant::ITERATION << endl;
+		ofs_result_csv 				<< blkdItProp/Constant::ITERATION << ",";
 		cout 						<< "[algo_prop] confidence:	" << stdItProp << endl << endl;
 		ofs_result_txt 				<< "[algo_prop] confidence:	" << stdItProp << endl << endl;
-		cout 						<< "[ilp_conv] blocked:		" << blkdItConvIlp/ITERATION << endl;
-		ofs_result_txt 				<< "[ilp_conv] blocked:		" << blkdItConvIlp/ITERATION << endl;
-		ofs_result_csv 				<< blkdItConvIlp/ITERATION << ",";
+		cout 						<< "[ilp_conv] blocked:		" << blkdItConvIlp/Constant::ITERATION << endl;
+		ofs_result_txt 				<< "[ilp_conv] blocked:		" << blkdItConvIlp/Constant::ITERATION << endl;
+		ofs_result_csv 				<< blkdItConvIlp/Constant::ITERATION << ",";
 		cout 						<< "[ilp_conv] confidence:	" << stdItConvIlp << endl << endl;
 		ofs_result_txt 				<< "[ilp_conv] confidence:	" << stdItConvIlp << endl << endl;
-		cout 						<< "[ilp_prop] blocked:		" << blkdItPropIlp/ITERATION << endl;
-		ofs_result_txt 				<< "[ilp_prop] blocked:		" << blkdItPropIlp/ITERATION << endl;
-		ofs_result_csv 				<< blkdItPropIlp/ITERATION << endl;
+		cout 						<< "[ilp_prop] blocked:		" << blkdItPropIlp/Constant::ITERATION << endl;
+		ofs_result_txt 				<< "[ilp_prop] blocked:		" << blkdItPropIlp/Constant::ITERATION << endl;
+		ofs_result_csv 				<< blkdItPropIlp/Constant::ITERATION << endl;
 		cout 						<< "[ilp_prop] confidence:	" << stdItPropIlp << endl << endl;
 		ofs_result_txt 				<< "[ilp_prop] confidence:	" << stdItPropIlp << endl << endl;
-		cout 						<< "[algo_conv] toggle:		" << togOpItConv/ITERATION << endl;
-		ofs_result_txt 				<< "[algo_conv] toggle:		" << togOpItConv/ITERATION << endl;
-		ofs_result_operation_csv	<< togOpItConv/ITERATION << ",";
-		cout 						<< "[algo_conv] reallocate:	" << realOpItConv/ITERATION << endl << endl;
-		ofs_result_txt 				<< "[algo_conv] reallocate:	" << realOpItConv/ITERATION << endl << endl;
-		ofs_result_operation_csv	<< realOpItConv/ITERATION << ",";
-		cout 						<< "[algo_prop] toggle:		" << togOpItProp/ITERATION << endl;
-		ofs_result_txt 				<< "[algo_prop] toggle:		" << togOpItProp/ITERATION << endl;
-		ofs_result_operation_csv	<< togOpItProp/ITERATION << ",";
-		cout 						<< "[algo_prop] reallocate:	" << realOpItProp/ITERATION << endl;
-		ofs_result_txt 				<< "[algo_prop] reallocate:	" << realOpItProp/ITERATION << endl;
-		ofs_result_operation_csv	<< realOpItProp/ITERATION << ",";
-		cout 						<< "[algo_prop] reroute:	" << rerouteOpItProp/ITERATION << endl << endl;
-		ofs_result_txt 				<< "[algo_prop] reroute:	" << rerouteOpItProp/ITERATION << endl << endl;
-		ofs_result_operation_csv	<< rerouteOpItProp/ITERATION << endl;
+		cout 						<< "[algo_conv] toggle:		" << togOpItConv/Constant::ITERATION << endl;
+		ofs_result_txt 				<< "[algo_conv] toggle:		" << togOpItConv/Constant::ITERATION << endl;
+		ofs_result_operation_csv	<< togOpItConv/Constant::ITERATION << ",";
+		cout 						<< "[algo_conv] reallocate:	" << realOpItConv/Constant::ITERATION << endl << endl;
+		ofs_result_txt 				<< "[algo_conv] reallocate:	" << realOpItConv/Constant::ITERATION << endl << endl;
+		ofs_result_operation_csv	<< realOpItConv/Constant::ITERATION << ",";
+		cout 						<< "[algo_prop] toggle:		" << togOpItProp/Constant::ITERATION << endl;
+		ofs_result_txt 				<< "[algo_prop] toggle:		" << togOpItProp/Constant::ITERATION << endl;
+		ofs_result_operation_csv	<< togOpItProp/Constant::ITERATION << ",";
+		cout 						<< "[algo_prop] reallocate:	" << realOpItProp/Constant::ITERATION << endl;
+		ofs_result_txt 				<< "[algo_prop] reallocate:	" << realOpItProp/Constant::ITERATION << endl;
+		ofs_result_operation_csv	<< realOpItProp/Constant::ITERATION << ",";
+		cout 						<< "[algo_prop] reroute:	" << rerouteOpItProp/Constant::ITERATION << endl << endl;
+		ofs_result_txt 				<< "[algo_prop] reroute:	" << rerouteOpItProp/Constant::ITERATION << endl << endl;
+		ofs_result_operation_csv	<< rerouteOpItProp/Constant::ITERATION << endl;
 	}
 	ofs_result_txt.close();
 
