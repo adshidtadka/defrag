@@ -36,3 +36,6 @@ result/*
 
 # .DS_Store
 .DS_Store
+
+# jetbrain
+.idea/*
