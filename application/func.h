@@ -12,6 +12,7 @@
 #include <float.h>
 #include <sstream>
 #include <map>
+#include <numeric>
 
 using namespace std;
 
