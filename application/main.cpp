@@ -4,24 +4,12 @@
 int main(int argc, char *argv[]) {
     ofstream ofs_result_txt;
     ofs_result_txt.open("./../result/result.txt", ios::out);
-    if (!ofs_result_txt) {
-        cout << "[error] Cannot open ./../result/result.txt" << endl;
-        return 1;
-    }
-
     ofstream ofs_result_csv;
     ofs_result_csv.open("./../result/result.csv", ios::out);
-    if (!ofs_result_csv) {
-        cout << "[error] Cannot open ./../result/result.csv" << endl;
-        return 1;
-    }
-
     ofstream ofs_result_operation_csv;
     ofs_result_operation_csv.open("./../result/result_operation.csv", ios::out);
-    if (!ofs_result_operation_csv) {
-        cout << "[error] Cannot open ./../result/result_operation.csv" << endl;
-        return 1;
-    }
+    ofstream ofs_slot_csv;
+    ofs_slot_csv.open("./../result/slot.csv", ios::out);
 
     ofs_result_txt << "-------- Simulation start --------" << endl;
     ofs_result_txt << "Constant::NODE_NUM 		= " << Constant::NODE_NUM << endl;
@@ -51,6 +39,7 @@ int main(int argc, char *argv[]) {
         int realOpItConv = 0, realOpItProp = 0;
         int rerouteOpItProp = 0;
         double stdItNoneArr[Constant::ITERATION] = {}, stdItConvArr[Constant::ITERATION] = {}, stdItPropArr[Constant::ITERATION] = {}, stdItConvIlpArr[Constant::ITERATION] = {}, stdItPropIlpArr[Constant::ITERATION] = {};
+        int slotNone[Constant::LINK_NUM][Constant::ITERATION], slotConv[Constant::LINK_NUM][Constant::ITERATION], slotProp[Constant::LINK_NUM][Constant::ITERATION], slotConvIlp[Constant::LINK_NUM][Constant::ITERATION], slotPropIlp[Constant::LINK_NUM][Constant::ITERATION];
         if (l != 0) {
             load = load + Constant::LOAD_GAIN;
         }
@@ -80,6 +69,8 @@ int main(int argc, char *argv[]) {
                 for (int c = 0; c < defragCount; c++) {
                     eventQueue.push(defragEvent[c]);
                 }
+
+                vector <vector<int>> allocatedSlotNum(Constant::LINK_NUM);
 
                 time_slot_now = 0;
                 clock_t start, end;
@@ -155,6 +146,17 @@ int main(int argc, char *argv[]) {
                             return 1;
                         }
                     }
+
+                    // count allocated slot number
+                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
+                        int counter = 0;
+                        for (int j = 0; j < Constant::CAPACITY; ++j) {
+                            if (spec[j][i]) {
+                                counter++;
+                            }
+                        }
+                        allocatedSlotNum[i].push_back(counter);
+                    }
                 }
 
                 end = clock();
@@ -168,6 +170,9 @@ int main(int argc, char *argv[]) {
                     ofs_result_txt << "[none] blocked:		" << blocked << endl << endl;
                     blkdItNone += blocked;
                     stdItNoneArr[it] = blocked;
+                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
+                        slotNone[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
+                    }
                     reInitialize();
                 }
                 if (algoCall == 1) {
@@ -181,6 +186,9 @@ int main(int argc, char *argv[]) {
                     stdItConvArr[it] = blocked;
                     togOpItConv += togOp;
                     realOpItConv += realOp;
+                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
+                        slotNone[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
+                    }
                     reInitialize();
                 }
                 if (algoCall == 2) {
@@ -197,6 +205,9 @@ int main(int argc, char *argv[]) {
                     togOpItProp += togOp;
                     realOpItProp += realOp;
                     rerouteOpItProp += rerouteOp;
+                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
+                        slotNone[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
+                    }
                     reInitialize();
                 }
                 if (algoCall == 3) {
@@ -208,6 +219,9 @@ int main(int argc, char *argv[]) {
                     ofs_result_txt << "[ilp_conv] reallocate:	" << realOp << endl << endl;
                     blkdItConvIlp += blocked;
                     stdItConvIlpArr[it] = blocked;
+                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
+                        slotConvIlp[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
+                    }
                     reInitialize();
                 }
                 if (algoCall == 4) {
@@ -219,6 +233,9 @@ int main(int argc, char *argv[]) {
                     ofs_result_txt << "[ilp_prop] reallocate:	" << realOp << endl << endl;
                     blkdItPropIlp += blocked;
                     stdItPropIlpArr[it] = blocked;
+                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
+                        slotNone[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
+                    }
                     reInitialize();
                 }
             }
@@ -281,6 +298,36 @@ int main(int argc, char *argv[]) {
         cout << "[algo_prop] reroute:	" << rerouteOpItProp / Constant::ITERATION << endl << endl;
         ofs_result_txt << "[algo_prop] reroute:	" << rerouteOpItProp / Constant::ITERATION << endl << endl;
         ofs_result_operation_csv << rerouteOpItProp / Constant::ITERATION << endl;
+        for (int i = 0; i < Constant::LINK_NUM; ++i) {
+            int slot_num = accumulate(slotNone[i], slotNone[i] + Constant::ITERATION, 0) / Constant::ITERATION;
+            cout << "[none] allocated slot average number on link[" << i << "]: " << slot_num  << endl;
+            ofs_slot_csv << slot_num << ",";
+        }
+        ofs_slot_csv << endl;
+        for (int i = 0; i < Constant::LINK_NUM; ++i) {
+            int slot_num = accumulate(slotConv[i], slotConv[i] + Constant::ITERATION, 0) / Constant::ITERATION;
+            cout << "[conv] allocated slot average number on link[" << i << "]: " << slot_num  << endl;
+            ofs_slot_csv << slot_num << ",";
+        }
+        ofs_slot_csv << endl;
+        for (int i = 0; i < Constant::LINK_NUM; ++i) {
+            int slot_num = accumulate(slotProp[i], slotProp[i] + Constant::ITERATION, 0) / Constant::ITERATION;
+            cout << "[prop] allocated slot average number on link[" << i << "]: " << slot_num  << endl;
+            ofs_slot_csv << slot_num << ",";
+        }
+        ofs_slot_csv << endl;
+        for (int i = 0; i < Constant::LINK_NUM; ++i) {
+            int slot_num = accumulate(slotConvIlp[i], slotConvIlp[i] + Constant::ITERATION, 0) / Constant::ITERATION;
+            cout << "[conv_ilp] allocated slot average number on link[" << i << "]: " << slot_num  << endl;
+            ofs_slot_csv << slot_num << ",";
+        }
+        ofs_slot_csv << endl;
+        for (int i = 0; i < Constant::LINK_NUM; ++i) {
+            int slot_num = accumulate(slotPropIlp[i], slotPropIlp[i] + Constant::ITERATION, 0) / Constant::ITERATION;
+            cout << "[prop_ilp] allocated slot average number on link[" << i << "]: " << slot_num  << endl;
+            ofs_slot_csv << slot_num << ",";
+        }
+        ofs_slot_csv << endl;
     }
     ofs_result_txt.close();
 
