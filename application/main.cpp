@@ -187,7 +187,7 @@ int main(int argc, char *argv[]) {
                     togOpItConv += togOp;
                     realOpItConv += realOp;
                     for (int i = 0; i < Constant::LINK_NUM; ++i) {
-                        slotNone[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
+                        slotConv[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
                     }
                     reInitialize();
                 }
@@ -206,7 +206,7 @@ int main(int argc, char *argv[]) {
                     realOpItProp += realOp;
                     rerouteOpItProp += rerouteOp;
                     for (int i = 0; i < Constant::LINK_NUM; ++i) {
-                        slotNone[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
+                        slotProp[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
                     }
                     reInitialize();
                 }
@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
                     blkdItPropIlp += blocked;
                     stdItPropIlpArr[it] = blocked;
                     for (int i = 0; i < Constant::LINK_NUM; ++i) {
-                        slotNone[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
+                        slotPropIlp[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
                     }
                     reInitialize();
                 }
