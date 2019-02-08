@@ -24,6 +24,8 @@ int initializeEvent(void);
 
 int readInput(int, char **, int);
 
+void congestedLink(void);
+
 int retuneDown(void);
 
 int asignPrim(int, int);
@@ -96,6 +98,10 @@ int isAvailableBack(int, int, int);
 
 bool path_prim[Constant::LINK_NUM][Constant::REQ_NUM];
 bool path_back[Constant::LINK_NUM][Constant::REQ_NUM];
+
+bool path_prim_init[Constant::NODE_NUM][Constant::NODE_NUM][Constant::LINK_NUM];
+bool path_back_init[Constant::NODE_NUM][Constant::NODE_NUM][Constant::LINK_NUM];
+
 int link[Constant::NODE_NUM][Constant::NODE_NUM];
 bool spec[Constant::CAPACITY][Constant::LINK_NUM];
 
@@ -182,10 +188,6 @@ int readInput(int argc, char *argv[0], int load) {
     ss << "./../network/net_" << argv[1] << ".txt";
     s = ss.str();
     fin.open(s);
-    if (!fin) {
-        cout << "[error] cannot open network model" << endl;
-        return 1;
-    }
     fin.ignore(INT_MAX, '=');
     for (int k = 0; k < Constant::LINK_NUM; k++) {
         int a, b;
@@ -194,15 +196,21 @@ int readInput(int argc, char *argv[0], int load) {
     }
     fin.close();
 
+    // initialize path_prim_init and path_back_init
+    for (int i = 0; i < Constant::NODE_NUM; ++i) {
+        for (int j = 0; j < Constant::NODE_NUM; ++j) {
+            for (int k = 0; k < Constant::LINK_NUM; ++k) {
+                path_prim_init[i][j][k] = false;
+                path_back_init[i][j][k] = false;
+            }
+        }
+    }
+
     // count primary path number
     ss.str("");
     ss << "./../network/path_" << argv[1] << "_prim.txt";
     s = ss.str();
     fin.open(s);
-    if (!fin) {
-        cout << "[error] cannot open primary routing file" << endl;
-        return 1;
-    }
     char tmp;
     fin.ignore(INT_MAX, '=');
     fin >> tmp;
@@ -221,10 +229,10 @@ int readInput(int argc, char *argv[0], int load) {
     fin.open(s);
     fin.ignore(INT_MAX, '=');
     for (int k = 0; k < path_num; k++) {
-        int i, j, a, b, p;
+        int i, j, a, b;
         fin >> i >> j >> a >> b;
         fin.ignore(INT_MAX, '\n');
-        p = link[a][b];
+        path_prim_init[i][j][link[a][b]] = true;
     }
     fin.close();
 
@@ -233,10 +241,6 @@ int readInput(int argc, char *argv[0], int load) {
     ss << "./../network/path_" << argv[1] << "_back.txt";
     s = ss.str();
     fin.open(s);
-    if (!fin) {
-        cout << "[error] cannot open backup routing file" << endl;
-        return 1;
-    }
     fin.ignore(INT_MAX, '=');
     fin >> tmp;
     path_num = 0;
@@ -254,14 +258,47 @@ int readInput(int argc, char *argv[0], int load) {
     fin.open(s);
     fin.ignore(INT_MAX, '=');
     for (int k = 0; k < path_num; k++) {
-        int i, j, a, b, p;
+        int i, j, a, b;
         fin >> i >> j >> a >> b;
         fin.ignore(INT_MAX, '\n');
-        p = link[a][b];
+        path_back_init[i][j][link[a][b]] = true;
     }
     fin.close();
 
     return 0;
+}
+
+void congestedLink() {
+    ofstream ofs_congested_link_csv;
+    ofs_congested_link_csv.open("./../result/congestedLink.csv", ios::out);
+
+    int usedLinkCounter[Constant::LINK_NUM] = {};
+
+    // check all lightpath
+    for (int i = 0; i < Constant::NODE_NUM; ++i) {
+        for (int j = 0; j < Constant::NODE_NUM; ++j) {
+            for (int k = 0; k < Constant::LINK_NUM; ++k) {
+                // skip the same node
+                if (i == j) continue;
+
+                // count the used link by prim path
+                if (path_prim_init[i][j][k]){
+                    usedLinkCounter[k]++;
+                }
+
+                // count the used link by back path
+                if (path_back_init[i][j][k]){
+                    usedLinkCounter[k]++;
+                }
+            }
+        }
+    }
+
+    // save congested link
+    for (int i = 0; i < Constant::LINK_NUM; ++i) {
+        cout << "the number of lightpath using link[" << i << "] = " << usedLinkCounter[i] << endl;
+        ofs_congested_link_csv << i << "," << usedLinkCounter[i] << endl;
+    }
 }
 
 int writeGivenParamConv(int load) {
