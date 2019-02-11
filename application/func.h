@@ -1598,17 +1598,30 @@ int searchRoutePrim(int s, int lp, bool isSetUp) {
     int dest_node = dest[lp];
     int from_node = Nodes[dest_node].from;
     int hop_counter = 0;
+    bool isCongested = false;
     while (from_node < Constant::NODE_NUM && dest_node != from_node) {
+        // check congested
+        if (linksStatus[link[from_node][dest_node]].isCongested) isCongested = true;
+
+        // increment counter
         dest_node = from_node;
         from_node = Nodes[dest_node].from;
         hop_counter++;
+
     }
 
     if (isSetUp) {
         limit_hop_prim[lp] = hop_counter + Constant::ADDITIONAL_HOP;
     } else {
-        if (hop_counter > limit_hop_prim[lp]) {
-            return 0;
+        // check congested
+        if (isCongested) {
+            if (hop_counter > limit_hop_prim[lp] + Constant::ADDITIONAL_HOP_CONGESTED) {
+                return 0;
+            }
+        } else {
+            if (hop_counter > limit_hop_prim[lp]) {
+                return 0;
+            }
         }
     }
 
@@ -1695,7 +1708,12 @@ int searchRouteBack(int s, int lp, bool isSetUp) {
     int dest_node = dest[lp];
     int from_node = Nodes[dest_node].from;
     int hop_counter = 0;
+    bool isCongested = false;
     while (from_node < Constant::NODE_NUM && dest_node != from_node) {
+        // check congested
+        if (linksStatus[link[from_node][dest_node]].isCongested) isCongested = true;
+
+        // increment counter
         dest_node = from_node;
         from_node = Nodes[dest_node].from;
         hop_counter++;
@@ -1704,9 +1722,16 @@ int searchRouteBack(int s, int lp, bool isSetUp) {
     if (isSetUp) {
         limit_hop_back[lp] = hop_counter + Constant::ADDITIONAL_HOP;
     } else {
-        if (hop_counter > limit_hop_back[lp]) {
-            return 0;
+        if (isCongested) {
+            if (hop_counter > limit_hop_back[lp] + Constant::ADDITIONAL_HOP_CONGESTED) {
+                return 0;
+            }
+        } else {
+            if (hop_counter > limit_hop_back[lp]) {
+                return 0;
+            }
         }
+
     }
 
     a = dest[lp];
