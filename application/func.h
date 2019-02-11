@@ -13,6 +13,7 @@
 #include <sstream>
 #include <map>
 #include <numeric>
+#include <algorithm>
 
 using namespace std;
 
