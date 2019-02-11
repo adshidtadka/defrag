@@ -165,6 +165,17 @@ Event nowEvent;
 Event nextEvent;
 vector <Event> defragEvent;
 
+struct linkStatus {
+    int linkIndex;
+    int usedNum;
+    bool isCongested = false;
+
+    bool operator<(const linkStatus &linkStatus1) const {
+        return (usedNum > linkStatus1.usedNum);
+    }
+};
+vector <linkStatus> linksStatus;
+
 // map<char, int> links;
 // map<char, int> nodes;
 // links["5node"] 	= 5;
@@ -272,7 +283,11 @@ void getCongestedLink() {
     ofstream ofs_congested_link_csv;
     ofs_congested_link_csv.open("./../result/congestedLink.csv", ios::out);
 
-    int usedLinkCounter[Constant::LINK_NUM] = {};
+    linksStatus.resize(Constant::LINK_NUM);
+    for (int i = 0; i < Constant::LINK_NUM + 1; ++i) {
+        linksStatus[i].linkIndex = i;
+        linksStatus[i].usedNum = 0;
+    }
 
     // check all lightpath
     for (int i = 0; i < Constant::NODE_NUM; ++i) {
@@ -283,21 +298,23 @@ void getCongestedLink() {
 
                 // count the used link by prim path
                 if (path_prim_init[i][j][k]){
-                    usedLinkCounter[k]++;
+                    linksStatus[k].usedNum++;
                 }
 
                 // count the used link by back path
                 if (path_back_init[i][j][k]){
-                    usedLinkCounter[k]++;
+                    linksStatus[k].usedNum++;
                 }
             }
         }
     }
 
+    sort(linksStatus.begin(), linksStatus.end());
+
     // save congested link
     for (int i = 0; i < Constant::LINK_NUM; ++i) {
-        cout << "the number of lightpath using link[" << i << "] = " << usedLinkCounter[i] << endl;
-        ofs_congested_link_csv << i << "," << usedLinkCounter[i] << endl;
+        cout << "the number of lightpath using link[" << linksStatus[i].linkIndex << "] = " << linksStatus[i].usedNum << endl;
+        ofs_congested_link_csv << linksStatus[i].linkIndex << "," << linksStatus[i].usedNum << endl;
     }
 }
 
