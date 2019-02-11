@@ -19,5 +19,6 @@ struct Constant {
     static const int SEED_2				= 125;
     static const int ALGO_START			= 0;
     static const int ALGO_FINISH			= 2;
+    static const int RATE_CONGESTED     = 20;
     // (NODE_NUM,LINK_NUM) = (11, 28), (5, 12), (14,44), (11, 52), (14, 46), (25, 84)
 };

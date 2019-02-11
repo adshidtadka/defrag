@@ -316,6 +316,13 @@ void getCongestedLink() {
         cout << "the number of lightpath using link[" << linksStatus[i].linkIndex << "] = " << linksStatus[i].usedNum << endl;
         ofs_congested_link_csv << linksStatus[i].linkIndex << "," << linksStatus[i].usedNum << endl;
     }
+
+    // update isCongested
+    int congestedLinkNum = Constant::LINK_NUM * Constant::RATE_CONGESTED / 100;
+    for (int i = 0; i < congestedLinkNum; ++i) {
+        linksStatus[i].isCongested = true;
+        cout << "updated link is " << linksStatus[i].linkIndex << endl;
+    }
 }
 
 int writeGivenParamConv(int load) {
