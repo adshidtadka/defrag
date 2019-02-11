@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        congestedLink();
+        getCongestedLink();
 
         for (int it = 0; it < Constant::ITERATION; it++) {
             ofs_result_txt << endl << "Iteration = " << it << endl;

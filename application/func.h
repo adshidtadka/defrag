@@ -24,7 +24,7 @@ int initializeEvent(void);
 
 int readInput(int, char **, int);
 
-void congestedLink(void);
+void getCongestedLink(void);
 
 int retuneDown(void);
 
@@ -268,7 +268,7 @@ int readInput(int argc, char *argv[0], int load) {
     return 0;
 }
 
-void congestedLink() {
+void getCongestedLink() {
     ofstream ofs_congested_link_csv;
     ofs_congested_link_csv.open("./../result/congestedLink.csv", ios::out);
 
