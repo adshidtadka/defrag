@@ -801,13 +801,7 @@ int startAlgo() {
                 if (b) {
                     int path_prev[Constant::LINK_NUM];
                     for (int i = 0; i < Constant::LINK_NUM; ++i) {
-                        path_prev[i] = 0;
-                    }
-                    for (int i = 0; i < Constant::NODE_NUM; ++i) {
-                        for (int j = 0; j < Constant::NODE_NUM; ++j) {
-                            if (link[i][j] > Constant::LINK_NUM) continue;
-                            path_prev[link[i][j]] = path_prim[link[i][j]][lp];
-                        }
+                        path_prev[i] = path_prim[i][lp];
                     }
                     delLp(lp, 1);
                     if (algoCall == 2 || algoCall == 4) {
@@ -826,12 +820,9 @@ int startAlgo() {
                         a = ind_prim[lp];
                     }
                     bool isSame = true;
-                    for (int i = 0; i < Constant::NODE_NUM; ++i) {
-                        for (int j = 0; j < Constant::NODE_NUM; ++j) {
-                            if (link[i][j] > Constant::LINK_NUM) continue;
-                            if (path_prev[link[i][j]] != path_prim[link[i][j]][lp]) {
-                                isSame = false;
-                            }
+                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
+                        if (path_prev[i] != path_prim[i][lp]) {
+                            isSame = false;
                         }
                     }
                     if (isSame == false) {
@@ -852,12 +843,7 @@ int startAlgo() {
                     int bp_rr_prev[Constant::LINK_NUM];
                     for (int i = 0; i < Constant::LINK_NUM; ++i) {
                         bp_rr_prev[i] = 0;
-                    }
-                    for (int i = 0; i < Constant::NODE_NUM; ++i) {
-                        for (int j = 0; j < Constant::NODE_NUM; ++j) {
-                            if (link[i][j] > Constant::LINK_NUM) continue;
-                            bp_rr_prev[link[i][j]] = path_back[link[i][j]][lp];
-                        }
+                        bp_rr_prev[i] = path_back[i][lp];
                     }
                     delLp(lp, 2);
                     if (algoCall == 2 || algoCall == 4) {
@@ -876,12 +862,9 @@ int startAlgo() {
                         a = ind_back[lp];
                     }
                     bool isSame = true;
-                    for (int i = 0; i < Constant::NODE_NUM; ++i) {
-                        for (int j = 0; j < Constant::NODE_NUM; ++j) {
-                            if (link[i][j] > Constant::LINK_NUM) continue;
-                            if (bp_rr_prev[link[i][j]] != path_back[link[i][j]][lp]) {
-                                isSame = false;
-                            }
+                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
+                        if (bp_rr_prev[i] != path_back[i][lp]) {
+                            isSame = false;
                         }
                     }
                     if (isSame == false) {
@@ -951,13 +934,7 @@ int retuneDown() {
             if (isactive[i] == 1 && ind_prim[i] == index1) {
                 int path_prev[Constant::LINK_NUM]; //to compare the previous root and new route
                 for (int b = 0; b < Constant::LINK_NUM; ++b) {
-                    path_prev[b] = 0;
-                }
-                for (int b = 0; b < Constant::NODE_NUM; ++b) {
-                    for (int c = 0; c < Constant::NODE_NUM; ++c) {
-                        if (link[b][c] > Constant::LINK_NUM) continue;
-                        path_prev[link[b][c]] = path_prim[link[b][c]][i];
-                    }
+                    path_prev[b] = path_prim[b][i];
                 }
                 delLp(i, 1);
                 if (algoCall == 2 || algoCall == 4) {
@@ -976,12 +953,9 @@ int retuneDown() {
                     a = ind_prim[i];
                 }
                 bool isSame = true;
-                for (int b = 0; b < Constant::NODE_NUM; ++b) {
-                    for (int c = 0; c < Constant::NODE_NUM; ++c) {
-                        if (link[b][c] > Constant::LINK_NUM) continue;
-                        if (path_prev[link[b][c]] != path_prim[link[b][c]][i]) {
-                            isSame = false;
-                        }
+                for (int b = 0; b < Constant::LINK_NUM; ++b) {
+                    if (path_prev[b] != path_prim[b][i]) {
+                        isSame = false;
                     }
                 }
                 if (isSame == false) {
@@ -1002,13 +976,7 @@ int retuneDown() {
             if (isactive[i] == 1 && ind_back[i] == index1) {
                 int bp_rr_prev[Constant::LINK_NUM]; //to compare the previous root and new route
                 for (int b = 0; b < Constant::LINK_NUM; ++b) {
-                    bp_rr_prev[b] = 0;
-                }
-                for (int b = 0; b < Constant::NODE_NUM; ++b) {
-                    for (int c = 0; c < Constant::NODE_NUM; ++c) {
-                        if (link[b][c] > Constant::LINK_NUM) continue;
-                        bp_rr_prev[link[b][c]] = path_back[link[b][c]][i];
-                    }
+                    bp_rr_prev[b] = path_back[b][i];
                 }
                 delLp(i, 2);
                 if (algoCall == 2 || algoCall == 4) {
@@ -1027,12 +995,9 @@ int retuneDown() {
                     a = ind_back[i];
                 }
                 bool isSame = true;
-                for (int b = 0; b < Constant::NODE_NUM; ++b) {
-                    for (int c = 0; c < Constant::NODE_NUM; ++c) {
-                        if (link[b][c] > Constant::LINK_NUM) continue;
-                        if (bp_rr_prev[link[b][c]] != path_back[link[b][c]][i]) {
-                            isSame = false;
-                        }
+                for (int b = 0; b < Constant::LINK_NUM; ++b) {
+                    if (bp_rr_prev[b] != path_back[b][i]) {
+                        isSame = false;
                     }
                 }
                 if (isSame == false) {

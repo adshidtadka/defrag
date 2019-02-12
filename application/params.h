@@ -1,7 +1,7 @@
 struct Constant {
     static const int INF                            = 999999999;
     static const int ITERATION                      = 3;
-    static const int REQ_NUM                        = 10000;
+    static const int REQ_NUM                        = 100;
     static const int CAPACITY                       = 400;
     static const int LOAD_START                     = 50;
     static const int LOAD_GAIN                      = 10;
