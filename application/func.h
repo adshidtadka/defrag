@@ -100,8 +100,8 @@ int isAvailableBack(int, int, int);
 bool path_prim[Constant::LINK_NUM][Constant::REQ_NUM];
 bool path_back[Constant::LINK_NUM][Constant::REQ_NUM];
 
-bool path_prim_init[Constant::NODE_NUM][Constant::NODE_NUM][Constant::LINK_NUM];
-bool path_back_init[Constant::NODE_NUM][Constant::NODE_NUM][Constant::LINK_NUM];
+bool path_prim_init[Constant::NODE_NUM][Constant::NODE_NUM][Constant::LINK_NUM] = {false};
+bool path_back_init[Constant::NODE_NUM][Constant::NODE_NUM][Constant::LINK_NUM] = {false};
 
 int link[Constant::NODE_NUM][Constant::NODE_NUM];
 bool spec[Constant::CAPACITY][Constant::LINK_NUM];
@@ -207,16 +207,6 @@ int readInput(int argc, char *argv[0], int load) {
         link[a][b] = k;
     }
     fin.close();
-
-    // initialize path_prim_init and path_back_init
-    for (int i = 0; i < Constant::NODE_NUM; ++i) {
-        for (int j = 0; j < Constant::NODE_NUM; ++j) {
-            for (int k = 0; k < Constant::LINK_NUM; ++k) {
-                path_prim_init[i][j][k] = false;
-                path_back_init[i][j][k] = false;
-            }
-        }
-    }
 
     // count primary path number
     ss.str("");
