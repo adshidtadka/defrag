@@ -169,7 +169,6 @@ vector <Event> defragEvent;
 struct linkStatus {
     int linkIndex;
     int usedNum;
-    bool isCongested = false;
 
     bool operator<(const linkStatus &linkStatus1) const {
         return (usedNum > linkStatus1.usedNum);
@@ -274,10 +273,20 @@ void getCongestedLink() {
     ofstream ofs_congested_link_csv;
     ofs_congested_link_csv.open("./../result/congestedLink.csv", ios::out);
 
-    linksStatus.resize(Constant::LINK_NUM);
+    struct linkStatusInit {
+        int linkIndex;
+        int usedNum;
+
+        bool operator<(const linkStatusInit &linkStatusInit1) const {
+            return (usedNum > linkStatusInit1.usedNum);
+        }
+    };
+    vector <linkStatusInit> linksStatusInit;
+
+    linksStatusInit.resize(Constant::LINK_NUM);
     for (int i = 0; i < Constant::LINK_NUM + 1; ++i) {
-        linksStatus[i].linkIndex = i;
-        linksStatus[i].usedNum = 0;
+        linksStatusInit[i].linkIndex = i;
+        linksStatusInit[i].usedNum = 0;
     }
 
     // check all lightpath
@@ -289,30 +298,22 @@ void getCongestedLink() {
 
                 // count the used link by prim path
                 if (path_prim_init[i][j][k]){
-                    linksStatus[k].usedNum++;
+                    linksStatusInit[k].usedNum++;
                 }
 
                 // count the used link by back path
                 if (path_back_init[i][j][k]){
-                    linksStatus[k].usedNum++;
+                    linksStatusInit[k].usedNum++;
                 }
             }
         }
     }
 
-    sort(linksStatus.begin(), linksStatus.end());
+    sort(linksStatusInit.begin(), linksStatusInit.end());
 
     // save congested link
     for (int i = 0; i < Constant::LINK_NUM; ++i) {
-        cout << "the number of lightpath using link[" << linksStatus[i].linkIndex << "] = " << linksStatus[i].usedNum << endl;
-        ofs_congested_link_csv << linksStatus[i].linkIndex << "," << linksStatus[i].usedNum << endl;
-    }
-
-    // update isCongested
-    int congestedLinkNum = Constant::LINK_NUM * Constant::RATE_CONGESTED / 100;
-    for (int i = 0; i < congestedLinkNum; ++i) {
-        linksStatus[i].isCongested = true;
-        cout << "updated link is " << linksStatus[i].linkIndex << endl;
+        ofs_congested_link_csv << linksStatusInit[i].linkIndex << "," << linksStatusInit[i].usedNum << endl;
     }
 }
 
@@ -1554,11 +1555,7 @@ int searchRoutePrim(int s, int lp, bool isSetUp) {
     int dest_node = dest[lp];
     int from_node = Nodes[dest_node].from;
     int hop_counter = 0;
-    bool isCongested = false;
     while (from_node < Constant::NODE_NUM && dest_node != from_node) {
-        // check congested
-        if (linksStatus[link[from_node][dest_node]].isCongested) isCongested = true;
-
         // increment counter
         dest_node = from_node;
         from_node = Nodes[dest_node].from;
@@ -1569,15 +1566,8 @@ int searchRoutePrim(int s, int lp, bool isSetUp) {
     if (isSetUp) {
         limit_hop_prim[lp] = hop_counter + Constant::ADDITIONAL_HOP;
     } else {
-        // check congested
-        if (isCongested) {
-            if (hop_counter > limit_hop_prim[lp] + Constant::ADDITIONAL_HOP_CONGESTED) {
-                return 0;
-            }
-        } else {
-            if (hop_counter > limit_hop_prim[lp]) {
-                return 0;
-            }
+        if (hop_counter > limit_hop_prim[lp]) {
+            return 0;
         }
     }
 
@@ -1664,11 +1654,7 @@ int searchRouteBack(int s, int lp, bool isSetUp) {
     int dest_node = dest[lp];
     int from_node = Nodes[dest_node].from;
     int hop_counter = 0;
-    bool isCongested = false;
     while (from_node < Constant::NODE_NUM && dest_node != from_node) {
-        // check congested
-        if (linksStatus[link[from_node][dest_node]].isCongested) isCongested = true;
-
         // increment counter
         dest_node = from_node;
         from_node = Nodes[dest_node].from;
@@ -1678,16 +1664,9 @@ int searchRouteBack(int s, int lp, bool isSetUp) {
     if (isSetUp) {
         limit_hop_back[lp] = hop_counter + Constant::ADDITIONAL_HOP;
     } else {
-        if (isCongested) {
-            if (hop_counter > limit_hop_back[lp] + Constant::ADDITIONAL_HOP_CONGESTED) {
-                return 0;
-            }
-        } else {
-            if (hop_counter > limit_hop_back[lp]) {
-                return 0;
-            }
+        if (hop_counter > limit_hop_back[lp]) {
+            return 0;
         }
-
     }
 
     a = dest[lp];
