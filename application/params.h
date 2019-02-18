@@ -13,11 +13,9 @@ struct Constant {
     static const int DEFRAG_TOTAL_TIME_MAX          = 100;
     static const int MAX_STEP 				        = 3;
     static const int ADDITIONAL_HOP 		        = 0;
-    static const int ADDITIONAL_HOP_CONGESTED       = 10;
-    static const int RATE_CONGESTED                 = 20;
     static const int SEED_1				            = 1448601515;
     static const int SEED_2				            = 125;
-    static const int ALGO_START			            = 0;
+    static const int ALGO_START			            = 2;
     static const int ALGO_FINISH			        = 2;
     static const int NODE_NUM 				        = 25;
     static const int LINK_NUM 				        = 84;
