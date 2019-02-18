@@ -1216,6 +1216,9 @@ int removeLP1_1(int lp) {
                     throw "[error] cannot delete primary path";
                 }
                 spec[index + i][j] = path_prim[j][lp] ^ spec[index + i][j];
+
+                // update linksStatus
+                linksStatus[j].usedNum--;
             }
         }
         index = ind_back[lp];
@@ -1228,6 +1231,9 @@ int removeLP1_1(int lp) {
                         throw "[error] cannot delete backup path";
                     }
                     spec[index + i][j] = path_back[j][lp] ^ spec[index + i][j];
+
+                    // update linksStatus
+                    linksStatus[j].usedNum--;
                 }
             }
         }
@@ -1245,6 +1251,9 @@ int asignBack(int lp, int index) {
         for (p = 0; p < Constant::LINK_NUM; p++) {
             if (spec[index + j][p] == 1 && path_back[p][lp] == 1) throw "バックアップパス割り当てエラー";
             spec[index + j][p] = spec[index + j][p] || path_back[p][lp];
+
+            // update linksStatus
+            linksStatus[p].usedNum++;
         }
     }
 
@@ -1297,6 +1306,12 @@ int reInitialize(void) {
     activeList = NULL;
     backupList = NULL;
     mixtList = NULL;
+
+    // initialize linkStatus
+    linksStatus.resize(Constant::LINK_NUM);
+    for (int i = 0; i < Constant::LINK_NUM; ++i) {
+        linksStatus[i].usedNum = 0;
+    }
 
     return 0;
 }
@@ -1372,6 +1387,9 @@ int asignPrim(int lp, int index) {
         for (p = 0; p < Constant::LINK_NUM; p++) {
             if (spec[index + j][p] == 1 && path_prim[p][lp] == 1) throw "プライマリパス割り当てエラー";
             spec[index + j][p] = spec[index + j][p] || path_prim[p][lp];
+
+            // update linksStatus
+            linksStatus[p].usedNum++ ;
         }
     }
 
@@ -1702,6 +1720,9 @@ void delLp(int lp, int p) {
                 for (j = 0; j < Constant::LINK_NUM; j++) {
                     if (spec[index + i][j] == 0 && path_prim[j][lp] == 1) throw "プライマリパス消去エラー";
                     spec[index + i][j] = path_prim[j][lp] ^ spec[index + i][j];
+
+                    // update linksStatus
+                    linksStatus[j].usedNum--;
                 }
             }
         }
@@ -1713,6 +1734,9 @@ void delLp(int lp, int p) {
                 for (j = 0; j < Constant::LINK_NUM; j++) {
                     if (spec[index + i][j] == 0 && path_back[j][lp] == 1) throw "バックアップパス消去エラー";
                     spec[index + i][j] = path_back[j][lp] ^ spec[index + i][j];
+
+                    // update linksStatus
+                    linksStatus[j].usedNum--;
                 }
             }
         }
