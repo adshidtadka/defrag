@@ -147,17 +147,11 @@ int main(int argc, char *argv[]) {
                             cout << "ERR:デフラグ中における" << err << endl;
                             return 1;
                         }
-                    }
 
-                    // count allocated slot number
-                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
-                        int counter = 0;
-                        for (int j = 0; j < Constant::CAPACITY; ++j) {
-                            if (spec[j][i]) {
-                                counter++;
-                            }
+                        // count allocated slot number
+                        for (int i = 0; i < Constant::LINK_NUM; ++i) {
+                            allocatedSlotNum[i].push_back(linksStatus[i].usedNum);
                         }
-                        allocatedSlotNum[i].push_back(counter);
                     }
                 }
 
