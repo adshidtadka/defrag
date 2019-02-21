@@ -1218,7 +1218,7 @@ int removeLP1_1(int lp) {
                 spec[index + i][j] = path_prim[j][lp] ^ spec[index + i][j];
 
                 // update linksStatus
-                linksStatus[j].usedNum--;
+                if (path_prim[j][lp] == 1) linksStatus[j].usedNum--;
             }
         }
         index = ind_back[lp];
@@ -1233,7 +1233,7 @@ int removeLP1_1(int lp) {
                     spec[index + i][j] = path_back[j][lp] ^ spec[index + i][j];
 
                     // update linksStatus
-                    linksStatus[j].usedNum--;
+                    if (path_back[j][lp] == 1) linksStatus[j].usedNum--;
                 }
             }
         }
@@ -1253,7 +1253,7 @@ int asignBack(int lp, int index) {
             spec[index + j][p] = spec[index + j][p] || path_back[p][lp];
 
             // update linksStatus
-            linksStatus[p].usedNum++;
+            if (path_back[p][lp] == 1) linksStatus[p].usedNum++;
         }
     }
 
@@ -1389,7 +1389,7 @@ int asignPrim(int lp, int index) {
             spec[index + j][p] = spec[index + j][p] || path_prim[p][lp];
 
             // update linksStatus
-            linksStatus[p].usedNum++ ;
+            if (path_prim[p][lp] == 1) linksStatus[p].usedNum++ ;
         }
     }
 
@@ -1722,7 +1722,7 @@ void delLp(int lp, int p) {
                     spec[index + i][j] = path_prim[j][lp] ^ spec[index + i][j];
 
                     // update linksStatus
-                    linksStatus[j].usedNum--;
+                    if (path_prim[j][lp] == 1) linksStatus[j].usedNum--;
                 }
             }
         }
@@ -1736,7 +1736,7 @@ void delLp(int lp, int p) {
                     spec[index + i][j] = path_back[j][lp] ^ spec[index + i][j];
 
                     // update linksStatus
-                    linksStatus[j].usedNum--;
+                    if (path_back[j][lp] == 1) linksStatus[j].usedNum--;
                 }
             }
         }
