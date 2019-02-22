@@ -1538,6 +1538,7 @@ int searchRoutePrim(int s, int lp, bool isSetUp, int additionalHop) {
     int threshold = 1;
     if (!isSetUp) {
         threshold = Constant::INIT_THRESHOLD - Constant::ADD_HOP_EFFECT * additionalHop;
+        if (threshold <= 0) return 0;
     }
 
     for (i = 0; i < Constant::NODE_NUM; i++) {
@@ -1642,6 +1643,7 @@ int searchRouteBack(int s, int lp, bool isSetUp, int additionalHop) {
     int threshold = 1;
     if (!isSetUp) {
         threshold = Constant::INIT_THRESHOLD - Constant::ADD_HOP_EFFECT * additionalHop;
+        if (threshold <= 0) return 0;
     }
 
     for (i = 0; i < Constant::NODE_NUM; i++) {
