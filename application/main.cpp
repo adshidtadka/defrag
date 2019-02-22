@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     ofs_result_txt << "Constant::DEFRAG_INTERVAL 	= " << Constant::DEFRAG_INTERVAL << endl;
     ofs_result_txt << "Constant::DEFRAG_TOTAL_TIME_MAX 	= " << Constant::DEFRAG_TOTAL_TIME_MAX << endl;
     ofs_result_txt << "Constant::PROCESSING_TIME 	= " << Constant::PROCESSING_TIME << endl;
-    ofs_result_txt << "Constant::ADDITIONAL_HOP 		= " << Constant::ADDITIONAL_HOP << endl;
+    ofs_result_txt << "Constant::MAX_ADD_HOP 		= " << Constant::MAX_ADD_HOP << endl;
     cout << "-------- Simulation start --------" << endl;
     cout << "Constant::NODE_NUM 		= " << Constant::NODE_NUM << endl;
     cout << "Constant::LINK_NUM 		= " << Constant::LINK_NUM << endl;
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     cout << "Constant::DEFRAG_INTERVAL 	= " << Constant::DEFRAG_INTERVAL << endl;
     cout << "Constant::DEFRAG_TOTAL_TIME_MAX	= " << Constant::DEFRAG_TOTAL_TIME_MAX << endl;
     cout << "Constant::PROCESSING_TIME 	= " << Constant::PROCESSING_TIME << endl;
-    cout << "Constant::ADDITIONAL_HOP 	= " << Constant::ADDITIONAL_HOP << endl;
+    cout << "Constant::MAX_ADD_HOP 	        = " << Constant::MAX_ADD_HOP << endl;
 
     int load = Constant::LOAD_START;
     for (int l = 0; l < Constant::LOAD_REPEAT_NUM; l++) {

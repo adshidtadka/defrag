@@ -57,9 +57,9 @@ int checkFirstBackConv(int);
 
 int checkFirstBackProp(int, bool);
 
-int searchRoutePrim(int, int, bool);
+int searchRoutePrim(int, int, bool, int);
 
-int searchRouteBack(int, int, bool);
+int searchRouteBack(int, int, bool, int);
 
 void delLp(int, int);
 
@@ -1362,8 +1362,10 @@ int checkFirstBackConv(int lp) {
 
 int checkFirstPrimProp(int lp, bool isSetUp) {
     for (int i = 0; i < Constant::CAPACITY - lp_size[lp]; ++i) {
-        if (searchRoutePrim(i, lp, isSetUp)) {
-            return i;
+        for (int j = 0; j < Constant::MAX_ADD_HOP; ++j) {
+            if (searchRoutePrim(i, lp, isSetUp, j)) {
+                return i;
+            }
         }
     }
     return Constant::INF;
@@ -1371,8 +1373,10 @@ int checkFirstPrimProp(int lp, bool isSetUp) {
 
 int checkFirstBackProp(int lp, bool isSetUp) {
     for (int i = 0; i < Constant::CAPACITY - lp_size[lp]; ++i) {
-        if (searchRouteBack(i, lp, isSetUp)) {
-            return i;
+        for (int j = 0; j < Constant::MAX_ADD_HOP; ++j) {
+            if (searchRouteBack(i, lp, isSetUp, j)) {
+                return i;
+            }
         }
     }
     return Constant::INF;
@@ -1455,14 +1459,16 @@ int checkExactPrimProp(int lp, bool isSetUp) {
 
     for (i = 0; i < Constant::CAPACITY - b; i++) {
         isGetRoot = 0;
-        isGetRoot = searchRoutePrim(i, lp, isSetUp);
-        if (isGetRoot) {
-            // confirm non-availability
-            if (i + 1 + b == Constant::CAPACITY) {
-                return i;
-            } else {
-                if (isAvailablePrim(i + 1 + b, 1, lp) == 0) {
+        for (int j = 0; j < Constant::MAX_ADD_HOP; ++j) {
+            isGetRoot = searchRoutePrim(i, lp, isSetUp, j);
+            if (isGetRoot) {
+                // confirm non-availability
+                if (i + 1 + b == Constant::CAPACITY) {
                     return i;
+                } else {
+                    if (isAvailablePrim(i + 1 + b, 1, lp) == 0) {
+                        return i;
+                    }
                 }
             }
         }
@@ -1476,14 +1482,16 @@ int checkExactBackProp(int lp, bool isSetUp) {
 
     for (int i = 0; i < Constant::CAPACITY - b; i++) {
         isGetRoot = 0;
-        isGetRoot = searchRouteBack(i, lp, isSetUp);
-        if (isGetRoot) {
-            // confirm non-availability
-            if (i + 1 + b == Constant::CAPACITY) {
-                return i;
-            } else {
-                if (isAvailableBack(i + 1 + b, 1, lp) == 0) {
+        for (int j = 0; j < Constant::MAX_ADD_HOP; ++j) {
+            isGetRoot = searchRouteBack(i, lp, isSetUp, j);
+            if (isGetRoot) {
+                // confirm non-availability
+                if (i + 1 + b == Constant::CAPACITY) {
                     return i;
+                } else {
+                    if (isAvailableBack(i + 1 + b, 1, lp) == 0) {
+                        return i;
+                    }
                 }
             }
         }
@@ -1515,7 +1523,7 @@ int isAvailableBack(int index, int times, int lp) {
     return 1;
 }
 
-int searchRoutePrim(int s, int lp, bool isSetUp) {
+int searchRoutePrim(int s, int lp, bool isSetUp, int additionalHop) {
     int i, j, k;
     bool unconnectedFlag;
     int a, b;
@@ -1525,6 +1533,12 @@ int searchRoutePrim(int s, int lp, bool isSetUp) {
 
     Node Nodes[Constant::NODE_NUM];
     Node doneNode;
+
+    // get the threshold
+    int threshold = 1;
+    if (!isSetUp) {
+        threshold = Constant::INIT_THRESHOLD - Constant::ADD_HOP_EFFECT * additionalHop;
+    }
 
     for (i = 0; i < Constant::NODE_NUM; i++) {
         for (j = 0; j < Constant::NODE_NUM; j++) {
@@ -1536,9 +1550,10 @@ int searchRoutePrim(int s, int lp, bool isSetUp) {
                 }
             }
             if (!unconnectedFlag) {
-                Nodes[i].edges_to.push_back(j);
-                Nodes[i].edges_cost.push_back(1);
-
+                if (linksStatus[link[i][j]].usedNum / Constant::CAPACITY <= threshold) {
+                    Nodes[i].edges_to.push_back(j);
+                    Nodes[i].edges_cost.push_back(1);
+                }
             }
         }
     }
@@ -1584,8 +1599,10 @@ int searchRoutePrim(int s, int lp, bool isSetUp) {
     if (isSetUp) {
         prev_hop_prim[lp] = hop_counter;
     } else {
-        if (hop_counter > prev_hop_prim[lp] + Constant::ADDITIONAL_HOP) {
+        if (hop_counter > prev_hop_prim[lp] + additionalHop) {
             return 0;
+        } else {
+            prev_hop_prim[lp] = hop_counter;
         }
     }
 
@@ -1610,7 +1627,7 @@ int searchRoutePrim(int s, int lp, bool isSetUp) {
     }
 }
 
-int searchRouteBack(int s, int lp, bool isSetUp) {
+int searchRouteBack(int s, int lp, bool isSetUp, int additionalHop) {
     int i, j, k;
     bool unconnectedFlag;
     int a, b;
@@ -1620,6 +1637,12 @@ int searchRouteBack(int s, int lp, bool isSetUp) {
 
     Node Nodes[Constant::NODE_NUM];
     Node doneNode;
+
+    // get the threshold
+    int threshold = 1;
+    if (!isSetUp) {
+        threshold = Constant::INIT_THRESHOLD - Constant::ADD_HOP_EFFECT * additionalHop;
+    }
 
     for (i = 0; i < Constant::NODE_NUM; i++) {
         for (j = 0; j < Constant::NODE_NUM; j++) {
@@ -1631,8 +1654,10 @@ int searchRouteBack(int s, int lp, bool isSetUp) {
                 }
             }
             if (!unconnectedFlag) {
-                Nodes[i].edges_to.push_back(j);
-                Nodes[i].edges_cost.push_back(1);
+                if (linksStatus[link[i][j]].usedNum / Constant::CAPACITY <= threshold) {
+                    Nodes[i].edges_to.push_back(j);
+                    Nodes[i].edges_cost.push_back(1);
+                }
             }
         }
     }
@@ -1682,8 +1707,10 @@ int searchRouteBack(int s, int lp, bool isSetUp) {
     if (isSetUp) {
         prev_hop_back[lp] = hop_counter;
     } else {
-        if (hop_counter > prev_hop_back[lp] + Constant::ADDITIONAL_HOP) {
+        if (hop_counter > prev_hop_back[lp] + additionalHop) {
             return 0;
+        } else {
+            prev_hop_back[lp] = hop_counter;
         }
     }
 
