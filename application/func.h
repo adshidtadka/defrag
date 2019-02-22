@@ -112,8 +112,8 @@ double t_req_event[Constant::REQ_NUM], t_hold_event[Constant::REQ_NUM], t_exp_ev
 int ind_prim[Constant::REQ_NUM], ind_back[Constant::REQ_NUM];
 bool state_prim[Constant::REQ_NUM];
 bool state_back[Constant::REQ_NUM];
-int limit_hop_prim[Constant::REQ_NUM];
-int limit_hop_back[Constant::REQ_NUM];
+int prev_hop_prim[Constant::REQ_NUM];
+int prev_hop_back[Constant::REQ_NUM];
 unsigned seed1 = Constant::SEED_1;
 unsigned seed2 = Constant::SEED_2;
 int blocked;
@@ -1288,8 +1288,8 @@ int reInitialize(void) {
         isactive[i] = 0;
         state_prim[i] = 1;
         state_back[i] = 0;
-        limit_hop_prim[i] = 0;
-        limit_hop_back[i] = 0;
+        prev_hop_prim[i] = 0;
+        prev_hop_back[i] = 0;
     }
 
     while (!eventQueue.empty()) {
@@ -1582,9 +1582,9 @@ int searchRoutePrim(int s, int lp, bool isSetUp) {
     }
 
     if (isSetUp) {
-        limit_hop_prim[lp] = hop_counter + Constant::ADDITIONAL_HOP;
+        prev_hop_prim[lp] = hop_counter;
     } else {
-        if (hop_counter > limit_hop_prim[lp]) {
+        if (hop_counter > prev_hop_prim[lp] + Constant::ADDITIONAL_HOP) {
             return 0;
         }
     }
@@ -1680,9 +1680,9 @@ int searchRouteBack(int s, int lp, bool isSetUp) {
     }
 
     if (isSetUp) {
-        limit_hop_back[lp] = hop_counter + Constant::ADDITIONAL_HOP;
+        prev_hop_back[lp] = hop_counter;
     } else {
-        if (hop_counter > limit_hop_back[lp]) {
+        if (hop_counter > prev_hop_back[lp] + Constant::ADDITIONAL_HOP) {
             return 0;
         }
     }
