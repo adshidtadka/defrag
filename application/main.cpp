@@ -69,8 +69,6 @@ int main(int argc, char *argv[]) {
                     eventQueue.push(defragEvent[c]);
                 }
 
-                vector <vector<int>> allocatedSlotNum(Constant::LINK_NUM);
-
                 time_slot_now = 0;
                 clock_t start, end;
                 start = clock();
@@ -143,11 +141,6 @@ int main(int argc, char *argv[]) {
                         catch (const char *err) {
                             cout << "ERR:デフラグ中における" << err << endl;
                             return 1;
-                        }
-
-                        // count allocated slot number
-                        for (int i = 0; i < Constant::LINK_NUM; ++i) {
-                            allocatedSlotNum[i].push_back(linksStatus[i].usedNum);
                         }
                     }
                 }

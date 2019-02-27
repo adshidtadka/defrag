@@ -166,15 +166,15 @@ Event nowEvent;
 Event nextEvent;
 vector <Event> defragEvent;
 
-struct linkStatus {
+struct Link {
     int linkIndex;
     int usedNum;
 
-    bool operator<(const linkStatus &linkStatus1) const {
-        return (usedNum > linkStatus1.usedNum);
+    bool operator<(const Link &Link1) const {
+        return (usedNum > Link1.usedNum);
     }
 };
-vector <linkStatus> linksStatus;
+vector <Link> links;
 
 // map<char, int> links;
 // map<char, int> nodes;
@@ -273,20 +273,12 @@ void getCongestedLink() {
     ofstream ofs_congested_link_csv;
     ofs_congested_link_csv.open("./../result/congestedLink.csv", ios::out);
 
-    struct linkStatusInit {
-        int linkIndex;
-        int usedNum;
+    vector <Link> linksInit;
 
-        bool operator<(const linkStatusInit &linkStatusInit1) const {
-            return (usedNum > linkStatusInit1.usedNum);
-        }
-    };
-    vector <linkStatusInit> linksStatusInit;
-
-    linksStatusInit.resize(Constant::LINK_NUM);
+    linksInit.resize(Constant::LINK_NUM);
     for (int i = 0; i < Constant::LINK_NUM + 1; ++i) {
-        linksStatusInit[i].linkIndex = i;
-        linksStatusInit[i].usedNum = 0;
+        linksInit[i].linkIndex = i;
+        linksInit[i].usedNum = 0;
     }
 
     // check all lightpath
@@ -298,22 +290,22 @@ void getCongestedLink() {
 
                 // count the used link by prim path
                 if (path_prim_init[i][j][k]){
-                    linksStatusInit[k].usedNum++;
+                    linksInit[k].usedNum++;
                 }
 
                 // count the used link by back path
                 if (path_back_init[i][j][k]){
-                    linksStatusInit[k].usedNum++;
+                    linksInit[k].usedNum++;
                 }
             }
         }
     }
 
-    sort(linksStatusInit.begin(), linksStatusInit.end());
+    sort(linksInit.begin(), linksInit.end());
 
     // save congested link
     for (int i = 0; i < Constant::LINK_NUM; ++i) {
-        ofs_congested_link_csv << linksStatusInit[i].linkIndex << "," << linksStatusInit[i].usedNum << endl;
+        ofs_congested_link_csv << linksInit[i].linkIndex << "," << linksInit[i].usedNum << endl;
     }
 }
 
@@ -1217,8 +1209,8 @@ int removeLP1_1(int lp) {
                 }
                 spec[index + i][j] = path_prim[j][lp] ^ spec[index + i][j];
 
-                // update linksStatus
-                if (path_prim[j][lp] == 1) linksStatus[j].usedNum--;
+                // update links
+                if (path_prim[j][lp] == 1) links[j].usedNum--;
             }
         }
         index = ind_back[lp];
@@ -1232,8 +1224,8 @@ int removeLP1_1(int lp) {
                     }
                     spec[index + i][j] = path_back[j][lp] ^ spec[index + i][j];
 
-                    // update linksStatus
-                    if (path_back[j][lp] == 1) linksStatus[j].usedNum--;
+                    // update links
+                    if (path_back[j][lp] == 1) links[j].usedNum--;
                 }
             }
         }
@@ -1252,8 +1244,8 @@ int asignBack(int lp, int index) {
             if (spec[index + j][p] == 1 && path_back[p][lp] == 1) throw "バックアップパス割り当てエラー";
             spec[index + j][p] = spec[index + j][p] || path_back[p][lp];
 
-            // update linksStatus
-            if (path_back[p][lp] == 1) linksStatus[p].usedNum++;
+            // update links
+            if (path_back[p][lp] == 1) links[p].usedNum++;
         }
     }
 
@@ -1307,10 +1299,10 @@ int reInitialize(void) {
     backupList = NULL;
     mixtList = NULL;
 
-    // initialize linkStatus
-    linksStatus.resize(Constant::LINK_NUM);
+    // initialize Link
+    links.resize(Constant::LINK_NUM);
     for (int i = 0; i < Constant::LINK_NUM; ++i) {
-        linksStatus[i].usedNum = 0;
+        links[i].usedNum = 0;
     }
 
     return 0;
@@ -1392,8 +1384,8 @@ int asignPrim(int lp, int index) {
             if (spec[index + j][p] == 1 && path_prim[p][lp] == 1) throw "プライマリパス割り当てエラー";
             spec[index + j][p] = spec[index + j][p] || path_prim[p][lp];
 
-            // update linksStatus
-            if (path_prim[p][lp] == 1) linksStatus[p].usedNum++ ;
+            // update links
+            if (path_prim[p][lp] == 1) links[p].usedNum++ ;
         }
     }
 
@@ -1551,7 +1543,7 @@ int searchRoutePrim(int s, int lp, bool isSetUp, int additionalHop) {
                 }
             }
             if (!unconnectedFlag) {
-                if (linksStatus[link[i][j]].usedNum / Constant::CAPACITY <= threshold) {
+                if (links[link[i][j]].usedNum / Constant::CAPACITY <= threshold) {
                     Nodes[i].edges_to.push_back(j);
                     Nodes[i].edges_cost.push_back(1);
                 }
@@ -1656,7 +1648,7 @@ int searchRouteBack(int s, int lp, bool isSetUp, int additionalHop) {
                 }
             }
             if (!unconnectedFlag) {
-                if (linksStatus[link[i][j]].usedNum / Constant::CAPACITY <= threshold) {
+                if (links[link[i][j]].usedNum / Constant::CAPACITY <= threshold) {
                     Nodes[i].edges_to.push_back(j);
                     Nodes[i].edges_cost.push_back(1);
                 }
@@ -1750,8 +1742,8 @@ void delLp(int lp, int p) {
                     if (spec[index + i][j] == 0 && path_prim[j][lp] == 1) throw "プライマリパス消去エラー";
                     spec[index + i][j] = path_prim[j][lp] ^ spec[index + i][j];
 
-                    // update linksStatus
-                    if (path_prim[j][lp] == 1) linksStatus[j].usedNum--;
+                    // update links
+                    if (path_prim[j][lp] == 1) links[j].usedNum--;
                 }
             }
         }
@@ -1764,8 +1756,8 @@ void delLp(int lp, int p) {
                     if (spec[index + i][j] == 0 && path_back[j][lp] == 1) throw "バックアップパス消去エラー";
                     spec[index + i][j] = path_back[j][lp] ^ spec[index + i][j];
 
-                    // update linksStatus
-                    if (path_back[j][lp] == 1) linksStatus[j].usedNum--;
+                    // update links
+                    if (path_back[j][lp] == 1) links[j].usedNum--;
                 }
             }
         }
