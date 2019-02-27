@@ -163,9 +163,6 @@ int main(int argc, char *argv[]) {
                     ofs_result_txt << "[none] blocked:		" << blocked << endl << endl;
                     blkdItNone += blocked;
                     stdItNoneArr[it] = blocked;
-                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
-                        slotNone[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
-                    }
                     reInitialize();
                 }
                 if (algoCall == 1) {
@@ -179,9 +176,6 @@ int main(int argc, char *argv[]) {
                     stdItConvArr[it] = blocked;
                     togOpItConv += togOp;
                     realOpItConv += realOp;
-                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
-                        slotConv[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
-                    }
                     reInitialize();
                 }
                 if (algoCall == 2) {
@@ -198,9 +192,6 @@ int main(int argc, char *argv[]) {
                     togOpItProp += togOp;
                     realOpItProp += realOp;
                     rerouteOpItProp += rerouteOp;
-                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
-                        slotProp[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
-                    }
                     reInitialize();
                 }
                 if (algoCall == 3) {
@@ -212,9 +203,6 @@ int main(int argc, char *argv[]) {
                     ofs_result_txt << "[ilp_conv] reallocate:	" << realOp << endl << endl;
                     blkdItConvIlp += blocked;
                     stdItConvIlpArr[it] = blocked;
-                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
-                        slotConvIlp[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
-                    }
                     reInitialize();
                 }
                 if (algoCall == 4) {
@@ -226,9 +214,6 @@ int main(int argc, char *argv[]) {
                     ofs_result_txt << "[ilp_prop] reallocate:	" << realOp << endl << endl;
                     blkdItPropIlp += blocked;
                     stdItPropIlpArr[it] = blocked;
-                    for (int i = 0; i < Constant::LINK_NUM; ++i) {
-                        slotPropIlp[i][it] = accumulate(allocatedSlotNum[i].begin(), allocatedSlotNum[i].end(), 0) / allocatedSlotNum[i].size();
-                    }
                     reInitialize();
                 }
             }
