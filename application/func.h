@@ -110,8 +110,7 @@ int lp_size[Constant::REQ_NUM], source[Constant::REQ_NUM], dest[Constant::REQ_NU
 int isactive[Constant::REQ_NUM];
 double t_req_event[Constant::REQ_NUM], t_hold_event[Constant::REQ_NUM], t_exp_event[Constant::REQ_NUM];
 int ind_prim[Constant::REQ_NUM], ind_back[Constant::REQ_NUM];
-bool state_prim[Constant::REQ_NUM];
-bool state_back[Constant::REQ_NUM];
+bool lpState[Constant::REQ_NUM];
 int prev_hop_prim[Constant::REQ_NUM];
 int prev_hop_back[Constant::REQ_NUM];
 unsigned seed1 = Constant::SEED_1;
@@ -341,7 +340,7 @@ int writeGivenParamConv(int load) {
         lp = cur->x;
         cur = cur->next;
         n = lp_size[lp];
-        k = state_prim[lp];
+        k = lpState[lp];
         if (k) {
             f0 = ind_prim[lp];
             ofs2 << ind << " " << "1 " << n << " " << f0 << endl;
@@ -413,7 +412,7 @@ int writeGivenParamProp(int load) {
         lp = cur->x;
         cur = cur->next;
         n = lp_size[lp];
-        k = state_prim[lp];
+        k = lpState[lp];
         if (k) {
             f0 = ind_prim[lp];
             ofs2 << ind << " " << "1 " << n << " " << f0 << endl;
@@ -743,8 +742,8 @@ int startAlgo() {
                 } else {
                     int conf = 0;
                     while (cur2 != NULL) {
-                        if (state_prim[cur2->x]) {
-                            if (state_prim[lp]) {
+                        if (lpState[cur2->x]) {
+                            if (lpState[lp]) {
                                 for (i = 0; i < Constant::LINK_NUM; i++) {
                                     if (path_prim[i][cur2->x] && path_prim[i][lp]) conf = 1;
                                 }
@@ -755,7 +754,7 @@ int startAlgo() {
 
                             }
                         } else {
-                            if (state_prim[lp]) {
+                            if (lpState[lp]) {
                                 for (i = 0; i < Constant::LINK_NUM; i++) {
                                     if (path_back[i][cur2->x] && path_prim[i][lp]) conf = 1;
                                 }
@@ -779,7 +778,7 @@ int startAlgo() {
             int realcheck = realOp;
             while (cur2 != NULL) {
                 lp = cur2->x;
-                b = state_prim[lp];
+                b = lpState[lp];
                 cur2 = cur2->next;
                 if (b) {
                     int path_prev[Constant::LINK_NUM];
@@ -814,9 +813,8 @@ int startAlgo() {
                     if (a != ind_prim[lp]) {
                         realOp++;
                         realMov++;
-                        if (state_prim[lp]) {
-                            state_back[lp] = state_prim[lp];
-                            state_prim[lp] = !state_back[lp];
+                        if (lpState[lp]) {
+                            lpState[lp] = 0;
                             togOp++;
                         }
                     }
@@ -856,9 +854,8 @@ int startAlgo() {
                     if (a != ind_back[lp]) {
                         realOp++;
                         realMov++;
-                        if (state_back[lp]) {
-                            state_back[lp] = state_prim[lp];
-                            state_prim[lp] = !state_back[lp];
+                        if (!lpState[lp]) {
+                            lpState[lp] = 1;
                             togOp++;
                         }
                     }
@@ -946,9 +943,8 @@ int retuneDown() {
                 }
                 if (a != ind_prim[i]) {
                     realOp++;
-                    if (state_prim[i]) {
-                        state_back[i] = state_prim[i];
-                        state_prim[i] = !state_back[i];
+                    if (lpState[i]) {
+                        lpState[i] = 0;
                         togOp++;
                     }
                     mov_time++;
@@ -988,9 +984,8 @@ int retuneDown() {
                 }
                 if (a != ind_back[i]) {
                     realOp++;
-                    if (state_back[i]) {        // Actual primary
-                        state_back[i] = state_prim[i];
-                        state_prim[i] = !state_back[i];
+                    if (!lpState[i]) {
+                        lpState[i] = 1;
                         togOp++;
                     }
                     mov_time++;
@@ -1278,8 +1273,7 @@ int reInitialize(void) {
     for (int i = 0; i < Constant::REQ_NUM; i++) {
         ind_prim[i] = 0;
         isactive[i] = 0;
-        state_prim[i] = 1;
-        state_back[i] = 0;
+        lpState[i] = 1;
         prev_hop_prim[i] = 0;
         prev_hop_back[i] = 0;
     }
