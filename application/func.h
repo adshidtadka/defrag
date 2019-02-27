@@ -173,22 +173,7 @@ struct Link {
         return (usedNum > Link1.usedNum);
     }
 };
-vector <Link> links;
-
-// map<char, int> links;
-// map<char, int> nodes;
-// links["5node"] 	= 5;
-// nodes["5node"] 	= 12;
-// links["abi"] 	= 11;
-// nodes["abi"] 	= 28;
-// links["euro"] 	= 11;
-// nodes["euro"] 	= 52;
-// links["nsf"] 	= 14;
-// nodes["nsf"] 	= 44;
-// links["ind"] 	= 14;
-// nodes["ind"] 	= 46;
-// links["jap"] 	= 25;
-// nodes["jap"] 	= 84;
+Link links[Constant::LINK_NUM];
 
 int readInput(int argc, char *argv[0], int load) {
     ifstream fin;
@@ -1294,7 +1279,6 @@ int reInitialize(void) {
     mixtList = NULL;
 
     // initialize Link
-    links.resize(Constant::LINK_NUM);
     for (int i = 0; i < Constant::LINK_NUM; ++i) {
         links[i].usedNum = 0;
     }
